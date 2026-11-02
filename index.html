@@ -513,8 +513,8 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
       <div class="vidrio panel">
         <h2>Ponerle el sello de la visita</h2>
         <p class="menor">En el celular del cliente, delante de ti, cuando ya pagó.
-          Un sello por visita.</p>
-        <button class="btn" id="btnSellar" style="margin-top:13px">+1 sello a este celular</button>
+          Toca lo que consumió: entre más grande el plato, más sellos.</p>
+        <div id="nivelesBtns" style="margin-top:13px"></div>
         <div id="sellarMsg"></div>
       </div>
 
@@ -576,10 +576,10 @@ const CONFIG = {
      Cada uno cuesta distinto: pon solo los que a Eli le cuadren, y en el
      orden que quieras. Si dejas uno solo, no rota. */
   beneficios: [
-    { ico:"🥤", que:"Jugo natural gratis",  nota:"Con tu corrientazo de esta semana." },
+    { ico:"🥤", que:"Jugo natural gratis",  nota:"Con tu almuerzo de esta semana." },
     { ico:"🍮", que:"Postre gratis",        nota:"Con tu almuerzo de esta semana." },
     { ico:"🍌", que:"Patacón extra gratis", nota:"Con tu almuerzo de esta semana." },
-    { ico:"🥤", que:"Jugo natural gratis",  nota:"Con tu corrientazo de esta semana." },
+    { ico:"🥤", que:"Jugo natural gratis",  nota:"Con tu almuerzo de esta semana." },
     { ico:"🍲", que:"Sopa extra gratis",    nota:"Con tu almuerzo de esta semana." }
   ],
 
@@ -646,6 +646,23 @@ const CONFIG = {
   ],
 
   sellosParaAlmuerzo: 20,
+
+  /* --- CUÁNTOS SELLOS DA CADA VISITA ----------------------------------
+     Lo que pidió Eli —que no a todos les salga lo mismo— resuelto SIN
+     azar: los sellos dependen de lo que consumió. Una bandeja da más
+     que un sancocho mediano. Varía por cliente y por visita, pero es
+     aritmética, no suerte, así que el art. 5 de la Ley 643 no se activa
+     por ninguna lectura.
+     Repartir sellos al azar es terreno gris: Coljuegos lista "raspa y
+     gana" como método de azar, y Puntos Colombia —cuyos puntos tampoco
+     son dinero ni transferibles— tramita autorización para sortearlos.
+     Los rangos salen de la carta real. Ajusta los sellos si quieres que
+     el almuerzo gratis llegue más rápido o más lento.               */
+  nivelesSello: [
+    { sellos:1, titulo:"Almuerzo sencillo",  detalle:"$14.000 a $16.000" },
+    { sellos:2, titulo:"Almuerzo completo",  detalle:"$17.000 a $20.000" },
+    { sellos:3, titulo:"Bandeja especial",   detalle:"$22.000" }
+  ],
 
   /* --- METAS EN EL CAMINO --------------------------------------------
      Lo que pidió Eli: que la gente se quede "a ver qué me puedo ganar".
@@ -1042,17 +1059,34 @@ $("btnPin").addEventListener("click", () => {
   else $("pinError").innerHTML = '<div class="aviso">Clave incorrecta.</div>';
 });
 
-$("btnSellar").addEventListener("click", () => {
-  const ahora = Date.now();
-  if(E.ultimoSello && ahora - E.ultimoSello < 120000){
-    const seg = Math.round((ahora - E.ultimoSello)/1000);
-    if(!confirm("Ya le pusiste un sello a este celular hace "+seg+" segundos.\n\n¿Es otra visita distinta?")) return;
-  }
-  E.sellos += 1; E.ultimoSello = ahora;
-  guardar(E); pintarSellos(true);
-  $("sellarMsg").innerHTML = '<div class="aviso ok">Listo: este celular va en <b>'+E.sellos+
-    '</b> '+(E.sellos===1?"sello":"sellos")+'.</div>';
-});
+/* Un botón por nivel de consumo. Lo que pidió Eli —que no a todos les
+   salga lo mismo— sin azar: los sellos los decide lo que se comió, que
+   es aritmética. Repartirlos al azar es terreno gris y lo evitamos. */
+(function(){
+  const z = $("nivelesBtns");
+  if(!z || !CONFIG.nivelesSello) return;
+  z.innerHTML = CONFIG.nivelesSello.map((n, i) =>
+    '<button class="btn' + (i ? " cristal" : "") + '" data-s="' + n.sellos +
+    '" style="margin-top:' + (i ? 9 : 0) + 'px;flex-direction:column;gap:2px">' +
+      '<span>' + esc(n.titulo) + ' · +' + n.sellos + (n.sellos === 1 ? " sello" : " sellos") + '</span>' +
+      '<span style="font-weight:400;font-size:13px;opacity:.75">' + esc(n.detalle) + '</span>' +
+    '</button>').join("");
+
+  z.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    const suma = +b.dataset.s || 1;
+    /* El error típico de caja es tocar dos veces por la misma visita.
+       Cada toque de más es plata regalada. */
+    const ahora = Date.now();
+    if(E.ultimoSello && ahora - E.ultimoSello < 120000){
+      const seg = Math.round((ahora - E.ultimoSello)/1000);
+      if(!confirm("Ya le pusiste sellos a este celular hace "+seg+" segundos.\n\n¿Es otra visita distinta?")) return;
+    }
+    E.sellos += suma; E.ultimoSello = ahora;
+    guardar(E); pintarSellos(true);
+    $("sellarMsg").innerHTML = '<div class="aviso ok">+'+suma+' · este celular va en <b>'+E.sellos+
+      '</b> '+(E.sellos===1?"sello":"sellos")+'.</div>';
+  }));
+})();
 
 $("btnIrMio").addEventListener("click", () => { pintarSellos(false); pintarLista(); pantalla("pMio"); });
 $("btnSalir1").addEventListener("click", () => pantalla("pInicio"));
