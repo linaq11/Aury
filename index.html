@@ -384,6 +384,8 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 const CONFIG = {
 
   whatsapp: "573002679611",
+  /* La Ley 1480 de 2011 exige decir DÓNDE se reclama, no basta "en el local". */
+  direccion: "Cl. 31b #52-29, Villa Olímpica, Cartagena",
 
   /* --- EL BENEFICIO DE LA SEMANA ---------------------------------
      Uno solo, igual para todos. Se puede cambiar cada semana; lo que
@@ -741,14 +743,15 @@ window.addEventListener("resize", () => {
     "<b>Condiciones.</b> Esto <b>no es un sorteo</b>: el beneficio es el mismo para todas " +
     "las personas y está anunciado de antemano, no se decide por azar. Vigencia del <b>" +
     CONFIG.vigenciaDesde + "</b> al <b>" + CONFIG.vigenciaHasta + "</b>. Un raspado por " +
-    "celular por día. El beneficio se reclama únicamente en el local, presentando esta " +
-    "pantalla junto con el pedido del almuerzo; no es transferible ni canjeable por dinero. " +
+    "celular por día. El beneficio se reclama únicamente en <b>" + CONFIG.direccion + "</b>, " +
+    "presentando esta pantalla junto con el pedido del almuerzo; no es transferible ni " +
+    "canjeable por dinero. " +
     "<b>Sellos:</b> un sello por visita, puesto por el personal en el local cuando se " +
     "confirma el consumo; al completar <b>" + CONFIG.sellosParaAlmuerzo + "</b> sellos se " +
     "obtiene un almuerzo del día sin costo. Los sellos no se compran, no se transfieren y " +
     "no se dan por dejar reseñas. <b>Esta página no guarda ningún dato personal:</b> los " +
     "sellos y los beneficios se guardan solo en este celular, así que si borras los datos " +
-    "del navegador se pierden. Restaurante Aury, Cartagena · WhatsApp " +
+    "del navegador se pierden. Restaurante Aury · " + CONFIG.direccion + " · WhatsApp " +
     CONFIG.whatsapp.replace(/^57/, "") + ".";
   $("tycInicio").innerHTML = t;
   $("tycMio").innerHTML = t;
