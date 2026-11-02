@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<title>Aury · hoja para la caja</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  @page{ size:letter; margin:14mm; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Public Sans",sans-serif;color:#2a1206;background:#fff;line-height:1.5}
+  .hoja{max-width:180mm;margin:0 auto}
+
+  h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:26pt;
+     letter-spacing:-.02em;line-height:1.05}
+  .sub{font-size:11pt;color:#6b4a2e;margin-top:3mm}
+
+  .paso{display:flex;gap:5mm;margin-top:7mm;page-break-inside:avoid}
+  .num{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:15pt;
+       background:#f4940a;color:#1a1a1e;width:11mm;height:11mm;border-radius:50%;
+       display:flex;align-items:center;justify-content:center;flex:none}
+  .paso h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:13pt;
+           letter-spacing:-.01em}
+  .paso p{font-size:10.5pt;margin-top:1.5mm}
+  .paso .ojo{font-size:9.5pt;color:#8a5a33;margin-top:1.5mm}
+
+  .clave{border:1.6px solid #f4940a;border-radius:4mm;padding:5mm 6mm;margin-top:8mm;
+         display:flex;align-items:center;gap:6mm;page-break-inside:avoid}
+  .clave .et{font-size:9.5pt;color:#6b4a2e;letter-spacing:.1em;text-transform:uppercase;
+             font-weight:700}
+  .clave .v{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:30pt;
+            letter-spacing:.12em;color:#b5281e;line-height:1}
+  .clave .n{font-size:9.5pt;color:#6b4a2e;flex:1}
+
+  .reglas{margin-top:9mm;border-top:1.4px solid #e0d2bb;padding-top:5mm;page-break-inside:avoid}
+  .reglas h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:12pt;
+             color:#b5281e;letter-spacing:.04em;text-transform:uppercase}
+  .reglas li{font-size:10.5pt;margin-top:3mm;list-style:none;padding-left:6mm;position:relative}
+  .reglas li::before{content:"•";position:absolute;left:0;color:#b5281e;font-weight:700}
+  .reglas b{color:#2a1206}
+
+  .pie{margin-top:9mm;border-top:1.4px solid #e0d2bb;padding-top:4mm;
+       font-size:9pt;color:#8a5a33;line-height:1.6}
+  .pie b{color:#2a1206}
+</style>
+</head>
+<body>
+<div class="hoja">
+
+  <h1>La raspadita de Aury</h1>
+  <p class="sub">Hoja para quien atiende la caja. Déjala pegada cerca de la registradora.</p>
+
+  <div class="paso">
+    <div class="num">1</div>
+    <div>
+      <h2>El cliente escanea el QR de la mesa y raspa</h2>
+      <p>Le sale el beneficio de la semana y se le guarda en el celular. No hay que
+        hacer nada de nuestro lado.</p>
+    </div>
+  </div>
+
+  <div class="paso">
+    <div class="num">2</div>
+    <div>
+      <h2>Cuando venga a pagar, te muestra la pantalla</h2>
+      <p>Ahí es donde entras tú. Todo se hace <b>en el celular del cliente</b>,
+        delante de él.</p>
+    </div>
+  </div>
+
+  <div class="paso">
+    <div class="num">3</div>
+    <div>
+      <h2>Abre el panel: mantén pulsado el logo 3 segundos</h2>
+      <p>El logo redondo de Aury, arriba a la izquierda. Pulsado, sin soltar, contando
+        hasta tres. Te pide la clave.</p>
+      <p class="ojo">Son tres segundos a propósito, para que ningún cliente lo
+        encuentre por accidente.</p>
+    </div>
+  </div>
+
+  <div class="paso">
+    <div class="num">4</div>
+    <div>
+      <h2>Toca "+1 sello a este celular"</h2>
+      <p>Una sola vez por visita. Si lo tocas dos veces seguidas, te pregunta antes de
+        sumar otro.</p>
+    </div>
+  </div>
+
+  <div class="paso">
+    <div class="num">5</div>
+    <div>
+      <h2>Entrégale el beneficio y márcalo</h2>
+      <p>Toca "Abrir su tarjeta" y luego el beneficio que le acabas de dar, para que
+        quede usado y no lo reclame dos veces.</p>
+    </div>
+  </div>
+
+  <div class="clave">
+    <div>
+      <div class="et">Clave del mes</div>
+      <div class="v">2611</div>
+    </div>
+    <div class="n">Cámbiala cada mes. Si se la aprende un cliente, puede sumarse sellos solo.
+      Pídele a Lina la clave nueva.</div>
+  </div>
+
+  <div class="reglas">
+    <h2>Dos cosas que no se pueden hacer</h2>
+    <ul>
+      <li><b>No es una rifa ni un sorteo.</b> A todo el mundo le sale lo mismo, y está
+        anunciado de antemano. No digas "a ver qué te ganas" ni "hoy hay premio mayor":
+        sortear premios al azar en Colombia necesita un permiso que no tenemos.</li>
+      <li><b>Nunca regales nada por dejar una reseña.</b> Ni sellos, ni jugo, ni
+        descuento. Pedirla está bien —"si te gustó, déjanos una reseñita"— pero si
+        ofreces algo a cambio, Google puede castigar la ficha del restaurante y
+        tumbarnos las 16 reseñas que ya tenemos.</li>
+    </ul>
+  </div>
+
+  <div class="pie">
+    <b>La página:</b> https://linaq11.github.io/Aury/<br>
+    <b>Si alguien borra los datos de su celular</b>, pierde sus sellos: están guardados
+    ahí, no en un servidor. Si pasa y la persona es clienta conocida, usa el criterio de
+    la casa.<br>
+    <b>El beneficio de la semana</b> y la clave los cambia Lina.
+  </div>
+
+</div>
+</body>
+</html>
