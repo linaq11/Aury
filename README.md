@@ -72,10 +72,18 @@ Fuente: support.google.com/contributionpolicy/answer/7400114
 
 ## Qué hay en la carpeta
 
+**En vivo:** https://linaq11.github.io/aury-raspa/
+**Repo:** https://github.com/linaq11/aury-raspa
+
 ```
-index.html        la página (esto es todo el producto)
-hacer-qr.py       genera el QR y la hoja para imprimir
-img/logo.jpg      logo recortado 512x512
+index.html             la página principal (la "vitrina": foto que rota + carta)
+vitrina-sin-foto.html  la misma sin la banda de comida
+sobria.html            la primera versión, paleta sepia, sin foto ni carta
+hacer-qr.py            genera el QR y la hoja para imprimir
+preparar-platos.py     recorta las fotos de los platos para la banda
+escoger-foto.py        cambia la foto de la banda
+empaquetar.py          mete las imágenes dentro del html (*-PARA-VER.html)
+img/logo.jpg           logo
 qr/
   aury-qr.svg       vectorial, para imprenta
   aury-qr.png       para WhatsApp y pantalla
