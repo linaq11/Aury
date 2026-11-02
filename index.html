@@ -566,9 +566,17 @@ const CONFIG = {
   sellosParaAlmuerzo: 20,
   claveDelMes: "2611",
 
-  /* PENDIENTE: link corto de reseñas. Perfil de Empresa de Google → Inicio
-     → "Pide reseñas". Mientras esté vacío la pantalla no se muestra. */
-  googleReview: "",
+  /* Link a la ficha de Aury en Google. Sacado de la URL de Maps que pasó
+     Lina: el par 0x...:0xc3296041bbe6ed2b da el CID 14062877146882698539.
+     VERIFICADO el 2 nov 2026 abriéndolo: resuelve a Restaurante Aury,
+     Cl. 31b #52-29, Villa Olímpica, 5.0 estrellas.
+     En el celular abre la app de Maps en la ficha; la persona toca las
+     estrellas para escribir.
+     MEJOR AÚN: el link corto del Perfil de Empresa (Inicio → "Pide
+     reseñas", queda como https://g.page/r/XXXX/review) abre directo la
+     caja de reseña, sin ese toque de más. Cuando Eli lo saque, se
+     reemplaza aquí.                                                    */
+  googleReview: "https://maps.google.com/?cid=14062877146882698539",
 
   vigenciaDesde: "3 de noviembre de 2026",
   vigenciaHasta: "31 de diciembre de 2026",
