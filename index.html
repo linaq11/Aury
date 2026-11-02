@@ -444,6 +444,7 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
     </div>
 
     <div class="pie" id="pieInicio">
+      <span id="pieHorario"></span><br>
       Cocinado por madres cabeza de hogar,<br>en la herencia de la abuela Aura.<br>
       <span id="pieWa"></span>
     </div>
@@ -536,8 +537,26 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 const CONFIG = {
   whatsapp: "573002679611",
   direccion: "Cl. 31b #52-29, Villa Olímpica, Cartagena",
+  /* Hora de cierre confirmada por Lina el 2 nov 2026. La de apertura
+     sale del reel del festivo ("desde las 8am"), así que va marcada:
+     si no es exacta, se corrige aquí. */
+  cierra: "5:00 p. m.",
+  abre: "8:00 a. m.",
 
-  beneficio: { ico:"🥤", que:"Jugo natural gratis", nota:"Con tu corrientazo de esta semana." },
+  /* --- EL BENEFICIO, SEMANA POR SEMANA -------------------------------
+     Rota solo: cambia cada lunes y vuelve a empezar cuando se acaba la
+     lista. Lo decide la fecha, no el azar — todos los que raspen esta
+     semana ven lo mismo, y está anunciado de antemano. Por eso sigue sin
+     ser sorteo y sigue sin necesitar permiso.
+     Cada uno cuesta distinto: pon solo los que a Eli le cuadren, y en el
+     orden que quieras. Si dejas uno solo, no rota. */
+  beneficios: [
+    { ico:"🥤", que:"Jugo natural gratis",  nota:"Con tu corrientazo de esta semana." },
+    { ico:"🍮", que:"Postre gratis",        nota:"Con tu almuerzo de esta semana." },
+    { ico:"🍌", que:"Patacón extra gratis", nota:"Con tu almuerzo de esta semana." },
+    { ico:"🥤", que:"Jugo natural gratis",  nota:"Con tu corrientazo de esta semana." },
+    { ico:"🍲", que:"Sopa extra gratis",    nota:"Con tu almuerzo de esta semana." }
+  ],
 
   /* --- LAS FOTOS DE ARRIBA ---------------------------------------
      Rota una por día, igual para todos, y vuelve a empezar. Así quien
@@ -637,6 +656,14 @@ const $ = id => document.getElementById(id);
 const hoy = () => new Date().toLocaleDateString("sv-SE");
 function esc(s){ return String(s).replace(/[&<>"']/g,
   c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+/* Días transcurridos en hora LOCAL, no UTC. Con UTC el cambio de día cae
+   a las 7 de la noche en Colombia (UTC-5) y tanto la foto como el
+   beneficio cambiarían con el restaurante abierto. */
+function diasLocales(){
+  const d = new Date();
+  return Math.floor((d.getTime() - d.getTimezoneOffset()*60000) / 86400000);
+}
+
 const menosMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function pantalla(id){
@@ -656,6 +683,19 @@ if(!(CSS.supports("backdrop-filter","blur(1px)") ||
   document.documentElement.classList.add("sin-blur");
 }
 
+/* ---- El beneficio de la semana ----
+   Por número de semana desde una fecha fija, no por Math.random(): todos
+   los que raspen esta semana ven lo mismo, y cambia cada lunes. */
+CONFIG.beneficio = (function(){
+  const lista = CONFIG.beneficios || [];
+  if(!lista.length) return { ico:"🎁", que:"Beneficio de la semana", nota:"" };
+  if(lista.length === 1) return lista[0];
+  /* el 1 ene 1970 fue jueves, así que el día 4 es lunes: con ese origen
+     la semana cambia los lunes a medianoche hora de Cartagena */
+  const semanas = Math.floor((diasLocales() - 4) / 7);
+  return lista[((semanas % lista.length) + lista.length) % lista.length];
+})();
+
 /* ---- La foto del día ----
    El índice sale de la fecha, no de Math.random(): así todos los que
    escanean hoy ven el mismo plato, y mañana cambia. Con random, dos
@@ -665,7 +705,7 @@ if(!(CSS.supports("backdrop-filter","blur(1px)") ||
   if(!lista.length) return;
   const hero = $("hero");
   if(!hero) return;
-  const dias = Math.floor(Date.now() / 86400000);
+  const dias = diasLocales();
   const hoyPlato = lista[dias % lista.length];
   const img = new Image();
   img.onload = () => {
@@ -1002,10 +1042,12 @@ window.addEventListener("resize", () => {
 /* ---------------- Términos (Ley 1480 de 2011, art. 33) ---------------- */
 (function(){
   const t = "<b>Condiciones.</b> Esto <b>no es un sorteo</b>: el beneficio es el mismo para " +
-    "todas las personas y está anunciado de antemano, no se decide por azar. Vigencia del <b>" +
+    "todas las personas durante toda la semana y está anunciado de antemano, no se decide " +
+    "por azar; cambia cada lunes. Vigencia del <b>" +
     CONFIG.vigenciaDesde + "</b> al <b>" + CONFIG.vigenciaHasta + "</b>. Un raspado por celular " +
     "por día. El beneficio se reclama únicamente en <b>" + CONFIG.direccion + "</b>, presentando " +
-    "esta pantalla junto con el pedido del almuerzo; no es transferible ni canjeable por dinero. " +
+    "esta pantalla junto con el pedido del almuerzo y dentro del horario de atención (<b>" +
+    CONFIG.abre + " a " + CONFIG.cierra + "</b>); no es transferible ni canjeable por dinero. " +
     "<b>Sellos:</b> un sello por visita, puesto por el personal en el local cuando se confirma " +
     "el consumo; al completar <b>" + CONFIG.sellosParaAlmuerzo + "</b> sellos se obtiene un " +
     "almuerzo del día sin costo. Los sellos no se compran, no se transfieren y no se dan por " +
@@ -1015,6 +1057,9 @@ window.addEventListener("resize", () => {
     CONFIG.whatsapp.replace(/^57/,"") + ".";
   $("tycInicio").innerHTML = t;
   $("tycMio").innerHTML = t;
+  const ph = $("pieHorario");
+  if(ph) ph.innerHTML = '<b style="color:var(--naranja)">Abrimos de ' + CONFIG.abre +
+    ' a ' + CONFIG.cierra + '</b>';
   $("pieWa").innerHTML = '<a target="_blank" rel="noopener" href="https://wa.me/' +
     CONFIG.whatsapp + '">WhatsApp ' + CONFIG.whatsapp.replace(/^57/,"") + '</a>';
 })();
