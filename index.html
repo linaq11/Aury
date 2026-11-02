@@ -257,6 +257,24 @@ input:focus-visible,.cupon:focus-visible{outline:3px solid var(--naranja-claro);
 .sellos-pie{font-size:13px;color:rgba(255,255,255,.84);margin-top:13px}
 .sellos-pie b{color:var(--naranja-claro)}
 
+/* ---------------- Metas del camino ---------------- */
+.hitos{margin-top:14px;border-top:1px solid rgba(255,255,255,.1);padding-top:12px}
+.hito{display:flex;align-items:center;gap:10px;padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,.07)}
+.hito:last-child{border-bottom:0}
+.hito .hs{font-family:var(--display);font-weight:800;font-size:13px;
+  width:30px;height:30px;flex:none;border-radius:50%;display:grid;place-items:center;
+  border:1.5px dashed rgba(255,255,255,.3);color:rgba(247,246,241,.6)}
+.hito .hi{font-size:18px;flex:none}
+.hito .hq{flex:1;min-width:0;font-size:14px}
+.hito .hf{font-size:12px;color:rgba(247,246,241,.6);white-space:nowrap}
+.hito .hl{font-family:var(--display);font-weight:800;font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;color:#86e3a6;white-space:nowrap}
+.hito.logrado .hs{border-style:solid;border-color:var(--naranja);
+  background:var(--naranja);color:#1a1a1e}
+.hito.logrado .hq{color:var(--tinta)}
+.hito.meta .hq{font-family:var(--display);font-weight:700}
+
 /* ---------------- La carta ---------------- */
 .carta h3{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.14em;
   text-transform:uppercase;color:var(--naranja);margin:18px 0 2px}
@@ -371,10 +389,16 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 <div class="reflejo" id="reflejo" aria-hidden="true"></div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- Plato visto de frente. El dibujo anterior (media luna + dos volutas
+       de vapor) a 30px leia como una CARITA SONRIENTE: las volutas
+       parecian ojos y el borde del plato, una boca. Este tiene ala ancha
+       y una sola linea de vapor centrada, que no se confunde. -->
   <symbol id="g-plato" viewBox="0 0 24 24">
-    <path d="M3.2 11.4h17.6a8.8 8.8 0 0 1-17.6 0z" fill="currentColor"/>
-    <path d="M9 7.6c0-1.3 1.6-1.4 1.6-2.8M13.4 7.6c0-1.3 1.6-1.4 1.6-2.8"
-          fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    <ellipse cx="12" cy="15.4" rx="9.6" ry="3.1" fill="none"
+             stroke="currentColor" stroke-width="1.7"/>
+    <path d="M4.2 14.6a7.8 7.8 0 0 0 15.6 0z" fill="currentColor"/>
+    <path d="M12 9.6c0-1.8 1.9-1.9 1.9-3.8" fill="none" stroke="currentColor"
+          stroke-width="1.7" stroke-linecap="round"/>
   </symbol>
 </defs></svg>
 
@@ -458,6 +482,7 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
       <div><span class="n" id="mNum">0</span> <span class="de">de <b id="mMeta">20</b> sellos</span></div>
       <div class="sellos" id="grid" aria-live="polite"></div>
       <div class="sellos-pie" id="mFaltan"></div>
+      <div class="hitos" id="hitos"></div>
     </div>
 
     <div class="vidrio panel">
@@ -621,6 +646,20 @@ const CONFIG = {
   ],
 
   sellosParaAlmuerzo: 20,
+
+  /* --- METAS EN EL CAMINO --------------------------------------------
+     Lo que pidió Eli: que la gente se quede "a ver qué me puedo ganar".
+     Se consigue con metas ANUNCIADAS, no con azar. Que el premio salga
+     al azar, o que a veces salga "sigue intentando", convierte esto en
+     juego promocional: permiso de la Lotería de Bolívar y 14% del plan
+     de premios. Una meta conocida de antemano no es azar, y engancha
+     igual o más, porque el cliente sabe cuánto le falta.
+     Cada una cuesta plata: ajusta cuáles y en qué sello.             */
+  hitos: [
+    { sello:5,  ico:"🥤", que:"Jugo gratis" },
+    { sello:10, ico:"🍮", que:"Postre gratis" },
+    { sello:15, ico:"🍌", que:"Porción de patacones" }
+  ],
   claveDelMes: "2611",
 
   /* Link a la ficha de Aury en Google. Sacado de la URL de Maps que pasó
@@ -760,6 +799,28 @@ function pintarSellos(nuevo){
     }
     pintados = E.sellos;
   }
+  // las metas del camino
+  const zh = $("hitos");
+  if(zh && CONFIG.hitos){
+    zh.innerHTML = CONFIG.hitos.map(h => {
+      const logrado = E.sellos >= h.sello;
+      return '<div class="hito' + (logrado ? " logrado" : "") + '">' +
+        '<span class="hs">' + h.sello + '</span>' +
+        '<span class="hi">' + esc(h.ico) + '</span>' +
+        '<span class="hq">' + esc(h.que) + '</span>' +
+        (logrado ? '<span class="hl">listo</span>'
+                 : '<span class="hf">faltan ' + (h.sello - E.sellos) + '</span>') +
+        '</div>';
+    }).join("") +
+    '<div class="hito meta' + (E.sellos >= meta ? " logrado" : "") + '">' +
+      '<span class="hs">' + meta + '</span>' +
+      '<span class="hi">🍲</span>' +
+      '<span class="hq">Almuerzo gratis</span>' +
+      (E.sellos >= meta ? '<span class="hl">listo</span>'
+                        : '<span class="hf">faltan ' + (meta - E.sellos) + '</span>') +
+    '</div>';
+  }
+
   const faltan = Math.max(0, meta - E.sellos);
   $("mFaltan").innerHTML = faltan === 0
     ? "<b>¡Tarjeta llena! Pídele tu almuerzo gratis a la cajera.</b>"
