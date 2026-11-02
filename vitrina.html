@@ -860,9 +860,22 @@ window.addEventListener("resize", () => {
 
 pintarSellos(false);
 if(CONFIG.unoPorDia && E.ultimoRaspado === hoy()){
-  pintarLista(); pantalla("pMio");
-  $("mFaltan").insertAdjacentHTML("afterend",
-    '<div class="aviso">Ya raspaste hoy. Vuelve mañana ❤️</div>');
+  /* Ya raspó hoy: se le muestra SU BENEFICIO en la pantalla de inicio, con
+     la boleta ya destapada. Antes saltaba a "Mi tarjeta", que esconde la
+     banda de comida: el que volvía a abrir la página no veía ni la foto ni
+     lo que se había ganado, solo una grilla de sellos vacíos. */
+  const b = CONFIG.beneficio;
+  $("bIco").textContent = b.ico;
+  $("bQue").textContent = b.que;
+  $("bNota").textContent = b.nota || "";
+  $("boleta").classList.add("abierta");
+  $("antes").style.display = "none";
+  $("btnDestapar").style.display = "none";
+  $("pieInicio").style.display = "none";
+  $("despues").style.display = "";
+  pintarResena();
+  $("despues").insertAdjacentHTML("afterbegin",
+    '<div class="aviso" style="margin:0 0 4px">Ya raspaste hoy. Vuelve mañana ❤️</div>');
 }else{
   montar();
 }
