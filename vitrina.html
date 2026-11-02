@@ -29,14 +29,19 @@
    compuesto sobre la foto, no contra el vidrio solo.
    =========================================================== */
 :root{
-  --naranja:#f2a20f;
-  --naranja-claro:#ffc24d;
+  /* La paleta sale del MENÚ de Aury, no del markdown de marca: el menú es
+     negro con texto blanco y un bloque naranja. Lo que yo tenía antes era
+     marrón con crema, o sea sepia, y por eso se veía apagado y todo igual. */
+  --naranja:#f4940a;      /* muestreado del menú real */
+  --naranja-claro:#ffab2e;
   --rojo:#d8362a;
   --rojo-texto:#b5281e;
-  --crema:#f8e9cf;
-  --marron:#2a1206;
+  --tinta:#f7f6f1;        /* muestreado del menú: blanco roto, no crema */          /* el texto es BLANCO, no crema */
+  --crema:#f8e9cf;          /* la crema se queda SOLO para el papel de la boleta */
+  --marron:#2a1206;         /* y para el texto sobre ese papel */
   --marron-2:#4a2812;
-  --noche:#1a0b03;
+  --noche:#15151a;        /* el oscuro del menú: gris-negro, sin marrón */          /* negro neutro, como el menú: no marrón */
+  --carbon:#1e1e24;
   --crema-sombra:#d9c6a4;
 
   --display:"Bricolage Grotesque",system-ui,sans-serif;
@@ -51,8 +56,8 @@
 
   /* El vidrio. Tinte oscuro cálido para que el texto claro tenga
      contraste medido encima de cualquier zona de la foto. */
-  --vidrio:rgba(26,11,3,.62);
-  --vidrio-borde:rgba(248,233,207,.17);
+  --vidrio:rgba(24,24,30,.58);
+  --vidrio-borde:rgba(255,255,255,.17);
   --vidrio-luz:rgba(255,255,255,.07);
 }
 
@@ -60,7 +65,7 @@
 
 html,body{min-height:100%}
 body{
-  font-family:var(--body);color:var(--crema);line-height:1.5;
+  font-family:var(--body);color:var(--tinta);line-height:1.5;
   min-height:100svh;display:flex;flex-direction:column;align-items:center;
   padding:0 15px calc(28px + env(safe-area-inset-bottom));
   overflow-x:hidden;background:var(--noche);
@@ -79,15 +84,20 @@ body{
    la foto tapada casi entera. 300px le da una banda que de verdad se ve
    entre el encabezado y el título. */
 .hero{
-  position:absolute;top:0;left:0;right:0;height:300px;z-index:-2;
+  /* Constreñida a la columna, NO a todo el ancho. En una pantalla de
+     escritorio el full-bleed estiraba una foto de 840px a 1900 y quedaba
+     una mancha borrosa — que es justo lo que Lina estaba viendo. */
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:420px;height:300px;z-index:-2;
+  border-radius:0 0 22px 22px;overflow:hidden;
   background-image:url("data:image/jpeg;base64,C:/Program Files/Git/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAOABQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC3JJKCwTdBD1VIxyx+tMW/mBQu7Lg7SVP8+1Pv7YQofKcqrN+IHcD/ABqjInkRjyiVXPA64P41xOVpanUo3Rpw65EVInQ7gSMg4yPWiqkGnRiFTK5ywz8o/n70VpzVOhFon/Z");
   background-size:cover;background-position:50% 42%;
   filter:blur(8px);transform:scale(1.06);
 }
 .hero.cargada{
   background-image:url("img/hero.jpg");
-  filter:none;transform:none;
-  transition:filter 500ms var(--salida),transform 700ms var(--salida);
+  filter:none;transform:translateX(-50%);
+  transition:filter 500ms var(--salida);
 }
 /* Dos capas, cada una con su trabajo:
    - arriba, un velo corto que le da contraste al encabezado
@@ -99,10 +109,10 @@ body{
        y recién ahí se abre. Medido: la foto tiene blancos puros en el borde del
        plato, y contra blanco puro hace falta .71 para que el texto crema llegue
        a 4.5:1. Antes caía a .18 en el 26% y el subtítulo quedaba en 3.17:1. */
-    linear-gradient(180deg, rgba(12,5,1,.82) 0%, rgba(12,5,1,.78) 28%,
-                    rgba(12,5,1,.30) 38%, rgba(12,5,1,0) 48%),
+    linear-gradient(180deg, rgba(10,10,13,.82) 0%, rgba(10,10,13,.78) 28%,
+                    rgba(10,10,13,.30) 38%, rgba(10,10,13,0) 48%),
     /* el fundido empieza tarde: entre el 40% y el 72% la comida se ve limpia */
-    linear-gradient(180deg, rgba(26,11,3,0) 68%, rgba(26,11,3,.88) 90%, var(--noche) 100%);
+    linear-gradient(180deg, rgba(21,21,26,0) 68%, rgba(21,21,26,.92) 90%, var(--noche) 100%);
 }
 
 /* ---- La luz que sigue al dedo ----
@@ -134,7 +144,7 @@ body{
   background:linear-gradient(90deg,transparent,var(--vidrio-luz) 18%,
     rgba(255,255,255,.3) 50%,var(--vidrio-luz) 82%,transparent);
 }
-html.sin-blur .vidrio{background:rgba(20,8,2,.88)}
+html.sin-blur .vidrio{background:rgba(16,16,18,.92)}
 
 /* ---------------- Encabezado ---------------- */
 .top{display:flex;align-items:center;gap:11px;
@@ -144,8 +154,8 @@ html.sin-blur .vidrio{background:rgba(20,8,2,.88)}
   box-shadow:0 3px 14px rgba(0,0,0,.5)}
 .top .marca{font-family:var(--display);font-weight:800;font-size:15.5px;
   letter-spacing:-.01em;line-height:1.15;text-shadow:0 1px 10px rgba(0,0,0,.65)}
-.top .sub{font-size:11.5px;color:rgba(248,233,207,.76);text-shadow:0 1px 8px rgba(0,0,0,.7)}
-.chip{margin-left:auto;display:flex;align-items:center;gap:7px;
+.top .sub{font-size:11.5px;color:rgba(255,255,255,.76);text-shadow:0 1px 8px rgba(0,0,0,.7)}
+.chip{color:var(--tinta);margin-left:auto;display:flex;align-items:center;gap:7px;
   background:var(--vidrio);border:1px solid var(--vidrio-borde);
   -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
   padding:6px 13px 6px 10px;border-radius:999px;color:var(--crema);
@@ -161,9 +171,9 @@ html.sin-blur .vidrio{background:rgba(20,8,2,.88)}
 h1{font-family:var(--display);font-weight:800;font-size:30px;line-height:1.08;
   letter-spacing:-.03em;text-shadow:0 2px 18px rgba(0,0,0,.7)}
 h2{font-family:var(--display);font-weight:700;font-size:18px;line-height:1.22;letter-spacing:-.018em}
-.lead{font-size:14.5px;color:rgba(248,233,207,.88);margin-top:9px;
+.lead{font-size:14.5px;color:rgba(255,255,255,.88);margin-top:9px;
   text-shadow:0 1px 12px rgba(0,0,0,.75)}
-.menor{font-size:13px;color:rgba(248,233,207,.82)}
+.menor{font-size:13px;color:rgba(255,255,255,.82)}
 
 /* ---------------- Botones ---------------- */
 .btn{font-family:var(--display);font-weight:800;font-size:16.5px;
@@ -180,10 +190,10 @@ h2{font-family:var(--display);font-weight:700;font-size:18px;line-height:1.22;le
 .btn[disabled]{opacity:.42;pointer-events:none}
 .btn.rojo{background:var(--rojo);color:#fff}
 .btn.cristal{background:var(--vidrio);color:var(--crema);
-  border:1px solid rgba(248,233,207,.26);box-shadow:none;font-weight:700;font-size:15px;
+  border:1px solid rgba(255,255,255,.26);box-shadow:none;font-weight:700;font-size:15px;
   min-height:48px;padding:13px 18px;
   -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
-html.sin-blur .btn.cristal{background:rgba(20,8,2,.88)}
+html.sin-blur .btn.cristal{background:rgba(16,16,18,.92)}
 .btn:focus-visible,.top img:focus-visible,.chip:focus-visible,
 input:focus-visible,.cupon:focus-visible{outline:3px solid var(--naranja-claro);outline-offset:3px}
 
@@ -227,16 +237,16 @@ input:focus-visible,.cupon:focus-visible{outline:3px solid var(--naranja-claro);
 .tarjeta{padding:17px}
 .tarjeta .n{font-family:var(--display);font-weight:800;font-size:27px;
   color:var(--naranja-claro);line-height:1}
-.tarjeta .de{font-size:13px;color:rgba(248,233,207,.82)}
+.tarjeta .de{font-size:13px;color:rgba(255,255,255,.82)}
 .sellos{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}
 .sello{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
-  border:1.5px dashed rgba(248,233,207,.3);color:rgba(248,233,207,.34)}
+  border:1.5px dashed rgba(255,255,255,.3);color:rgba(255,255,255,.34)}
 .sello svg{width:56%;height:56%;display:block}
 .sello.lleno{border-style:solid;border-color:var(--naranja-claro);
   background:var(--naranja);color:var(--marron)}
 .sello.nuevo{animation:sella 460ms var(--salida) both}
 @keyframes sella{from{transform:scale(.2) rotate(-18deg);opacity:0}to{transform:none;opacity:1}}
-.sellos-pie{font-size:13px;color:rgba(248,233,207,.84);margin-top:13px}
+.sellos-pie{font-size:13px;color:rgba(255,255,255,.84);margin-top:13px}
 .sellos-pie b{color:var(--naranja-claro)}
 
 /* ---------------- Bloques ---------------- */
@@ -257,28 +267,28 @@ input:focus-visible,.cupon:focus-visible{outline:3px solid var(--naranja-claro);
   letter-spacing:.06em;text-align:right;line-height:1.3}
 .cupon.usado{opacity:.5;cursor:default}
 .cupon.usado .tx b{text-decoration:line-through}
-.vacio{text-align:center;padding:28px 18px;color:rgba(248,233,207,.72);font-size:14px}
+.vacio{text-align:center;padding:28px 18px;color:rgba(255,255,255,.72);font-size:14px}
 
 .pie{margin-top:auto;padding-top:24px;text-align:center;font-size:12px;
-  color:rgba(248,233,207,.74);line-height:1.6;text-shadow:0 1px 10px rgba(0,0,0,.8)}
+  color:rgba(255,255,255,.74);line-height:1.6;text-shadow:0 1px 10px rgba(0,0,0,.8)}
 .pie a{color:var(--naranja-claro)}
 
 input[type=text],input[type=number]{width:100%;font-family:var(--body);font-size:16px;
-  background:rgba(0,0,0,.45);color:var(--crema);border:1.5px solid rgba(248,233,207,.26);
+  background:rgba(0,0,0,.5);color:var(--tinta);border:1.5px solid rgba(255,255,255,.26);
   border-radius:var(--radio-chico);padding:13px 14px;min-height:48px}
-input::placeholder{color:rgba(248,233,207,.56)}
-label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgba(248,233,207,.84)}
+input::placeholder{color:rgba(255,255,255,.56)}
+label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgba(255,255,255,.84)}
 
 .aviso{background:rgba(216,54,42,.26);border:1px solid rgba(216,54,42,.5);
   border-radius:var(--radio-chico);padding:12px 14px;font-size:13.5px;margin-top:12px}
 .aviso.ok{background:rgba(47,125,79,.28);border-color:rgba(47,125,79,.55)}
 
-.tyc{font-size:11.5px;color:rgba(248,233,207,.74);margin-top:16px;line-height:1.7;
-  padding:14px 16px;border-radius:var(--radio-chico);background:rgba(12,5,1,.5)}
-.tyc b{color:rgba(248,233,207,.92)}
+.tyc{font-size:11.5px;color:rgba(255,255,255,.74);margin-top:16px;line-height:1.7;
+  padding:14px 16px;border-radius:var(--radio-chico);background:rgba(10,10,13,.5)}
+.tyc b{color:rgba(255,255,255,.92)}
 
 .cuenta{display:flex;justify-content:space-between;font-size:13px;margin-top:5px}
-.cuenta.total{border-top:1px solid rgba(248,233,207,.24);margin-top:11px;padding-top:11px;
+.cuenta.total{border-top:1px solid rgba(255,255,255,.24);margin-top:11px;padding-top:11px;
   font-family:var(--display);font-weight:800;font-size:15px}
 .cuenta.total span:last-child{color:var(--naranja-claro)}
 
