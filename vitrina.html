@@ -51,6 +51,7 @@
   --t-feedback:140ms;
   --t-foco:600ms;
 
+  --banda:232px;        /* alto de la banda de comida */
   --radio:16px;
   --radio-chico:12px;
 
@@ -89,8 +90,7 @@ body{
   /* Constreñida a la columna, NO a todo el ancho. En una pantalla de
      escritorio el full-bleed estiraba una foto de 840px a 1900 y quedaba
      una mancha borrosa — que es justo lo que Lina estaba viendo. */
-  position:absolute;top:96px;left:50%;transform:translateX(-50%);
-  width:100%;max-width:420px;height:232px;z-index:-2;
+  position:absolute;top:0;left:0;right:0;height:var(--banda);z-index:-2;
   border-radius:18px;overflow:hidden;
   /* La foto real va aqui, en el CSS. Antes habia un relleno borroso de
      960 bytes que el JS reemplazaba al cargar: si faltaba la carpeta img/
@@ -161,6 +161,11 @@ html.sin-blur .vidrio{background:rgba(16,16,18,.92)}
 
 /* ---------------- Pantallas ---------------- */
 .pantalla{display:none;flex:1;flex-direction:column}
+/* El hueco de la banda se calcula de su propio alto, y la banda se
+   posiciona DENTRO de esta pantalla. Antes ambos eran numeros fijos
+   calculados sobre un encabezado de 96px que en realidad mide 65: la
+   boleta caia encima de la foto y la tapaba. */
+#pInicio{position:relative;padding-top:calc(var(--banda) + 16px)}
 .pantalla.on{display:flex}
 
 h1{font-family:var(--display);font-weight:800;font-size:30px;line-height:1.08;
@@ -295,7 +300,6 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 </head>
 <body>
 
-<div class="hero" id="hero" aria-hidden="true"></div>
 <div class="reflejo" id="reflejo" aria-hidden="true"></div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -323,8 +327,9 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 
   <!-- ===================== INICIO ===================== -->
   <section class="pantalla on" id="pInicio">
+    <div class="hero" id="hero" aria-hidden="true"></div>
     <!-- arranca debajo de la banda de comida (232px) que empieza bajo el encabezado -->
-    <div id="antes" style="padding-top:150px">
+    <div id="antes">
       <h1>Raspa y descubre<br>lo de esta semana</h1>
       <p class="lead">Lo mismo para todos, sin sorteo ni suerte.
         Pasa el dedo y <b>se te guarda en el celular</b>.</p>
