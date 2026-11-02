@@ -504,6 +504,14 @@ function montar(reintento){
   ctx = canvas.getContext("2d");
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
+  /* Volver a modo pintar. Al final de esta función el contexto queda en
+     "destination-out" (borrar), y montar() se vuelve a llamar en cada resize:
+     sin esta línea, el fillRect de abajo BORRA la lámina en vez de pintarla y
+     la boleta aparece destapada sola. En un celular pasa al hacer scroll,
+     cuando se esconde la barra de direcciones y eso dispara un resize. */
+  ctx.globalCompositeOperation = "source-over";
+  ctx.clearRect(0, 0, r.width, r.height);
+
   const g = ctx.createLinearGradient(0, 0, r.width, r.height);
   g.addColorStop(0,"#b9a98f"); g.addColorStop(.42,"#d6c9b2"); g.addColorStop(.52,"#efe6d4");
   g.addColorStop(.62,"#d6c9b2"); g.addColorStop(1,"#ad9d83");
@@ -515,6 +523,32 @@ function montar(reintento){
     ctx.fillStyle = i % 2 ? "#6b5c45" : "#fff";
     ctx.fillRect(Math.random()*r.width, Math.random()*r.height, 2, 2);
   }
+  /* "RASCA AQUÍ" va PINTADO EN LA LÁMINA, como en una boleta de verdad.
+     Antes estaba en una capa del DOM debajo del canvas opaco, así que no
+     se veía nunca: el cliente abría la página y encontraba un rectángulo
+     crema en blanco, sin saber que había que raspar. */
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = "rgba(42,18,6,.40)";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "800 17px system-ui, sans-serif";
+  const cx0 = r.width/2, cy0 = r.height/2;
+  ctx.fillText("R A S C A   A Q U Í", cx0, cy0);
+  ctx.font = "600 13px system-ui, sans-serif";
+  ctx.fillStyle = "rgba(42,18,6,.30)";
+  ctx.fillText("pasa el dedo por encima", cx0, cy0 + 26);
+  ctx.strokeStyle = "rgba(42,18,6,.26)";
+  ctx.lineWidth = 2; ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(cx0-26, cy0+52); ctx.lineTo(cx0+26, cy0+52);
+  ctx.moveTo(cx0+16, cy0+45); ctx.lineTo(cx0+26, cy0+52);
+  ctx.moveTo(cx0+16, cy0+59); ctx.lineTo(cx0+26, cy0+52);
+  ctx.stroke();
+
+  /* El pincel tiene que ser OPACO. En destination-out se borra tanto como
+     el alfa del relleno: si queda el rgba(...,.30) del subtítulo de arriba,
+     cada pasada del dedo borra solo un 30% y la boleta se siente muerta. */
+  ctx.fillStyle = "#000";
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = "destination-out";
   raspar.n = 0;
@@ -524,7 +558,7 @@ function raspar(ev){
   if(!raspando || abierta || !ctx) return;
   const r = canvas.getBoundingClientRect();
   ctx.beginPath();
-  ctx.arc(ev.clientX - r.left, ev.clientY - r.top, 26, 0, Math.PI*2);
+  ctx.arc(ev.clientX - r.left, ev.clientY - r.top, 32, 0, Math.PI*2);
   ctx.fill();
   $("pista").classList.add("ida");
   if(++raspar.n % 6 === 0) medir();
@@ -538,7 +572,9 @@ function medir(){
     const d = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
     let vacios = 0, total = 0;
     for(let i = 3; i < d.length; i += 4*48){ total++; if(d[i] < 24) vacios++; }
-    if(total && vacios/total > .5) abrir();
+    /* 35%, no 50%. Medido: con el umbral en la mitad hacían falta unos 460
+       movimientos de dedo para que se abriera. Nadie rasca tanto. */
+    if(total && vacios/total > .35) abrir();
   }catch(e){ /* el botón de destapar cubre este caso */ }
 }
 

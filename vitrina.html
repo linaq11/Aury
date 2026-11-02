@@ -7,7 +7,7 @@
 <meta name="description" content="Raspa y descubre el beneficio de la semana en Restaurante Aury.">
 <meta name="theme-color" content="#1a0b03">
 <link rel="icon" href="img/logo.jpg">
-<link rel="preload" as="image" href="img/fondo.jpg" fetchpriority="high">
+<link rel="preload" as="image" href="img/hero.jpg" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -66,26 +66,43 @@ body{
   overflow-x:hidden;background:var(--noche);
 }
 
-/* ---- La foto, fija detrás de todo ----
-   Arranca con un JPEG de 18x24 incrustado (960 bytes) para que haya algo
-   caliente en pantalla al instante, y encima entra la foto real de 77 KB. */
-.fondo{
-  position:fixed;inset:0;z-index:-2;
-  background-image:url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAYABIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDDa73hWHOf4RVq2lyMHKnpg9zUENsgDGWQZHBpRErSIUlGFOcYxU3RVjQoqDa3/PSiqJMoXQlYlo2B9VPFOSdYTuG8nplzwPwFFFTZXL6C7pzz52c+/wD9aiiinYVz/9k=");
-  background-size:cover;background-position:52% 24%;
-  filter:blur(6px);transform:scale(1.08);
+/* ---- La banda de comida ----
+   Antes la foto iba detrás de TODO, oscurecida al 46%. Quedaba fea y con
+   razón: la boleta tapaba el plato y solo se veía la cocina del fondo.
+   Ahora va arriba, a brillo completo, donde no la tapa nada — igual que
+   el menú de Aury, que pone las fotos limpias sobre el fondo oscuro.
+   Y es justo ahí donde el vidrio se lee como vidrio: necesita color
+   detrás para que el desenfoque signifique algo.
+   Arranca con un JPEG incrustado de 960 bytes para que haya algo caliente
+   en pantalla al instante, y encima entra la foto real. */
+/* Altura fija, no 46svh: con la boleta empezando a 189px, el 46svh dejaba
+   la foto tapada casi entera. 300px le da una banda que de verdad se ve
+   entre el encabezado y el título. */
+.hero{
+  position:absolute;top:0;left:0;right:0;height:300px;z-index:-2;
+  background-image:url("data:image/jpeg;base64,C:/Program Files/Git/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAOABQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC3JJKCwTdBD1VIxyx+tMW/mBQu7Lg7SVP8+1Pv7YQofKcqrN+IHcD/ABqjInkRjyiVXPA64P41xOVpanUo3Rpw65EVInQ7gSMg4yPWiqkGnRiFTK5ywz8o/n70VpzVOhFon/Z");
+  background-size:cover;background-position:50% 42%;
+  filter:blur(8px);transform:scale(1.06);
 }
-.fondo.cargada{
-  background-image:url("img/fondo.jpg");
+.hero.cargada{
+  background-image:url("img/hero.jpg");
   filter:none;transform:none;
   transition:filter 500ms var(--salida),transform 700ms var(--salida);
 }
-/* viñeta: hunde los bordes para que los paneles floten de verdad */
-.fondo::after{
+/* Dos capas, cada una con su trabajo:
+   - arriba, un velo corto que le da contraste al encabezado
+   - abajo, el fundido que disuelve la foto en el fondo, sin borde duro */
+.hero::after{
   content:"";position:absolute;inset:0;
   background:
-    radial-gradient(ellipse 120% 70% at 50% 18%, transparent 20%, rgba(12,5,1,.78) 100%),
-    linear-gradient(180deg, rgba(12,5,1,.42) 0%, rgba(12,5,1,.12) 26%, rgba(12,5,1,.88) 100%);
+    /* El velo se mantiene fuerte TODO el alto del encabezado (96px de 300 = 32%)
+       y recién ahí se abre. Medido: la foto tiene blancos puros en el borde del
+       plato, y contra blanco puro hace falta .71 para que el texto crema llegue
+       a 4.5:1. Antes caía a .18 en el 26% y el subtítulo quedaba en 3.17:1. */
+    linear-gradient(180deg, rgba(12,5,1,.82) 0%, rgba(12,5,1,.78) 28%,
+                    rgba(12,5,1,.30) 38%, rgba(12,5,1,0) 48%),
+    /* el fundido empieza tarde: entre el 40% y el 72% la comida se ve limpia */
+    linear-gradient(180deg, rgba(26,11,3,0) 68%, rgba(26,11,3,.88) 90%, var(--noche) 100%);
 }
 
 /* ---- La luz que sigue al dedo ----
@@ -273,7 +290,7 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 </head>
 <body>
 
-<div class="fondo" id="fondo" aria-hidden="true"></div>
+<div class="hero" id="hero" aria-hidden="true"></div>
 <div class="reflejo" id="reflejo" aria-hidden="true"></div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -301,7 +318,8 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 
   <!-- ===================== INICIO ===================== -->
   <section class="pantalla on" id="pInicio">
-    <div id="antes" style="padding-top:6px">
+    <!-- arranca debajo de la banda de comida (300px) menos el encabezado -->
+    <div id="antes" style="padding-top:196px">
       <h1>Raspa y descubre<br>lo de esta semana</h1>
       <p class="lead">Lo mismo para todos, sin sorteo ni suerte.
         Pasa el dedo y <b>se te guarda en el celular</b>.</p>
@@ -487,8 +505,8 @@ if(!(CSS.supports("backdrop-filter","blur(1px)") ||
 /* ---- La foto grande entra cuando ya cargó, no antes ---- */
 (function(){
   const img = new Image();
-  img.onload = () => $("fondo").classList.add("cargada");
-  img.src = "img/fondo.jpg";
+  img.onload = () => $("hero").classList.add("cargada");
+  img.src = "img/hero.jpg";
 })();
 
 /* ---- El reflejo sigue al dedo ----
@@ -569,6 +587,14 @@ function montar(reintento){
   ctx = canvas.getContext("2d");
   ctx.setTransform(dpr,0,0,dpr,0,0);
 
+  /* Volver a modo pintar. Al final de esta función el contexto queda en
+     "destination-out" (borrar), y montar() se vuelve a llamar en cada resize:
+     sin esta línea, el fillRect de abajo BORRA la lámina en vez de pintarla y
+     la boleta aparece destapada sola. En un celular pasa al hacer scroll,
+     cuando se esconde la barra de direcciones y eso dispara un resize. */
+  ctx.globalCompositeOperation = "source-over";
+  ctx.clearRect(0, 0, r.width, r.height);
+
   const g = ctx.createLinearGradient(0,0,r.width,r.height);
   g.addColorStop(0,"#b9a98f"); g.addColorStop(.42,"#d6c9b2"); g.addColorStop(.52,"#efe6d4");
   g.addColorStop(.62,"#d6c9b2"); g.addColorStop(1,"#ad9d83");
@@ -576,6 +602,33 @@ function montar(reintento){
   ctx.globalAlpha = .07;
   for(let i=0;i<1100;i++){ ctx.fillStyle = i%2?"#6b5c45":"#fff";
     ctx.fillRect(Math.random()*r.width, Math.random()*r.height, 2, 2); }
+  /* "RASCA AQUÍ" va PINTADO EN LA LÁMINA, como en una boleta de verdad.
+     Antes estaba en una capa del DOM debajo del canvas opaco, así que no
+     se veía nunca: el cliente abría la página y encontraba un rectángulo
+     crema en blanco, sin saber que había que raspar. */
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = "rgba(42,18,6,.40)";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "800 17px system-ui, sans-serif";
+  const cx0 = r.width/2, cy0 = r.height/2;
+  ctx.fillText("R A S C A   A Q U Í", cx0, cy0);
+  ctx.font = "600 13px system-ui, sans-serif";
+  ctx.fillStyle = "rgba(42,18,6,.30)";
+  ctx.fillText("pasa el dedo por encima", cx0, cy0 + 26);
+  // una flecha corta debajo, para que se entienda sin leer
+  ctx.strokeStyle = "rgba(42,18,6,.26)";
+  ctx.lineWidth = 2; ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(cx0-26, cy0+52); ctx.lineTo(cx0+26, cy0+52);
+  ctx.moveTo(cx0+16, cy0+45); ctx.lineTo(cx0+26, cy0+52);
+  ctx.moveTo(cx0+16, cy0+59); ctx.lineTo(cx0+26, cy0+52);
+  ctx.stroke();
+
+  /* El pincel tiene que ser OPACO. En destination-out se borra tanto como
+     el alfa del relleno: si queda el rgba(...,.30) del subtítulo de arriba,
+     cada pasada del dedo borra solo un 30% y la boleta se siente muerta. */
+  ctx.fillStyle = "#000";
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = "destination-out";
   raspar.n = 0;
@@ -585,7 +638,7 @@ function raspar(ev){
   if(!raspando || abierta || !ctx) return;
   const r = canvas.getBoundingClientRect();
   ctx.beginPath();
-  ctx.arc(ev.clientX-r.left, ev.clientY-r.top, 26, 0, Math.PI*2);
+  ctx.arc(ev.clientX-r.left, ev.clientY-r.top, 32, 0, Math.PI*2);
   ctx.fill();
   $("pista").classList.add("ida");
   if(++raspar.n % 6 === 0) medir();
@@ -597,7 +650,7 @@ function medir(){
     const d = ctx.getImageData(0,0,canvas.width,canvas.height).data;
     let v=0,t=0;
     for(let i=3;i<d.length;i+=4*48){ t++; if(d[i]<24) v++; }
-    if(t && v/t > .5) abrir();
+    if(t && v/t > .35) abrir();
   }catch(e){}
 }
 
