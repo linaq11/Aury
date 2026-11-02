@@ -528,13 +528,6 @@ if(!(CSS.supports("backdrop-filter","blur(1px)") ||
   document.documentElement.classList.add("sin-blur");
 }
 
-/* ---- La foto grande entra cuando ya cargó, no antes ---- */
-(function(){
-  const img = new Image();
-  img.onload = () => $("hero").classList.add("cargada");
-  img.src = "img/hero.jpg";
-})();
-
 /* ---- La foto del día ----
    El índice sale de la fecha, no de Math.random(): así todos los que
    escanean hoy ven el mismo plato, y mañana cambia. Con random, dos
