@@ -72,8 +72,8 @@ Fuente: support.google.com/contributionpolicy/answer/7400114
 
 ## Qué hay en la carpeta
 
-**En vivo:** https://linaq11.github.io/aury-raspa/
-**Repo:** https://github.com/linaq11/aury-raspa
+**En vivo:** https://linaq11.github.io/Aury/
+**Repo:** https://github.com/linaq11/Aury
 
 ```
 index.html             la página principal (la "vitrina": foto que rota + carta)
@@ -166,7 +166,7 @@ El QR impreso **no se puede editar**. Si cambia la dirección hay que regenerar
 y volver a imprimir:
 
 ```
-python hacer-qr.py https://la-nueva-url/
+python hacer-qr.py https://linaq11.github.io/Aury/
 ```
 
 Por eso conviene decidir la URL definitiva **antes** de mandar a imprimir en
