@@ -7,7 +7,7 @@
 <meta name="description" content="Raspa y descubre el beneficio de la semana en Restaurante Aury.">
 <meta name="theme-color" content="#1a0b03">
 <link rel="icon" href="img/logo.jpg">
-<link rel="preload" as="image" href="img/hero.jpg" fetchpriority="high">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -80,22 +80,23 @@ body{
    detrás para que el desenfoque signifique algo.
    Arranca con un JPEG incrustado de 960 bytes para que haya algo caliente
    en pantalla al instante, y encima entra la foto real. */
-/* Altura fija, no 46svh: con la boleta empezando a 189px, el 46svh dejaba
-   la foto tapada casi entera. 300px le da una banda que de verdad se ve
-   entre el encabezado y el título. */
+/* La banda arranca DEBAJO del encabezado (96px), no detrás de él.
+   Teniéndolo encima hacía falta un velo oscuro para que el texto tuviera
+   contraste, y ese velo se comía media foto; al acortar la banda no
+   quedaba nada limpio. Así el encabezado va nítido sobre el negro y la
+   foto se ve entera, ocupando menos alto. */
 .hero{
   /* Constreñida a la columna, NO a todo el ancho. En una pantalla de
      escritorio el full-bleed estiraba una foto de 840px a 1900 y quedaba
      una mancha borrosa — que es justo lo que Lina estaba viendo. */
-  position:absolute;top:0;left:50%;transform:translateX(-50%);
-  width:100%;max-width:420px;height:360px;z-index:-2;
-  border-radius:0 0 22px 22px;overflow:hidden;
+  position:absolute;top:96px;left:50%;transform:translateX(-50%);
+  width:100%;max-width:420px;height:232px;z-index:-2;
+  border-radius:18px;overflow:hidden;
   background-image:url("data:image/jpeg;base64,C:/Program Files/Git/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAOABQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC3JJKCwTdBD1VIxyx+tMW/mBQu7Lg7SVP8+1Pv7YQofKcqrN+IHcD/ABqjInkRjyiVXPA64P41xOVpanUo3Rpw65EVInQ7gSMg4yPWiqkGnRiFTK5ywz8o/n70VpzVOhFon/Z");
   background-size:cover;background-position:50% 42%;
   filter:blur(8px);transform:scale(1.06);
 }
 .hero.cargada{
-  background-image:url("img/hero.jpg");
   filter:none;transform:translateX(-50%);
   transition:filter 500ms var(--salida);
 }
@@ -104,18 +105,8 @@ body{
    - abajo, el fundido que disuelve la foto en el fondo, sin borde duro */
 .hero::after{
   content:"";position:absolute;inset:0;
-  background:
-    /* El velo se mantiene fuerte TODO el alto del encabezado (96px de 300 = 32%)
-       y recién ahí se abre. Medido: la foto tiene blancos puros en el borde del
-       plato, y contra blanco puro hace falta .71 para que el texto crema llegue
-       a 4.5:1. Antes caía a .18 en el 26% y el subtítulo quedaba en 3.17:1. */
-    /* El encabezado ocupa 96px de 360 = 27%. El velo se mantiene hasta ahi
-       y se abre rapido: antes llegaba al 48% y, con el fundido empezando en
-       el 68%, solo quedaban 60px de foto limpia. */
-    linear-gradient(180deg, rgba(10,10,13,.84) 0%, rgba(10,10,13,.80) 27%,
-                    rgba(10,10,13,.22) 35%, rgba(10,10,13,0) 42%),
-    /* el fundido empieza tarde: entre el 40% y el 72% la comida se ve limpia */
-    linear-gradient(180deg, rgba(21,21,26,0) 80%, rgba(21,21,26,.92) 94%, var(--noche) 100%);
+  /* solo un fundido corto abajo, para que la foto no termine en un borde seco */
+  background:linear-gradient(180deg, rgba(21,21,26,0) 62%, rgba(21,21,26,.86) 92%, var(--noche) 100%);
 }
 
 /* ---- La luz que sigue al dedo ----
@@ -331,8 +322,8 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 
   <!-- ===================== INICIO ===================== -->
   <section class="pantalla on" id="pInicio">
-    <!-- arranca debajo de la banda de comida (360px) menos el encabezado -->
-    <div id="antes" style="padding-top:252px">
+    <!-- arranca debajo de la banda de comida (232px) que empieza bajo el encabezado -->
+    <div id="antes" style="padding-top:150px">
       <h1>Raspa y descubre<br>lo de esta semana</h1>
       <p class="lead">Lo mismo para todos, sin sorteo ni suerte.
         Pasa el dedo y <b>se te guarda en el celular</b>.</p>
@@ -472,6 +463,24 @@ const CONFIG = {
 
   beneficio: { ico:"🥤", que:"Jugo natural gratis", nota:"Con tu corrientazo de esta semana." },
 
+  /* --- LAS FOTOS DE ARRIBA ---------------------------------------
+     Rota una por día, igual para todos, y vuelve a empezar. Así quien
+     escanea seguido va viendo el menú entero sin que la página se
+     llene de miniaturas.
+     Para agregar o quitar: correr `python preparar-platos.py` y editar
+     esta lista. Quitar la "5" si el sancocho se ve muy borroso: es la
+     foto de peor calidad del lote.                                   */
+  platos: [
+    { img:"img/plato-2.jpg", nombre:"Pollo frito" },
+    { img:"img/plato-1.jpg", nombre:"Carne desmechada" },
+    { img:"img/plato-6.jpg", nombre:"Pescado frito con patacones" },
+    { img:"img/plato-4.jpg", nombre:"Carne asada" }
+    /* El sancocho está fuera a propósito: es el plato insignia pero la
+       única foto que hay viene de una captura de 750px y se ve borrosa
+       al lado de las demás. Cuando aparezca el original, descomentar:
+       , { img:"img/plato-5.jpg", nombre:"Sancocho de costilla" }        */
+  ],
+
   sellosParaAlmuerzo: 20,
   claveDelMes: "2611",
 
@@ -504,6 +513,10 @@ const menosMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").
 
 function pantalla(id){
   document.querySelectorAll(".pantalla").forEach(s => s.classList.toggle("on", s.id === id));
+  /* La banda de comida solo en el inicio: en "Mi tarjeta" y en el panel
+     quedaba detrás del contenido, asomando por los lados, y ensuciaba. */
+  const hero = $("hero");
+  if(hero) hero.style.display = (id === "pInicio") ? "" : "none";
   window.scrollTo(0,0);
 }
 
@@ -520,6 +533,25 @@ if(!(CSS.supports("backdrop-filter","blur(1px)") ||
   const img = new Image();
   img.onload = () => $("hero").classList.add("cargada");
   img.src = "img/hero.jpg";
+})();
+
+/* ---- La foto del día ----
+   El índice sale de la fecha, no de Math.random(): así todos los que
+   escanean hoy ven el mismo plato, y mañana cambia. Con random, dos
+   personas en la misma mesa verían cosas distintas. */
+(function(){
+  const lista = CONFIG.platos || [];
+  if(!lista.length) return;
+  const hero = $("hero");
+  if(!hero) return;
+  const dias = Math.floor(Date.now() / 86400000);
+  const hoyPlato = lista[dias % lista.length];
+  const img = new Image();
+  img.onload = () => {
+    hero.style.backgroundImage = 'url("' + hoyPlato.img + '")';
+    hero.classList.add("cargada");
+  };
+  img.src = hoyPlato.img;
 })();
 
 /* ---- El reflejo sigue al dedo ----
