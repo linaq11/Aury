@@ -322,6 +322,44 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
   font-family:var(--display);font-weight:800;font-size:15px}
 .cuenta.total span:last-child{color:var(--naranja-claro)}
 
+
+/* ---- Pantallas anchas ----------------------------------------------
+   Esto no es para computadores: es para los celulares que abren en modo
+   "Sitio para computadoras". Ese modo ignora el viewport, maqueta a unos
+   980px y despues achica todo para que quepa, asi que una columna de
+   420px queda diminuta en medio de dos franjas negras. Algunos lectores
+   de QR abren asi y no lo podemos controlar.
+   Al ensanchar la columna y agrandar el contenido, ocupa mucho mas de
+   esos 980px y se sigue leyendo despues del achique. En un computador de
+   verdad tambien se ve mejor que una columna perdida en el centro. */
+@media (min-width:680px){
+  .app{max-width:560px}
+  body{font-size:19px}
+  h1{font-size:40px}
+  h2{font-size:24px}
+  .lead{font-size:19px}
+  .menor,.sellos-pie,.tarjeta .de{font-size:17px}
+  .btn{font-size:21px;min-height:68px;border-radius:18px}
+  .btn.cristal{font-size:19px;min-height:62px}
+  .top img{width:54px;height:54px}
+  .top .marca{font-size:21px}
+  .top .sub{font-size:15px}
+  .chip{font-size:18px;min-height:52px;padding:8px 17px 8px 13px}
+  .chip b{font-size:21px}
+  :root{--banda:310px}
+  .debajo .que{font-size:40px}
+  .debajo .eti{font-size:15px}
+  .debajo .nota{font-size:17px}
+  .sellos{gap:11px}
+  .carta .pl,.carta .pr{font-size:19px}
+  .carta h3{font-size:15px}
+  .cupon .tx b{font-size:20px}
+  .cupon .tx span{font-size:15px}
+  .tyc{font-size:15px}
+  input[type=text],input[type=number]{font-size:20px;min-height:60px}
+  label{font-size:16px}
+}
+
 @media (prefers-reduced-motion:reduce){
   *{transition-duration:1ms!important;animation-duration:1ms!important}
   .reflejo{display:none}
