@@ -1,0 +1,101 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Arma la imagen para mandar por WhatsApp a los clientes cuando pagan.
+
+    python hacer-pieza-whatsapp.py
+
+Saca qr/whatsapp.jpg (1080x1350, formato 4:5).
+
+OJO CON ALGO IMPORTANTE: si la clienta recibe esto EN SU CELULAR, no
+puede escanear el QR con ese mismo celular. Por eso la pieza lleva el
+link escrito, y el mensaje de WhatsApp debe llevarlo tambien como texto
+para que sea tocable. El QR de la imagen sirve para cuando se la
+reenvian a otra persona o la ven en otra pantalla.
+"""
+import os
+import segno
+from PIL import Image, ImageDraw, ImageFont
+
+URL      = "https://linaq11.github.io/Aury/"
+URL_VIS  = "linaq11.github.io/Aury"
+AQUI     = os.path.dirname(os.path.abspath(__file__))
+SALIDA   = os.path.join(AQUI, "qr", "whatsapp.jpg")
+LOGO     = os.path.join(AQUI, "img", "logo.jpg")
+os.makedirs(os.path.join(AQUI, "qr"), exist_ok=True)
+
+W, H    = 1080, 1350
+NOCHE   = (0x15, 0x15, 0x1a)
+CREMA   = (0xf8, 0xe9, 0xcf)
+NARANJA = (0xf4, 0x94, 0x0a)
+TINTA   = (0xf7, 0xf6, 0xf1)
+MARRON  = (0x2a, 0x12, 0x06)
+
+F = "C:/Windows/Fonts/"
+def fuente(nombre, tam):
+    return ImageFont.truetype(F + nombre, tam)
+
+negra  = lambda t: fuente("ariblk.ttf", t)      # titulares
+semi   = lambda t: fuente("seguisb.ttf", t)     # apoyos
+normal = lambda t: fuente("segoeui.ttf", t)     # texto
+
+im = Image.new("RGB", (W, H), NOCHE)
+d  = ImageDraw.Draw(im)
+
+def centrado(y, txt, f, color, espaciado=0):
+    if espaciado:
+        ancho = sum(d.textlength(c, font=f) + espaciado for c in txt) - espaciado
+        x = (W - ancho) / 2
+        for c in txt:
+            d.text((x, y), c, font=f, fill=color)
+            x += d.textlength(c, font=f) + espaciado
+    else:
+        d.text((W/2, y), txt, font=f, fill=color, anchor="ma")
+
+# ---- logo ----
+if os.path.exists(LOGO):
+    lado = 150
+    logo = Image.open(LOGO).convert("RGB").resize((lado, lado), Image.LANCZOS)
+    mask = Image.new("L", (lado*4, lado*4), 0)
+    ImageDraw.Draw(mask).ellipse((0, 0, lado*4, lado*4), fill=255)
+    mask = mask.resize((lado, lado), Image.LANCZOS)
+    aro = Image.new("RGB", (lado+10, lado+10), NARANJA)
+    m2 = Image.new("L", ((lado+10)*4, (lado+10)*4), 0)
+    ImageDraw.Draw(m2).ellipse((0, 0, (lado+10)*4, (lado+10)*4), fill=255)
+    im.paste(aro, ((W-lado-10)//2, 70), m2.resize((lado+10, lado+10), Image.LANCZOS))
+    im.paste(logo, ((W-lado)//2, 75), mask)
+
+# ---- titulares ----
+centrado(252, "RESTAURANTE AURY", semi(26), NARANJA, espaciado=5)
+centrado(300, "Raspa y descubre", negra(66), TINTA)
+centrado(376, "lo de esta semana", negra(66), TINTA)
+centrado(468, "Un raspado por día. Siempre te ganas algo,", normal(29), (190, 188, 182))
+centrado(508, "y se te guarda en el celular.", normal(29), (190, 188, 182))
+
+# ---- tarjeta del QR ----
+TX, TY, TW_, TH_ = 215, 572, 650, 650
+tarjeta = Image.new("RGB", (TW_, TH_), CREMA)
+mr = Image.new("L", (TW_*4, TH_*4), 0)
+ImageDraw.Draw(mr).rounded_rectangle((0, 0, TW_*4, TH_*4), radius=130, fill=255)
+im.paste(tarjeta, (TX, TY), mr.resize((TW_, TH_), Image.LANCZOS))
+
+qr = segno.make(URL, error="h")
+qr.save(os.path.join(AQUI, "qr", "_tmp.png"), scale=20, border=0,
+        dark="#2a1206", light="#f8e9cf")
+# 500 y no 520, y subido: el rotulo de abajo quedaba a 12px del QR y le
+# comia la zona de silencio. En pantalla limpia leia igual, pero un
+# escaner apuntando a la pantalla de otro celular es menos indulgente.
+q = Image.open(os.path.join(AQUI, "qr", "_tmp.png")).convert("RGB").resize((500, 500), Image.LANCZOS)
+im.paste(q, (TX + (TW_-500)//2, TY + 58))
+os.remove(os.path.join(AQUI, "qr", "_tmp.png"))
+
+d.text((W/2, TY + 596), "Apunta la cámara", font=semi(27), fill=MARRON, anchor="ma")
+
+# ---- el link, que es lo que de verdad sirve en WhatsApp ----
+centrado(1262, URL_VIS, semi(30), NARANJA)
+centrado(1300, "Junta un punto por visita · a los 20, almuerzo gratis",
+         normal(24), (150, 148, 143))
+
+im.save(SALIDA, quality=90, optimize=True, progressive=True)
+print("whatsapp.jpg  %dx%d  %.0f KB" % (W, H, os.path.getsize(SALIDA)/1024))
+print(SALIDA)
