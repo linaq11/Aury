@@ -92,14 +92,15 @@ body{
   position:absolute;top:96px;left:50%;transform:translateX(-50%);
   width:100%;max-width:420px;height:232px;z-index:-2;
   border-radius:18px;overflow:hidden;
-  background-image:url("data:image/jpeg;base64,C:/Program Files/Git/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAOABQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC3JJKCwTdBD1VIxyx+tMW/mBQu7Lg7SVP8+1Pv7YQofKcqrN+IHcD/ABqjInkRjyiVXPA64P41xOVpanUo3Rpw65EVInQ7gSMg4yPWiqkGnRiFTK5ywz8o/n70VpzVOhFon/Z");
-  background-size:cover;background-position:50% 42%;
-  filter:blur(8px);transform:scale(1.06);
+  /* La foto real va aqui, en el CSS. Antes habia un relleno borroso de
+     960 bytes que el JS reemplazaba al cargar: si faltaba la carpeta img/
+     o el JS no corria, quedaba el borron y parecia que no habia foto. */
+  background-image:url("img/plato-2.jpg");
+  background-size:cover;background-position:50% 50%;
 }
-.hero.cargada{
-  filter:none;transform:translateX(-50%);
-  transition:filter 500ms var(--salida);
-}
+/* Una foto real ya en el CSS. Antes la ponia solo el JS tras img.onload:
+   si faltaba la carpeta img/ o el JS no corria, quedaba el borron de
+   relleno y parecia que la pagina no tenia foto. */
 /* Dos capas, cada una con su trabajo:
    - arriba, un velo corto que le da contraste al encabezado
    - abajo, el fundido que disuelve la foto en el fondo, sin borde duro */
@@ -542,7 +543,6 @@ if(!(CSS.supports("backdrop-filter","blur(1px)") ||
   const img = new Image();
   img.onload = () => {
     hero.style.backgroundImage = 'url("' + hoyPlato.img + '")';
-    hero.classList.add("cargada");
   };
   img.src = hoyPlato.img;
 })();
