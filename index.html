@@ -4,110 +4,221 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Raspa y descubre · Restaurante Aury</title>
-<meta name="description" content="Raspa y descubre el beneficio de la semana en Restaurante Aury. Se te guarda en el celular.">
-<meta name="theme-color" content="#2a1206">
+<meta name="description" content="Raspa y descubre el beneficio de la semana en Restaurante Aury.">
+<meta name="theme-color" content="#1a0b03">
 <link rel="icon" href="img/logo.jpg">
-<link rel="apple-touch-icon" href="img/logo.jpg">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
 /* ===========================================================
-   Paleta oficial de Restaurante Aury (docs/brand-guidelines.md)
-   Contraste medido contra el marrón y contra la crema:
-     crema 100%  sobre marrón  14.78:1
-     crema  .58  sobre marrón   5.4:1   <- piso del texto chico
-     naranja     sobre marrón   8.38:1
-     marrón      sobre crema   14.78:1
-     rojo marca  sobre crema    3.92:1  <- NO sirve para texto chico
-     rojo texto  sobre crema    5.34:1  <- el que se usa en texto chico
+   VITRINA — la variante con transparencias.
+
+   El fondo NO es un degradado inventado: es una foto real del plato
+   de Aury, oscurecida al 46%. Un vidrio sobre comida de verdad es
+   llamativo y además cumple la regla de que una textura de fondo
+   venga del mundo del tema.
+
+   La jerarquía se invierte respecto a la otra versión: aquí todo es
+   vidrio translúcido MENOS la boleta, que es el único objeto sólido
+   y opaco. Lo que importa es lo que no se transparenta.
+
+   Todo el contraste de texto está medido contra el vidrio ya
+   compuesto sobre la foto, no contra el vidrio solo.
    =========================================================== */
 :root{
-  --naranja:#f2a20f;
-  --rojo:#d8362a;          /* el rojo de marca: superficies y botones grandes */
-  --rojo-texto:#b5281e;    /* el mismo rojo, más profundo, para texto chico sobre crema */
-  --crema:#f8e9cf;
-  --marron:#2a1206;
+  /* La paleta sale del MENÚ de Aury, no del markdown de marca: el menú es
+     negro con texto blanco y un bloque naranja. Lo que yo tenía antes era
+     marrón con crema, o sea sepia, y por eso se veía apagado y todo igual. */
+  --naranja:#f4940a;      /* muestreado del menú real */
+  --naranja-claro:#ffab2e;
+  --rojo:#d8362a;
+  --rojo-texto:#b5281e;
+  --tinta:#f7f6f1;        /* muestreado del menú: blanco roto, no crema */          /* el texto es BLANCO, no crema */
+  --crema:#f8e9cf;          /* la crema se queda SOLO para el papel de la boleta */
+  --marron:#2a1206;         /* y para el texto sobre ese papel */
   --marron-2:#4a2812;
+  --noche:#15151a;        /* el oscuro del menú: gris-negro, sin marrón */          /* negro neutro, como el menú: no marrón */
+  --carbon:#1e1e24;
   --crema-sombra:#d9c6a4;
 
   --display:"Bricolage Grotesque",system-ui,sans-serif;
   --body:"Public Sans",system-ui,sans-serif;
 
-  /* Una sola curva de llegada, la de desaceleración natural. Sin rebotes. */
   --salida:cubic-bezier(.16,1,.3,1);
   --t-feedback:140ms;
-  --t-estado:220ms;
   --t-foco:600ms;
 
-  --radio:14px;            /* el piso de calidad pide 12-16 en tarjetas */
-  --radio-chico:11px;
+  --banda:232px;        /* alto de la banda de comida */
+  --radio:16px;
+  --radio-chico:12px;
+
+  /* El vidrio. Tinte oscuro cálido para que el texto claro tenga
+     contraste medido encima de cualquier zona de la foto. */
+  --vidrio:rgba(24,24,30,.58);
+  --vidrio-borde:rgba(255,255,255,.17);
+  --vidrio-luz:rgba(255,255,255,.07);
 }
 
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
+html,body{min-height:100%}
 body{
-  font-family:var(--body);background:var(--marron);color:var(--crema);
-  line-height:1.5;min-height:100svh;display:flex;flex-direction:column;align-items:center;
-  padding:0 16px calc(28px + env(safe-area-inset-bottom));overflow-x:hidden;
+  font-family:var(--body);color:var(--tinta);line-height:1.5;
+  min-height:100svh;display:flex;flex-direction:column;align-items:center;
+  padding:0 15px calc(28px + env(safe-area-inset-bottom));
+  overflow-x:hidden;background:var(--noche);
 }
-.app{width:100%;max-width:420px;display:flex;flex-direction:column;flex:1}
+
+/* ---- La banda de comida ----
+   Antes la foto iba detrás de TODO, oscurecida al 46%. Quedaba fea y con
+   razón: la boleta tapaba el plato y solo se veía la cocina del fondo.
+   Ahora va arriba, a brillo completo, donde no la tapa nada — igual que
+   el menú de Aury, que pone las fotos limpias sobre el fondo oscuro.
+   Y es justo ahí donde el vidrio se lee como vidrio: necesita color
+   detrás para que el desenfoque signifique algo.
+   Arranca con un JPEG incrustado de 960 bytes para que haya algo caliente
+   en pantalla al instante, y encima entra la foto real. */
+/* La banda arranca DEBAJO del encabezado (96px), no detrás de él.
+   Teniéndolo encima hacía falta un velo oscuro para que el texto tuviera
+   contraste, y ese velo se comía media foto; al acortar la banda no
+   quedaba nada limpio. Así el encabezado va nítido sobre el negro y la
+   foto se ve entera, ocupando menos alto. */
+.hero{
+  /* Constreñida a la columna, NO a todo el ancho. En una pantalla de
+     escritorio el full-bleed estiraba una foto de 840px a 1900 y quedaba
+     una mancha borrosa — que es justo lo que Lina estaba viendo. */
+  position:absolute;top:0;left:0;right:0;height:var(--banda);z-index:-2;
+  border-radius:18px;overflow:hidden;
+  /* La foto real va aqui, en el CSS. Antes habia un relleno borroso de
+     960 bytes que el JS reemplazaba al cargar: si faltaba la carpeta img/
+     o el JS no corria, quedaba el borron y parecia que no habia foto. */
+  background-image:url("img/plato-2.jpg");
+  background-size:cover;background-position:50% 50%;
+}
+/* Una foto real ya en el CSS. Antes la ponia solo el JS tras img.onload:
+   si faltaba la carpeta img/ o el JS no corria, quedaba el borron de
+   relleno y parecia que la pagina no tenia foto. */
+/* Dos capas, cada una con su trabajo:
+   - arriba, un velo corto que le da contraste al encabezado
+   - abajo, el fundido que disuelve la foto en el fondo, sin borde duro */
+/* Velo suave. Antes eran dos cosas distintas y ninguna servia ya:
+   la foto venia oscurecida al 46% en el archivo (por eso se veia
+   apagada), y encima habia un fundido a negro solido que, dentro de una
+   caja redondeada, no difuminaba nada: dejaba una franja oscura abajo.
+   Ahora la foto va a brillo pleno y el velo es solo lo justo para que no
+   grite al lado del fondo oscuro, con algo mas de peso abajo. */
+.hero::after{
+  content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(180deg, rgba(10,10,13,.24) 0%, rgba(10,10,13,.30) 55%,
+                    rgba(10,10,13,.60) 100%),
+    radial-gradient(ellipse 120% 80% at 50% 38%, transparent 38%, rgba(10,10,13,.40) 100%);
+}
+
+/* ---- La luz que sigue al dedo ----
+   Esto es lo que hace que el vidrio se sienta vidrio: un reflejo especular
+   que se mueve con el pulgar. Es una sola capa, no un efecto por panel. */
+.reflejo{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:0;
+  background:radial-gradient(260px circle at var(--lx,50%) var(--ly,38%),
+    rgba(255,194,77,.16), transparent 68%);
+  transition:opacity 420ms var(--salida);
+}
+.reflejo.viva{opacity:1}
+
+.app{width:100%;max-width:420px;display:flex;flex-direction:column;flex:1;position:relative}
+
+/* ================= VIDRIO ================= */
+.vidrio{
+  background:var(--vidrio);
+  border:1px solid var(--vidrio-borde);
+  border-radius:var(--radio);
+  /* el soporte se detecta en JS; sin backdrop-filter el tinte sube y sigue legible */
+  -webkit-backdrop-filter:blur(18px) saturate(150%);
+  backdrop-filter:blur(18px) saturate(150%);
+  position:relative;overflow:hidden;
+}
+/* brillo de canto arriba: el detalle que lee como cristal y no como caja */
+.vidrio::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--vidrio-luz) 18%,
+    rgba(255,255,255,.3) 50%,var(--vidrio-luz) 82%,transparent);
+}
+html.sin-blur .vidrio{background:rgba(16,16,18,.92)}
 
 /* ---------------- Encabezado ---------------- */
-.top{display:flex;align-items:center;gap:11px;padding:calc(14px + env(safe-area-inset-top)) 0 12px}
-.top img{width:40px;height:40px;border-radius:50%;object-fit:cover;
-  border:2px solid var(--naranja);flex:none;cursor:pointer}
+.top{display:flex;align-items:center;gap:11px;
+  padding:calc(13px + env(safe-area-inset-top)) 0 12px}
+.top img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none;
+  border:2px solid var(--naranja);cursor:pointer;
+  box-shadow:0 3px 14px rgba(0,0,0,.5)}
 .top .marca{font-family:var(--display);font-weight:800;font-size:15.5px;
-  letter-spacing:-.01em;line-height:1.15}
-.top .sub{font-size:11.5px;color:rgba(248,233,207,.62)}
-.sellos-chip{margin-left:auto;display:flex;align-items:center;gap:7px;background:none;
-  border:1px solid rgba(248,233,207,.2);padding:6px 12px 6px 9px;border-radius:999px;
-  color:var(--crema);font-family:var(--display);font-weight:700;font-size:13.5px;
-  min-height:40px;cursor:pointer;transition:border-color var(--t-feedback) var(--salida)}
-.sellos-chip b{color:var(--naranja);font-size:15.5px}
-.sellos-chip:active{transform:scale(.97)}
+  letter-spacing:-.01em;line-height:1.15;text-shadow:0 1px 10px rgba(0,0,0,.65)}
+.top .sub{font-size:11.5px;color:rgba(255,255,255,.76);text-shadow:0 1px 8px rgba(0,0,0,.7)}
+.chip{color:var(--tinta);margin-left:auto;display:flex;align-items:center;gap:7px;
+  background:var(--vidrio);border:1px solid var(--vidrio-borde);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  padding:6px 13px 6px 10px;border-radius:999px;color:var(--crema);
+  font-family:var(--display);font-weight:700;font-size:13.5px;min-height:40px;cursor:pointer;
+  transition:transform var(--t-feedback) var(--salida)}
+.chip b{color:var(--naranja-claro);font-size:15.5px}
+.chip:active{transform:scale(.97)}
 
-/* ---------------- Pantallas: sin animación de entrada ----------------
-   El piso de calidad prohíbe repetir la misma entrada en cada pantalla.
-   El único momento con autoría es destapar la boleta.                  */
+/* ---------------- Pantallas ---------------- */
 .pantalla{display:none;flex:1;flex-direction:column}
+/* El hueco de la banda se calcula de su propio alto, y la banda se
+   posiciona DENTRO de esta pantalla. Antes ambos eran numeros fijos
+   calculados sobre un encabezado de 96px que en realidad mide 65: la
+   boleta caia encima de la foto y la tapaba. */
+#pInicio{position:relative;padding-top:calc(var(--banda) + 16px)}
 .pantalla.on{display:flex}
 
-h1{font-family:var(--display);font-weight:800;font-size:29px;line-height:1.1;letter-spacing:-.028em}
+h1{font-family:var(--display);font-weight:800;font-size:30px;line-height:1.08;
+  letter-spacing:-.03em;text-shadow:0 2px 18px rgba(0,0,0,.7)}
 h2{font-family:var(--display);font-weight:700;font-size:18px;line-height:1.22;letter-spacing:-.018em}
-.lead{font-size:14.5px;color:rgba(248,233,207,.76);margin-top:8px}
-.menor{font-size:13px;color:rgba(248,233,207,.7)}
+.lead{font-size:14.5px;color:rgba(255,255,255,.88);margin-top:9px;
+  text-shadow:0 1px 12px rgba(0,0,0,.75)}
+.menor{font-size:13px;color:rgba(255,255,255,.82)}
 
 /* ---------------- Botones ---------------- */
-.btn{font-family:var(--display);font-weight:800;font-size:16.5px;background:var(--naranja);
-  color:var(--marron);border:0;border-radius:var(--radio);padding:16px 22px;min-height:54px;
-  width:100%;display:inline-flex;align-items:center;justify-content:center;gap:9px;
+.btn{font-family:var(--display);font-weight:800;font-size:16.5px;
+  background:var(--naranja);color:var(--marron);border:0;border-radius:var(--radio);
+  padding:16px 22px;min-height:54px;width:100%;
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
   cursor:pointer;text-decoration:none;
+  /* Elevación neutra. El halo de color del mismo tono del botón es el look
+     por defecto de UI generada; además aquí sobra, porque la página ya tiene
+     una fuente de luz propia: el reflejo que sigue al dedo. */
+  box-shadow:0 6px 20px rgba(0,0,0,.45);
   transition:transform var(--t-feedback) var(--salida),opacity var(--t-feedback) linear}
 .btn:active{transform:scale(.975)}
-.btn[disabled],.btn[aria-disabled=true]{opacity:.42;pointer-events:none}
+.btn[disabled]{opacity:.42;pointer-events:none}
 .btn.rojo{background:var(--rojo);color:#fff}
-.btn.fantasma{background:none;color:var(--crema);border:1.5px solid rgba(248,233,207,.28);
-  font-weight:700;font-size:15px;min-height:48px;padding:13px 18px}
-.btn:focus-visible,.top img:focus-visible,.sellos-chip:focus-visible,
-input:focus-visible,[role=button]:focus-visible{outline:3px solid var(--naranja);outline-offset:3px}
+.btn.cristal{background:var(--vidrio);color:var(--crema);
+  border:1px solid rgba(255,255,255,.26);box-shadow:none;font-weight:700;font-size:15px;
+  min-height:48px;padding:13px 18px;
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html.sin-blur .btn.cristal{background:rgba(16,16,18,.92)}
+.btn:focus-visible,.top img:focus-visible,.chip:focus-visible,
+input:focus-visible,.cupon:focus-visible{outline:3px solid var(--naranja-claro);outline-offset:3px}
 
-/* ================= LA BOLETA: el objeto protagonista ================= */
-.boleta-zona{position:relative;padding:4px 0 2px}
+/* ================= LA BOLETA =================
+   El único objeto opaco de la pantalla. Todo lo demás es vidrio;
+   por eso la vista se va derecho aquí. */
 .boleta{
-  position:relative;width:100%;aspect-ratio:1/1.06;
+  position:relative;width:100%;aspect-ratio:1/1.06;margin-top:4px;
   background:var(--crema);color:var(--marron);border-radius:var(--radio);
-  /* una sola declaración de elevación: sombra con desplazamiento y difuminado */
-  box-shadow:0 2px 0 var(--crema-sombra),0 20px 40px rgba(0,0,0,.45);
+  box-shadow:0 2px 0 var(--crema-sombra),0 26px 54px rgba(0,0,0,.6);
   overflow:hidden;display:grid;place-items:center;
   transform:rotate(-1.2deg);
-  transition:transform var(--t-foco) var(--salida);
-}
-.boleta.abierta{transform:rotate(0deg)}
-/* muescas de boleta troquelada: el detalle que la vuelve papel y no un div */
+  transition:transform var(--t-foco) var(--salida)}
+.boleta.abierta{transform:rotate(0)}
 .boleta::before,.boleta::after{content:"";position:absolute;width:20px;height:20px;
-  border-radius:50%;background:var(--marron);top:50%;transform:translateY(-50%);z-index:5}
+  border-radius:50%;background:var(--noche);top:50%;transform:translateY(-50%);z-index:5;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.6)}
 .boleta::before{left:-10px}
 .boleta::after{right:-10px}
 
@@ -115,59 +226,69 @@ input:focus-visible,[role=button]:focus-visible{outline:3px solid var(--naranja)
   text-align:center;padding:30px 26px;gap:2px}
 .debajo .eti{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.15em;
   text-transform:uppercase;color:var(--rojo-texto)}
-.debajo .ico{font-size:40px;line-height:1;margin:8px 0 2px}
-.debajo .que{font-family:var(--display);font-weight:800;font-size:30px;line-height:1.04;
+.debajo .ico{font-size:42px;line-height:1;margin:8px 0 2px}
+.debajo .que{font-family:var(--display);font-weight:800;font-size:31px;line-height:1.04;
   letter-spacing:-.032em}
 .debajo .nota{font-size:13.5px;color:var(--marron-2);margin-top:10px;max-width:24ch}
-/* el beneficio llega con la curva de salida, no aparece de golpe */
 .boleta.abierta .debajo{animation:llega 520ms var(--salida) 110ms both}
 @keyframes llega{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:none}}
 
-#capa{position:absolute;inset:0;width:100%;height:100%;z-index:3;
-  touch-action:none;cursor:grab;transition:opacity 420ms var(--salida),filter 420ms var(--salida)}
-.boleta.abierta #capa{opacity:0;filter:blur(4px);pointer-events:none}
+#capa{position:absolute;inset:0;width:100%;height:100%;z-index:3;touch-action:none;
+  cursor:grab;transition:opacity 420ms var(--salida),filter 420ms var(--salida)}
+.boleta.abierta #capa{opacity:0;filter:blur(5px);pointer-events:none}
 .pista{position:absolute;inset:0;z-index:2;display:grid;place-items:center;pointer-events:none;
   text-align:center;font-family:var(--display);font-weight:800;font-size:16px;letter-spacing:.11em;
   text-transform:uppercase;color:rgba(42,18,6,.46);transition:opacity 200ms linear}
 .boleta.abierta .pista,.pista.ida{opacity:0}
 
-/* ================= TARJETA DE SELLOS =================
-   El producto es la tarjeta de sellos de papel, pero que no se pierde.
-   Entonces se dibuja la tarjeta, no una barra de progreso.             */
-.tarjeta{background:rgba(248,233,207,.055);border:1px solid rgba(248,233,207,.15);
-  border-radius:var(--radio);padding:16px}
-.tarjeta-cab{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
-.tarjeta-cab .n{font-family:var(--display);font-weight:800;font-size:26px;color:var(--naranja);
-  line-height:1}
-.tarjeta-cab .de{font-size:13px;color:rgba(248,233,207,.7)}
+/* ================= TARJETA DE SELLOS ================= */
+.tarjeta{padding:17px}
+.tarjeta .n{font-family:var(--display);font-weight:800;font-size:27px;
+  color:var(--naranja-claro);line-height:1}
+.tarjeta .de{font-size:13px;color:rgba(255,255,255,.82)}
 .sellos{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}
 .sello{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
-  border:1.5px dashed rgba(248,233,207,.26);color:rgba(248,233,207,.3)}
+  border:1.5px dashed rgba(255,255,255,.3);color:rgba(255,255,255,.34)}
 .sello svg{width:56%;height:56%;display:block}
-.sello.lleno{border-style:solid;border-color:var(--naranja);background:var(--naranja);
-  color:var(--marron)}
+.sello.lleno{border-style:solid;border-color:var(--naranja-claro);
+  background:var(--naranja);color:var(--marron)}
 .sello.nuevo{animation:sella 460ms var(--salida) both}
-@keyframes sella{
-  from{transform:scale(.2) rotate(-18deg);opacity:0}
-  to{transform:none;opacity:1}
-}
-.sellos-pie{font-size:13px;color:rgba(248,233,207,.72);margin-top:13px}
-.sellos-pie b{color:var(--naranja)}
+@keyframes sella{from{transform:scale(.2) rotate(-18deg);opacity:0}to{transform:none;opacity:1}}
+.sellos-pie{font-size:13px;color:rgba(255,255,255,.84);margin-top:13px}
+.sellos-pie b{color:var(--naranja-claro)}
 
-/* ================= Bloques de contenido =================
-   Texto plano sobre el fondo, no una pila de tarjetas iguales:
-   el piso de calidad trata la tarjeta como el contenedor perezoso.     */
-.bloque{padding:18px 0;border-top:1px solid rgba(248,233,207,.12)}
-.bloque:first-of-type{border-top:0}
-.bloque h2+p{margin-top:7px}
+/* ---------------- La carta ---------------- */
+.carta h3{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--naranja);margin:18px 0 2px}
+.carta h3:first-child{margin-top:0}
+.carta .nota-grupo{font-size:12px;color:rgba(247,246,241,.66);margin-bottom:6px}
+.carta .linea{display:flex;align-items:baseline;gap:8px;padding:6px 0;
+  border-bottom:1px solid rgba(255,255,255,.07)}
+.carta .linea:last-child{border-bottom:0}
+.carta .pl{font-size:14.5px;flex:1;min-width:0}
+.carta .pr{font-family:var(--display);font-weight:700;font-size:14.5px;
+  color:var(--tinta);white-space:nowrap}
+.bandeja{display:flex;align-items:center;gap:13px;background:var(--naranja);
+  color:#1a1a1e;border-radius:var(--radio-chico);padding:13px 15px;margin-top:16px}
+.bandeja .bt{flex:1;min-width:0}
+.bandeja .bt b{font-family:var(--display);font-size:15.5px;display:block}
+.bandeja .bt span{font-size:12.5px;opacity:.82}
+.bandeja .bp{font-family:var(--display);font-weight:800;font-size:19px;white-space:nowrap}
+.bebida{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.bebida:last-child{border-bottom:0}
+.bebida b{font-size:13.5px;white-space:nowrap}
+.bebida span{font-size:12.5px;color:rgba(247,246,241,.72)}
 
-.sello-ok{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);
-  font-weight:800;font-size:14.5px;color:#7ddc9f}
+/* ---------------- Bloques ---------------- */
+.panel{padding:17px;margin-top:11px}
+.panel h2+p{margin-top:7px}
+.ok-linea{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);
+  font-weight:800;font-size:14.5px;color:#86e3a6}
 
-/* cupones */
 .cupon{display:flex;align-items:center;gap:13px;background:var(--crema);color:var(--marron);
   border-radius:var(--radio-chico);padding:13px 15px;margin-top:9px;width:100%;
-  text-align:left;border:0;font-family:var(--body);cursor:pointer}
+  text-align:left;border:0;font-family:var(--body);cursor:pointer;
+  box-shadow:0 4px 18px rgba(0,0,0,.4)}
 .cupon .ico{font-size:23px;flex:none}
 .cupon .tx{flex:1;min-width:0}
 .cupon .tx b{font-family:var(--display);font-size:15.5px;display:block;letter-spacing:-.012em}
@@ -176,40 +297,42 @@ input:focus-visible,[role=button]:focus-visible{outline:3px solid var(--naranja)
   letter-spacing:.06em;text-align:right;line-height:1.3}
 .cupon.usado{opacity:.5;cursor:default}
 .cupon.usado .tx b{text-decoration:line-through}
-.vacio{text-align:center;padding:30px 18px;color:rgba(248,233,207,.6);font-size:14px}
+.vacio{text-align:center;padding:28px 18px;color:rgba(255,255,255,.72);font-size:14px}
 
 .pie{margin-top:auto;padding-top:24px;text-align:center;font-size:12px;
-  color:rgba(248,233,207,.58);line-height:1.6}
-.pie a{color:rgba(248,233,207,.72)}
+  color:rgba(255,255,255,.74);line-height:1.6;text-shadow:0 1px 10px rgba(0,0,0,.8)}
+.pie a{color:var(--naranja-claro)}
 
 input[type=text],input[type=number]{width:100%;font-family:var(--body);font-size:16px;
-  background:rgba(0,0,0,.3);color:var(--crema);border:1.5px solid rgba(248,233,207,.22);
+  background:rgba(0,0,0,.5);color:var(--tinta);border:1.5px solid rgba(255,255,255,.26);
   border-radius:var(--radio-chico);padding:13px 14px;min-height:48px}
-input::placeholder{color:rgba(248,233,207,.5)}
-label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgba(248,233,207,.74)}
+input::placeholder{color:rgba(255,255,255,.56)}
+label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgba(255,255,255,.84)}
 
-.aviso{background:rgba(216,54,42,.16);border:1px solid rgba(216,54,42,.45);
+.aviso{background:rgba(216,54,42,.26);border:1px solid rgba(216,54,42,.5);
   border-radius:var(--radio-chico);padding:12px 14px;font-size:13.5px;margin-top:12px}
-.aviso.ok{background:rgba(47,125,79,.18);border-color:rgba(47,125,79,.5)}
+.aviso.ok{background:rgba(47,125,79,.28);border-color:rgba(47,125,79,.55)}
 
-.tyc{font-size:11.5px;color:rgba(248,233,207,.58);margin-top:18px;line-height:1.7;
-  padding-top:14px;border-top:1px solid rgba(248,233,207,.12)}
-.tyc b{color:rgba(248,233,207,.8)}
+.tyc{font-size:11.5px;color:rgba(255,255,255,.74);margin-top:16px;line-height:1.7;
+  padding:14px 16px;border-radius:var(--radio-chico);background:rgba(10,10,13,.5)}
+.tyc b{color:rgba(255,255,255,.92)}
 
 .cuenta{display:flex;justify-content:space-between;font-size:13px;margin-top:5px}
-.cuenta.total{border-top:1px solid rgba(248,233,207,.18);margin-top:11px;padding-top:11px;
+.cuenta.total{border-top:1px solid rgba(255,255,255,.24);margin-top:11px;padding-top:11px;
   font-family:var(--display);font-weight:800;font-size:15px}
-.cuenta.total span:last-child{color:var(--naranja)}
+.cuenta.total span:last-child{color:var(--naranja-claro)}
 
 @media (prefers-reduced-motion:reduce){
   *{transition-duration:1ms!important;animation-duration:1ms!important}
+  .reflejo{display:none}
 }
 </style>
 </head>
 <body>
 
+<div class="reflejo" id="reflejo" aria-hidden="true"></div>
+
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <!-- plato de sopa con vapor: el sello viene del mundo del restaurante -->
   <symbol id="g-plato" viewBox="0 0 24 24">
     <path d="M3.2 11.4h17.6a8.8 8.8 0 0 1-17.6 0z" fill="currentColor"/>
     <path d="M9 7.6c0-1.3 1.6-1.4 1.6-2.8M13.4 7.6c0-1.3 1.6-1.4 1.6-2.8"
@@ -226,51 +349,49 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
       <div class="marca">Restaurante Aury</div>
       <div class="sub">Comida casera · Cartagena</div>
     </div>
-    <button class="sellos-chip" id="chipSellos" aria-label="Ver mi tarjeta de sellos">
-      <svg width="16" height="16" aria-hidden="true" style="color:var(--naranja)"><use href="#g-plato"/></svg>
+    <button class="chip" id="chip" aria-label="Ver mi tarjeta de sellos">
+      <svg width="16" height="16" aria-hidden="true" style="color:var(--naranja-claro)"><use href="#g-plato"/></svg>
       <span><b id="chipNum">0</b>/<span id="chipMeta">20</span></span>
     </button>
   </header>
 
-  <!-- ===================== INICIO: la boleta es lo primero ===================== -->
+  <!-- ===================== INICIO ===================== -->
   <section class="pantalla on" id="pInicio">
-
+    <div class="hero" id="hero" aria-hidden="true"></div>
+    <!-- arranca debajo de la banda de comida (232px) que empieza bajo el encabezado -->
     <div id="antes">
       <h1>Raspa y descubre<br>lo de esta semana</h1>
-      <p class="lead">Es lo mismo para todos, sin sorteo ni suerte.
-        Pasa el dedo por la boleta y <b>se te guarda en el celular</b>.</p>
+      <p class="lead">Lo mismo para todos, sin sorteo ni suerte.
+        Pasa el dedo y <b>se te guarda en el celular</b>.</p>
     </div>
 
-    <div class="boleta-zona">
-      <div class="boleta" id="boleta">
-        <div class="debajo">
-          <div class="eti">Esta semana</div>
-          <div class="ico" id="bIco"></div>
-          <div class="que" id="bQue">—</div>
-          <div class="nota" id="bNota"></div>
-        </div>
-        <div class="pista" id="pista">Rasca aquí</div>
-        <canvas id="capa" aria-label="Capa para raspar"></canvas>
+    <div class="boleta" id="boleta">
+      <div class="debajo">
+        <div class="eti">Esta semana</div>
+        <div class="ico" id="bIco"></div>
+        <div class="que" id="bQue">—</div>
+        <div class="nota" id="bNota"></div>
       </div>
+      <div class="pista" id="pista">Rasca aquí</div>
+      <canvas id="capa" aria-label="Capa para raspar"></canvas>
     </div>
 
-    <button class="btn fantasma" id="btnDestapar" style="margin-top:14px">
+    <button class="btn cristal" id="btnDestapar" style="margin-top:14px">
       No puedo raspar, destápalo
     </button>
 
-    <!-- lo que aparece después de destapar -->
     <div id="despues" style="display:none">
-      <div class="bloque">
-        <div class="sello-ok">
+      <div class="vidrio panel">
+        <div class="ok-linea">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
           Guardado en tu celular
         </div>
-        <p class="menor" style="margin-top:7px">No se te va a perder. Lo encuentras arriba,
-          en tu tarjeta de sellos, cuando vengas.</p>
+        <p class="menor" style="margin-top:7px">No se te va a perder. Está arriba, en tu
+          tarjeta de sellos, para cuando vengas.</p>
       </div>
 
-      <div class="bloque">
+      <div class="vidrio panel">
         <h2>¿Cómo lo reclamo?</h2>
         <p class="menor">Muéstrale esta pantalla a la cajera cuando pidas tu almuerzo.
           Ella te lo marca y de paso te pone el sello de la visita.</p>
@@ -278,7 +399,9 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 
       <div id="zonaResena"></div>
 
-      <button class="btn" id="btnVerSellos" style="margin-top:16px">Ver mi tarjeta de sellos</button>
+      <div class="vidrio panel carta" id="carta"></div>
+
+      <button class="btn" id="btnVerSellos" style="margin-top:14px">Ver mi tarjeta de sellos</button>
       <div class="tyc" id="tycInicio"></div>
     </div>
 
@@ -290,42 +413,40 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 
   <!-- ===================== MI TARJETA ===================== -->
   <section class="pantalla" id="pMio">
-    <div style="padding:12px 0 14px"><h1 style="font-size:25px">Mi tarjeta</h1></div>
+    <div style="padding:10px 0 14px"><h1 style="font-size:26px">Mi tarjeta</h1></div>
 
-    <div class="tarjeta">
-      <div class="tarjeta-cab">
-        <div><span class="n" id="mNum">0</span> <span class="de">de <b id="mMeta">20</b> sellos</span></div>
-      </div>
+    <div class="vidrio tarjeta">
+      <div><span class="n" id="mNum">0</span> <span class="de">de <b id="mMeta">20</b> sellos</span></div>
       <div class="sellos" id="grid" aria-live="polite"></div>
       <div class="sellos-pie" id="mFaltan"></div>
     </div>
 
-    <div class="bloque" style="margin-top:6px">
+    <div class="vidrio panel">
       <h2>Lo que tengo guardado</h2>
       <div id="lista" style="margin-top:4px"></div>
     </div>
 
-    <button class="btn fantasma" id="btnVolver">Volver</button>
+    <button class="btn cristal" id="btnVolver" style="margin-top:14px">Volver</button>
     <div class="tyc" id="tycMio"></div>
   </section>
 
   <!-- ===================== PANEL DEL PERSONAL ===================== -->
   <section class="pantalla" id="pPersonal">
-    <div style="padding:12px 0 2px">
-      <h1 style="font-size:25px">Panel del personal</h1>
+    <div style="padding:10px 0 2px">
+      <h1 style="font-size:26px">Panel del personal</h1>
       <p class="lead">Solo para quien atiende la caja.</p>
     </div>
 
-    <div id="cerrado">
+    <div id="cerrado" class="vidrio panel">
       <label for="pin">Clave del mes</label>
       <input type="text" id="pin" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="····">
       <button class="btn" id="btnPin" style="margin-top:12px">Entrar</button>
       <div id="pinError"></div>
-      <button class="btn fantasma" id="btnSalir1" style="margin-top:12px">Volver</button>
+      <button class="btn cristal" id="btnSalir1" style="margin-top:11px">Volver</button>
     </div>
 
     <div id="abierto" style="display:none">
-      <div class="bloque">
+      <div class="vidrio panel">
         <h2>Ponerle el sello de la visita</h2>
         <p class="menor">En el celular del cliente, delante de ti, cuando ya pagó.
           Un sello por visita.</p>
@@ -333,26 +454,26 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
         <div id="sellarMsg"></div>
       </div>
 
-      <div class="bloque">
+      <div class="vidrio panel">
         <h2>Marcar como entregado</h2>
         <p class="menor">Abre la tarjeta del cliente y toca lo que le acabas de entregar.</p>
-        <button class="btn fantasma" id="btnIrMio" style="margin-top:13px">Abrir su tarjeta</button>
+        <button class="btn cristal" id="btnIrMio" style="margin-top:13px">Abrir su tarjeta</button>
       </div>
 
-      <div class="bloque">
+      <div class="vidrio panel">
         <h2>¿Cuánto me cuesta?</h2>
         <p class="menor">Para decidir si está muy regalado.</p>
         <label for="cVisitas">Visitas al mes (más o menos)</label>
         <input type="number" id="cVisitas" value="300" min="1" max="100000">
         <label for="cPrecio">Precio del almuerzo (COP)</label>
         <input type="number" id="cPrecio" value="15000" min="1000" max="200000">
-        <label for="cBenef">Lo que te cuesta el beneficio de la semana (COP)</label>
+        <label for="cBenef">Lo que te cuesta el beneficio semanal (COP)</label>
         <input type="number" id="cBenef" value="2000" min="0" max="200000">
-        <button class="btn fantasma" id="btnCalc" style="margin-top:13px">Calcular</button>
+        <button class="btn cristal" id="btnCalc" style="margin-top:13px">Calcular</button>
         <div id="calcOut"></div>
       </div>
 
-      <button class="btn fantasma" id="btnSalir2">Salir del panel</button>
+      <button class="btn cristal" id="btnSalir2" style="margin-top:12px">Salir del panel</button>
     </div>
   </section>
 
@@ -360,60 +481,97 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 
 <script>
 /* ===================================================================
-   ░░ CONFIGURACIÓN — LO ÚNICO QUE HAY QUE EDITAR ░░
-   ===================================================================
+   ░░ CONFIGURACIÓN ░░  (idéntica a index.html — misma mecánica,
+   lo único que cambia entre las dos versiones es el aspecto)
 
-   ⚠️ REGLA LEGAL QUE NO SE PUEDE ROMPER — leer antes de tocar esto.
+   ⚠️ Esto NO es un sorteo y no puede volverse uno. En Colombia un premio
+   decidido por azar es "juego promocional" (Ley 643 de 2001, arts. 5 y 31)
+   y exige autorización previa de la Lotería de Bolívar más el 14% del plan
+   de premios. La excepción para comerciantes fue DEROGADA por el art. 94
+   de la Ley 1753 de 2015. Por eso el beneficio es UNO SOLO, igual para
+   todos y anunciado de antemano.
 
-   Esto NO es un sorteo y no puede volverse uno. En Colombia un premio
-   decidido por azar es un "juego promocional" (Ley 643 de 2001, arts. 5
-   y 31) y necesita autorización previa de la Lotería de Bolívar más el
-   14% del plan de premios. La excepción que tenían los comerciantes fue
-   DEROGADA por el art. 94 de la Ley 1753 de 2015.
-
-   Por eso el beneficio es UNO SOLO, el mismo para todos y anunciado de
-   antemano. Si algún día se pone una lista de premios y se sortea cuál
-   toca, aunque todos ganen algo, esto pasa a ser juego promocional.
-
-   ⚠️ La reseña de Google se PIDE, nunca se PAGA. Nada de sellos,
-   descuentos ni beneficios a cambio de reseñar, y no se filtra a quién
-   se le pide según si quedó contento. Google lo prohíbe expresamente
-   (support.google.com/contributionpolicy/answer/7400114) y la sanción
-   cae sobre el perfil del negocio, no sobre la reseña.
+   ⚠️ La reseña de Google se PIDE, nunca se PAGA, y se le muestra igual a
+   todo el mundo. Google prohíbe incentivarlas y también el review gating;
+   la sanción cae sobre el perfil del negocio.
    =================================================================== */
 const CONFIG = {
-
   whatsapp: "573002679611",
-  /* La Ley 1480 de 2011 exige decir DÓNDE se reclama, no basta "en el local". */
   direccion: "Cl. 31b #52-29, Villa Olímpica, Cartagena",
 
-  /* --- EL BENEFICIO DE LA SEMANA ---------------------------------
-     Uno solo, igual para todos. Se puede cambiar cada semana; lo que
-     no se puede es ofrecer varios y sortear cuál sale.             */
-  beneficio: {
-    ico:  "🥤",
-    que:  "Jugo natural gratis",
-    nota: "Con tu corrientazo de esta semana."
-  },
+  beneficio: { ico:"🥤", que:"Jugo natural gratis", nota:"Con tu corrientazo de esta semana." },
 
-  /* --- SELLOS (determinista, no necesita permiso) --- */
+  /* --- LAS FOTOS DE ARRIBA ---------------------------------------
+     Rota una por día, igual para todos, y vuelve a empezar. Así quien
+     escanea seguido va viendo el menú entero sin que la página se
+     llene de miniaturas.
+     Para agregar o quitar: correr `python preparar-platos.py` y editar
+     esta lista. Quitar la "5" si el sancocho se ve muy borroso: es la
+     foto de peor calidad del lote.                                   */
+  platos: [
+    { img:"img/plato-2.jpg", nombre:"Pollo frito" },
+    { img:"img/plato-1.jpg", nombre:"Carne desmechada" },
+    { img:"img/plato-6.jpg", nombre:"Pescado frito con patacones" },
+    { img:"img/plato-4.jpg", nombre:"Carne asada" }
+    /* El sancocho está fuera a propósito: es el plato insignia pero la
+       única foto que hay viene de una captura de 750px y se ve borrosa
+       al lado de las demás. Cuando aparezca el original, descomentar:
+       , { img:"img/plato-5.jpg", nombre:"Sancocho de costilla" }        */
+  ],
+
+  /* --- LA CARTA ------------------------------------------------------
+     Tomada de las dos fotos del menú que pasó Lina. Confirmado por ella
+     el 2 nov 2026: los precios están vigentes y los platos son los
+     mismos, pero NO todos están disponibles todos los días.
+     Por eso la página lo dice de frente: prometer veinte platos y no
+     tenerlos molesta más que no poner la carta, y además la Ley 1480
+     obliga a cumplir lo que se anuncia.
+     Si suben los precios, se cambian aquí y ya.                        */
+  carta: [
+    { grupo:"Sancochos", nota:"El del día cambia: unos días es de costilla, otros de mondongo.",
+      platos:[
+        ["Sancocho (costilla o mondongo)", 18000],
+        ["Sancocho mediano", 14000]
+      ]},
+    { grupo:"Carnes", platos:[
+        ["Albóndigas en salsa", 14000],
+        ["Carne desmechada", 16000],
+        ["Sobrebarriga guisada", 16000],
+        ["Mondongo guisado", 16000],
+        ["Lengua en salsa", 17000],
+        ["Carne en bistec", 18000],
+        ["Carne asada", 18000]
+      ]},
+    { grupo:"Pollo y cerdo", platos:[
+        ["Alitas de pollo BBQ", 14000],
+        ["Pollo frito", 16000],
+        ["Pollo guisado", 16000],
+        ["Cerdo asado", 18000],
+        ["Cerdo asado a la pimienta", 19000],
+        ["Pechuga asada", 18000],
+        ["Pechuga a la pimienta", 19000],
+        ["Pechuga BBQ o gratinada", 19000],
+        ["Chicharrones fritos o BBQ", 18000],
+        ["Costillas de cerdo frita o BBQ", 20000]
+      ]}
+  ],
+  bandeja: { precio:22000,
+    texto:"Con la proteína que escojas, patacones o papas fritas, ensalada y sopa." },
+  bebidas: [
+    ["Jugos naturales", "Guayaba · mora · tomate de árbol · guanábana · maracuyá · sapote"],
+    ["Gaseosas", "Coca-Cola · Kola Román · Sprite · Quatro · soda"],
+    ["Cervezas", "Club Colombia · Corona · Águila · Águila Light"]
+  ],
+
   sellosParaAlmuerzo: 20,
-  claveDelMes: "2611",        // CÁMBIALA cada mes
+  claveDelMes: "2611",
 
-  /* --- Reseña en Google -------------------------------------------
-     PENDIENTE: pegar el link corto de reseñas de Aury.
-     Perfil de Empresa de Google → Inicio → "Pide reseñas" → copiar.
-     Queda como https://g.page/r/XXXXXXXX/review
-     Mientras esté vacío la pantalla de reseña no se muestra, para no
-     dejar un botón roto.                                            */
+  /* PENDIENTE: link corto de reseñas. Perfil de Empresa de Google → Inicio
+     → "Pide reseñas". Mientras esté vacío la pantalla no se muestra. */
   googleReview: "",
 
-  /* --- Vigencia: la Ley 1480 de 2011 (art. 33) obliga a publicarla.
-     Sin fecha de cierre la promoción queda vigente indefinidamente
-     hasta publicar la revocatoria por el mismo medio.               */
   vigenciaDesde: "3 de noviembre de 2026",
   vigenciaHasta: "31 de diciembre de 2026",
-
   unoPorDia: true
 };
 
@@ -421,16 +579,10 @@ const CONFIG = {
 (function(){
 "use strict";
 
-const LLAVE = "aury_raspa_v3";
+const LLAVE = "aury_raspa_v3";   // mismo almacén que index.html: los sellos no se pierden al cambiar de versión
 const mem = {};
-function leer(){
-  try{ const v = localStorage.getItem(LLAVE); if(v) return JSON.parse(v); }catch(e){}
-  return mem.d || null;
-}
-function guardar(d){
-  mem.d = d;
-  try{ localStorage.setItem(LLAVE, JSON.stringify(d)); }catch(e){}
-}
+function leer(){ try{ const v=localStorage.getItem(LLAVE); if(v) return JSON.parse(v);}catch(e){} return mem.d||null; }
+function guardar(d){ mem.d=d; try{ localStorage.setItem(LLAVE, JSON.stringify(d)); }catch(e){} }
 function inicial(){ return { sellos:0, cupones:[], ultimoRaspado:null, ultimoSello:null }; }
 let E = leer() || inicial();
 if(typeof E.sellos !== "number" || !Array.isArray(E.cupones)) E = inicial();
@@ -443,11 +595,65 @@ const menosMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").
 
 function pantalla(id){
   document.querySelectorAll(".pantalla").forEach(s => s.classList.toggle("on", s.id === id));
-  window.scrollTo(0, 0);
+  /* La banda de comida solo en el inicio: en "Mi tarjeta" y en el panel
+     quedaba detrás del contenido, asomando por los lados, y ensuciaba. */
+  const hero = $("hero");
+  if(hero) hero.style.display = (id === "pInicio") ? "" : "none";
+  window.scrollTo(0,0);
 }
 
-/* ---------------- La tarjeta de sellos ---------------- */
-let sellosPintados = -1;
+/* ---- Sin backdrop-filter (Android viejo) el vidrio se vuelve opaco ----
+   Si no, los paneles quedan translúcidos sin desenfoque y el texto se
+   pierde encima de la foto. */
+if(!(CSS.supports("backdrop-filter","blur(1px)") ||
+     CSS.supports("-webkit-backdrop-filter","blur(1px)"))){
+  document.documentElement.classList.add("sin-blur");
+}
+
+/* ---- La foto del día ----
+   El índice sale de la fecha, no de Math.random(): así todos los que
+   escanean hoy ven el mismo plato, y mañana cambia. Con random, dos
+   personas en la misma mesa verían cosas distintas. */
+(function(){
+  const lista = CONFIG.platos || [];
+  if(!lista.length) return;
+  const hero = $("hero");
+  if(!hero) return;
+  const dias = Math.floor(Date.now() / 86400000);
+  const hoyPlato = lista[dias % lista.length];
+  const img = new Image();
+  img.onload = () => {
+    hero.style.backgroundImage = 'url("' + hoyPlato.img + '")';
+  };
+  img.src = hoyPlato.img;
+})();
+
+/* ---- El reflejo sigue al dedo ----
+   Puntero grueso (dedo): se mueve con el toque. Puntero fino (mouse):
+   con el cursor. En un celular quieto no se ve, y eso está bien: no es
+   decoración de fondo, es respuesta al tacto. */
+(function(){
+  if(menosMotion()) return;
+  const r = $("reflejo");
+  let pendiente = false, x = 0, y = 0;
+  function mover(ev){
+    x = ev.clientX; y = ev.clientY;
+    if(pendiente) return;
+    pendiente = true;
+    requestAnimationFrame(() => {
+      r.style.setProperty("--lx", x + "px");
+      r.style.setProperty("--ly", y + "px");
+      r.classList.add("viva");
+      pendiente = false;
+    });
+  }
+  window.addEventListener("pointermove", mover, {passive:true});
+  window.addEventListener("pointerdown", mover, {passive:true});
+  window.addEventListener("pointerup", () => r.classList.remove("viva"), {passive:true});
+})();
+
+/* ---------------- Tarjeta de sellos ---------------- */
+let pintados = -1;
 function pintarSellos(nuevo){
   const meta = CONFIG.sellosParaAlmuerzo;
   $("chipNum").textContent = E.sellos;
@@ -456,7 +662,7 @@ function pintarSellos(nuevo){
   $("mMeta").textContent = meta;
 
   const g = $("grid");
-  if(sellosPintados !== E.sellos || !g.children.length){
+  if(pintados !== E.sellos || !g.children.length){
     g.innerHTML = "";
     for(let i = 0; i < meta; i++){
       const d = document.createElement("div");
@@ -466,14 +672,12 @@ function pintarSellos(nuevo){
       d.innerHTML = lleno ? '<svg viewBox="0 0 24 24"><use href="#g-plato"/></svg>' : "";
       g.appendChild(d);
     }
-    sellosPintados = E.sellos;
+    pintados = E.sellos;
   }
-
   const faltan = Math.max(0, meta - E.sellos);
   $("mFaltan").innerHTML = faltan === 0
     ? "<b>¡Tarjeta llena! Pídele tu almuerzo gratis a la cajera.</b>"
-    : "Te faltan <b>" + faltan + "</b> " + (faltan === 1 ? "sello" : "sellos") +
-      " para el almuerzo gratis.";
+    : "Te faltan <b>" + faltan + "</b> " + (faltan === 1 ? "sello" : "sellos") + " para el almuerzo gratis.";
 }
 
 /* ===================================================================
@@ -492,17 +696,15 @@ function montar(reintento){
 
   canvas = $("capa");
   const r = $("boleta").getBoundingClientRect();
-  /* Si todavía no hay layout, reintentar. Antes esto hacía return a secas
-     y la boleta quedaba sin capa: el cliente veía el premio destapado. */
-  if(!r.width){
-    if((reintento || 0) < 12) setTimeout(() => montar((reintento || 0) + 1), 60);
+  if(!r.width){                       // sin layout todavía: reintentar
+    if((reintento || 0) < 12) setTimeout(() => montar((reintento||0)+1), 60);
     return;
   }
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  canvas.width = Math.round(r.width * dpr);
-  canvas.height = Math.round(r.height * dpr);
+  canvas.width = Math.round(r.width*dpr);
+  canvas.height = Math.round(r.height*dpr);
   ctx = canvas.getContext("2d");
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
 
   /* Volver a modo pintar. Al final de esta función el contexto queda en
      "destination-out" (borrar), y montar() se vuelve a llamar en cada resize:
@@ -512,17 +714,13 @@ function montar(reintento){
   ctx.globalCompositeOperation = "source-over";
   ctx.clearRect(0, 0, r.width, r.height);
 
-  const g = ctx.createLinearGradient(0, 0, r.width, r.height);
+  const g = ctx.createLinearGradient(0,0,r.width,r.height);
   g.addColorStop(0,"#b9a98f"); g.addColorStop(.42,"#d6c9b2"); g.addColorStop(.52,"#efe6d4");
   g.addColorStop(.62,"#d6c9b2"); g.addColorStop(1,"#ad9d83");
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, r.width, r.height);
-
+  ctx.fillStyle = g; ctx.fillRect(0,0,r.width,r.height);
   ctx.globalAlpha = .07;
-  for(let i = 0; i < 1100; i++){
-    ctx.fillStyle = i % 2 ? "#6b5c45" : "#fff";
-    ctx.fillRect(Math.random()*r.width, Math.random()*r.height, 2, 2);
-  }
+  for(let i=0;i<1100;i++){ ctx.fillStyle = i%2?"#6b5c45":"#fff";
+    ctx.fillRect(Math.random()*r.width, Math.random()*r.height, 2, 2); }
   /* "RASCA AQUÍ" va PINTADO EN LA LÁMINA, como en una boleta de verdad.
      Antes estaba en una capa del DOM debajo del canvas opaco, así que no
      se veía nunca: el cliente abría la página y encontraba un rectángulo
@@ -537,6 +735,7 @@ function montar(reintento){
   ctx.font = "600 13px system-ui, sans-serif";
   ctx.fillStyle = "rgba(42,18,6,.30)";
   ctx.fillText("pasa el dedo por encima", cx0, cy0 + 26);
+  // una flecha corta debajo, para que se entienda sin leer
   ctx.strokeStyle = "rgba(42,18,6,.26)";
   ctx.lineWidth = 2; ctx.lineCap = "round";
   ctx.beginPath();
@@ -558,32 +757,25 @@ function raspar(ev){
   if(!raspando || abierta || !ctx) return;
   const r = canvas.getBoundingClientRect();
   ctx.beginPath();
-  ctx.arc(ev.clientX - r.left, ev.clientY - r.top, 32, 0, Math.PI*2);
+  ctx.arc(ev.clientX-r.left, ev.clientY-r.top, 32, 0, Math.PI*2);
   ctx.fill();
   $("pista").classList.add("ida");
   if(++raspar.n % 6 === 0) medir();
 }
 raspar.n = 0;
 
-/* Muestrea una rejilla: leer el canvas entero en cada movimiento va a
-   tirones en celulares de gama baja. */
 function medir(){
   try{
-    const d = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-    let vacios = 0, total = 0;
-    for(let i = 3; i < d.length; i += 4*48){ total++; if(d[i] < 24) vacios++; }
-    /* 35%, no 50%. Medido: con el umbral en la mitad hacían falta unos 460
-       movimientos de dedo para que se abriera. Nadie rasca tanto. */
-    if(total && vacios/total > .35) abrir();
-  }catch(e){ /* el botón de destapar cubre este caso */ }
+    const d = ctx.getImageData(0,0,canvas.width,canvas.height).data;
+    let v=0,t=0;
+    for(let i=3;i<d.length;i+=4*48){ t++; if(d[i]<24) v++; }
+    if(t && v/t > .35) abrir();
+  }catch(e){}
 }
 
-/* El único momento con autoría: la lámina se va con desenfoque, la boleta
-   se endereza y el beneficio llega con la curva de salida. */
 function abrir(){
   if(abierta) return;
-  abierta = true;
-  raspando = false;
+  abierta = true; raspando = false;
   $("boleta").classList.add("abierta");
   if(navigator.vibrate && !menosMotion()){ try{ navigator.vibrate(18); }catch(e){} }
   setTimeout(entregar, menosMotion() ? 0 : 560);
@@ -592,43 +784,34 @@ function abrir(){
 function entregar(){
   const b = CONFIG.beneficio;
   if(CONFIG.unoPorDia) E.ultimoRaspado = hoy();
-
-  /* El cupón NO lleva sellos. El sello sale de un solo lado: el botón del
-     panel, que la cajera toca una vez por visita. Tenerlo en los dos lados
-     hacía que una visita sumara 2 sellos, o sea el doble de almuerzos
-     regalados de los calculados. */
-  E.cupones.unshift({
-    id: "c" + Date.now().toString(36),
-    ico: b.ico, que: b.que, fecha: hoy(), usado: false
-  });
+  /* El cupón NO lleva sellos: el sello sale solo del botón de la cajera.
+     Tenerlo en los dos lados hacía que una visita sumara 2 sellos. */
+  E.cupones.unshift({ id:"c"+Date.now().toString(36), ico:b.ico, que:b.que,
+    fecha:hoy(), usado:false });
   guardar(E);
   pintarSellos(false);
-
   $("antes").style.display = "none";
   $("btnDestapar").style.display = "none";
   $("pieInicio").style.display = "none";
   $("despues").style.display = "";
   pintarResena();
+  pintarCarta();
 }
 
-/* ===================================================================
-   RESEÑA — se pide, nunca se paga. Mismo mensaje para todos, sin
-   preguntar antes si quedó contento (eso sería review gating, también
-   prohibido por Google).
-   =================================================================== */
+/* ---------------- Reseña: se pide, nunca se paga ---------------- */
 function pintarResena(){
   const z = $("zonaResena");
   const link = (CONFIG.googleReview || "").trim();
   if(!link){ z.innerHTML = ""; return; }
   z.innerHTML =
-    '<div class="bloque">' +
+    '<div class="vidrio panel">' +
       '<h2>¿Qué tal todo?</h2>' +
       '<p class="menor">Si te gustó, cuéntalo en Google. A un restaurante de barrio una ' +
         'reseña le sirve más que cualquier anuncio. Y si algo no estuvo bien, escríbenos ' +
         'por WhatsApp y lo arreglamos.</p>' +
       '<a class="btn rojo" style="margin-top:13px" target="_blank" rel="noopener" href="' +
         esc(link) + '">Dejar mi reseña en Google</a>' +
-      '<a class="btn fantasma" style="margin-top:9px" target="_blank" rel="noopener" href="' +
+      '<a class="btn cristal" style="margin-top:9px" target="_blank" rel="noopener" href="' +
         'https://wa.me/' + esc(CONFIG.whatsapp) + '">Contarnos algo por WhatsApp</a>' +
       '<p class="menor" style="margin-top:11px;font-size:11.5px">La reseña es un favor, no ' +
         'un requisito. Tu beneficio y tus sellos no dependen de que la dejes, ni de lo que ' +
@@ -636,87 +819,92 @@ function pintarResena(){
     '</div>';
 }
 
-/* ---------------- Cupones guardados ---------------- */
+/* ---------------- La carta ----------------
+   Se pinta una vez, al destapar. No se actualiza a diario porque no hace
+   falta: los platos y los precios son fijos. Lo que sí cambia es qué hay
+   disponible cada día, y eso la página lo dice en vez de prometerlo. */
+function pintarCarta(){
+  const c = $("carta");
+  if(!c || !CONFIG.carta) return;
+  const pesos = n => "$" + n.toLocaleString("es-CO");
+  let h = '<h2 style="margin-bottom:4px">La carta</h2>' +
+    '<p class="menor" style="margin-bottom:14px">Los precios son estos. ' +
+    '<b>No todos los días están todos los platos</b>, así que pregunta por los de hoy.</p>';
+  CONFIG.carta.forEach(g => {
+    h += "<h3>" + esc(g.grupo) + "</h3>";
+    if(g.nota) h += '<div class="nota-grupo">' + esc(g.nota) + "</div>";
+    g.platos.forEach(p => {
+      h += '<div class="linea"><span class="pl">' + esc(p[0]) +
+           '</span><span class="pr">' + pesos(p[1]) + "</span></div>";
+    });
+  });
+  if(CONFIG.bandeja){
+    h += '<div class="bandeja"><span class="bt"><b>Bandeja especial</b><span>' +
+         esc(CONFIG.bandeja.texto) + '</span></span><span class="bp">' +
+         pesos(CONFIG.bandeja.precio) + "</span></div>";
+  }
+  if(CONFIG.bebidas && CONFIG.bebidas.length){
+    h += "<h3>Para tomar</h3>";
+    CONFIG.bebidas.forEach(b => {
+      h += '<div class="bebida"><b>' + esc(b[0]) + "</b><span>" + esc(b[1]) + "</span></div>";
+    });
+  }
+  c.innerHTML = h;
+}
+
+/* ---------------- Cupones ---------------- */
 function pintarLista(){
   const l = $("lista");
-  if(!E.cupones.length){
-    l.innerHTML = '<div class="vacio">Todavía no has raspado.</div>';
-    return;
-  }
+  if(!E.cupones.length){ l.innerHTML = '<div class="vacio">Todavía no has raspado.</div>'; return; }
   l.innerHTML = E.cupones.map(c =>
-    '<button class="cupon' + (c.usado ? " usado" : "") + '" data-id="' + esc(c.id) + '"' +
-      (c.usado ? " disabled" : "") + '>' +
-      '<span class="ico">' + esc(c.ico) + '</span>' +
-      '<span class="tx"><b>' + esc(c.que) + '</b><span>' +
-        (c.usado ? "Entregado" : "Sin usar · " + esc(c.fecha)) + '</span></span>' +
-      (c.usado ? "" : '<span class="accion">LO TOCA<br>LA CAJERA</span>') +
-    '</button>'
-  ).join("");
-
+    '<button class="cupon'+(c.usado?" usado":"")+'" data-id="'+esc(c.id)+'"'+(c.usado?" disabled":"")+'>'+
+      '<span class="ico">'+esc(c.ico)+'</span>'+
+      '<span class="tx"><b>'+esc(c.que)+'</b><span>'+
+        (c.usado?"Entregado":"Sin usar · "+esc(c.fecha))+'</span></span>'+
+      (c.usado?"":'<span class="accion">LO TOCA<br>LA CAJERA</span>')+
+    '</button>').join("");
   l.querySelectorAll(".cupon:not([disabled])").forEach(el => {
     el.addEventListener("click", () => {
-      if(!panelAbierto){
-        alert("Este botón lo toca la cajera cuando te entregue el beneficio.");
-        return;
-      }
+      if(!panelAbierto){ alert("Este botón lo toca la cajera cuando te entregue el beneficio."); return; }
       const c = E.cupones.find(x => x.id === el.dataset.id);
       if(!c || c.usado) return;
-      if(!confirm('¿Entregaste "' + c.que + '"?\n\nSe marca como usado y no se puede deshacer.')) return;
-      c.usado = true;   // marcar entregado NO pone sello: eso lo hace el botón +1
-      guardar(E);
-      pintarLista();
+      if(!confirm('¿Entregaste "'+c.que+'"?\n\nSe marca como usado y no se puede deshacer.')) return;
+      c.usado = true;            // marcar entregado NO pone sello
+      guardar(E); pintarLista();
     });
   });
 }
 
-/* ===================================================================
-   PANEL DEL PERSONAL
-   =================================================================== */
+/* ---------------- Panel del personal ---------------- */
 let panelAbierto = false;
-
 function abrirPanel(){
   pantalla("pPersonal");
   $("cerrado").style.display = panelAbierto ? "none" : "";
   $("abierto").style.display = panelAbierto ? "" : "none";
-  $("pinError").innerHTML = "";
-  $("pin").value = "";
+  $("pinError").innerHTML = ""; $("pin").value = "";
 }
-
-/* Mantener pulsado el logo 3 s: incómodo a propósito, para que ningún
-   cliente lo encuentre de casualidad. */
 (function(){
-  let t = null;
-  const logo = $("logo");
+  let t = null; const logo = $("logo");
   logo.addEventListener("pointerdown", () => { t = setTimeout(abrirPanel, 3000); });
-  ["pointerup","pointerleave","pointercancel"].forEach(e =>
-    logo.addEventListener(e, () => clearTimeout(t)));
+  ["pointerup","pointerleave","pointercancel"].forEach(e => logo.addEventListener(e, () => clearTimeout(t)));
   logo.addEventListener("keydown", e => { if(e.key === "Enter") abrirPanel(); });
 })();
 
 $("btnPin").addEventListener("click", () => {
-  if($("pin").value.trim() === String(CONFIG.claveDelMes)){
-    panelAbierto = true;
-    abrirPanel();
-  }else{
-    $("pinError").innerHTML = '<div class="aviso">Clave incorrecta.</div>';
-  }
+  if($("pin").value.trim() === String(CONFIG.claveDelMes)){ panelAbierto = true; abrirPanel(); }
+  else $("pinError").innerHTML = '<div class="aviso">Clave incorrecta.</div>';
 });
 
 $("btnSellar").addEventListener("click", () => {
-  /* El error típico de caja es tocar esto dos veces por la misma visita.
-     A 20 sellos el almuerzo, cada toque de más es plata regalada. */
   const ahora = Date.now();
   if(E.ultimoSello && ahora - E.ultimoSello < 120000){
     const seg = Math.round((ahora - E.ultimoSello)/1000);
-    if(!confirm("Ya le pusiste un sello a este celular hace " + seg + " segundos.\n\n" +
-                "¿Es otra visita distinta?")) return;
+    if(!confirm("Ya le pusiste un sello a este celular hace "+seg+" segundos.\n\n¿Es otra visita distinta?")) return;
   }
-  E.sellos += 1;
-  E.ultimoSello = ahora;
-  guardar(E);
-  pintarSellos(true);
-  $("sellarMsg").innerHTML = '<div class="aviso ok">Listo: este celular va en <b>' +
-    E.sellos + '</b> ' + (E.sellos === 1 ? "sello" : "sellos") + '.</div>';
+  E.sellos += 1; E.ultimoSello = ahora;
+  guardar(E); pintarSellos(true);
+  $("sellarMsg").innerHTML = '<div class="aviso ok">Listo: este celular va en <b>'+E.sellos+
+    '</b> '+(E.sellos===1?"sello":"sellos")+'.</div>';
 });
 
 $("btnIrMio").addEventListener("click", () => { pintarSellos(false); pintarLista(); pantalla("pMio"); });
@@ -724,31 +912,25 @@ $("btnSalir1").addEventListener("click", () => pantalla("pInicio"));
 $("btnSalir2").addEventListener("click", () => { panelAbierto = false; pantalla("pInicio"); });
 
 $("btnCalc").addEventListener("click", () => {
-  const visitas = Math.max(1, +$("cVisitas").value || 0);
-  const precio  = Math.max(1, +$("cPrecio").value  || 0);
-  const costoB  = Math.max(0, +$("cBenef").value   || 0);
-  const almuerzos = visitas / CONFIG.sellosParaAlmuerzo;
-  const cAlm = almuerzos * precio, cBen = visitas * costoB, venta = visitas * precio;
-  const fmt = n => "$" + Math.round(n).toLocaleString("es-CO");
-  const fila = (a,b) => '<div class="cuenta"><span>' + a + '</span><b>' + b + '</b></div>';
-  $("calcOut").innerHTML =
-    '<div style="margin-top:14px">' +
-      fila("Almuerzos gratis al mes", almuerzos.toFixed(1)) +
-      fila("Lo que cuestan", fmt(cAlm)) +
-      fila("Beneficio de la semana", fmt(cBen)) +
-      '<div class="cuenta total"><span>Total al mes</span><span>' + fmt(cAlm+cBen) + '</span></div>' +
-      '<p class="menor" style="margin-top:10px;font-size:12px">Es el <b>' +
-        (((cAlm+cBen)/venta)*100).toFixed(1) + '%</b> de la venta del mes. Un programa de ' +
-        'fidelización sano anda entre el 3% y el 6%. Si te sale más alto, súbele los sellos ' +
-        'que cuesta el almuerzo o escoge un beneficio más barato.</p>' +
-    '</div>';
+  const vis = Math.max(1,+$("cVisitas").value||0), pre = Math.max(1,+$("cPrecio").value||0),
+        cb = Math.max(0,+$("cBenef").value||0);
+  const alm = vis/CONFIG.sellosParaAlmuerzo, cA = alm*pre, cB = vis*cb, venta = vis*pre;
+  const fmt = n => "$"+Math.round(n).toLocaleString("es-CO");
+  const fila = (a,b) => '<div class="cuenta"><span>'+a+'</span><b>'+b+'</b></div>';
+  $("calcOut").innerHTML = '<div style="margin-top:14px">' +
+    fila("Almuerzos gratis al mes", alm.toFixed(1)) +
+    fila("Lo que cuestan", fmt(cA)) +
+    fila("Beneficio de la semana", fmt(cB)) +
+    '<div class="cuenta total"><span>Total al mes</span><span>'+fmt(cA+cB)+'</span></div>' +
+    '<p class="menor" style="margin-top:10px;font-size:12px">Es el <b>'+
+      (((cA+cB)/venta)*100).toFixed(1)+'%</b> de la venta del mes. Un programa de fidelización '+
+      'sano anda entre el 3% y el 6%. Si te sale más alto, súbele los sellos que cuesta el '+
+      'almuerzo o escoge un beneficio más barato.</p></div>';
 });
 
-/* ===================================================================
-   NAVEGACIÓN E INTERACCIÓN
-   =================================================================== */
+/* ---------------- Navegación ---------------- */
 $("btnDestapar").addEventListener("click", abrir);
-$("chipSellos").addEventListener("click", () => { pintarSellos(false); pintarLista(); pantalla("pMio"); });
+$("chip").addEventListener("click", () => { pintarSellos(false); pintarLista(); pantalla("pMio"); });
 $("btnVerSellos").addEventListener("click", () => { pintarSellos(false); pintarLista(); pantalla("pMio"); });
 $("btnVolver").addEventListener("click", () => pantalla("pInicio"));
 
@@ -761,48 +943,55 @@ $("btnVolver").addEventListener("click", () => pantalla("pInicio"));
   });
   c.addEventListener("pointermove", raspar);
   ["pointerup","pointercancel"].forEach(e => c.addEventListener(e, () => {
-    raspando = false;
-    if(!abierta) medir();
+    raspando = false; if(!abierta) medir();
   }));
 })();
 
 let tRe = null;
 window.addEventListener("resize", () => {
   if(abierta || !$("pInicio").classList.contains("on")) return;
-  clearTimeout(tRe);
-  tRe = setTimeout(montar, 240);
+  clearTimeout(tRe); tRe = setTimeout(montar, 240);
 });
 
 /* ---------------- Términos (Ley 1480 de 2011, art. 33) ---------------- */
 (function(){
-  const t =
-    "<b>Condiciones.</b> Esto <b>no es un sorteo</b>: el beneficio es el mismo para todas " +
-    "las personas y está anunciado de antemano, no se decide por azar. Vigencia del <b>" +
-    CONFIG.vigenciaDesde + "</b> al <b>" + CONFIG.vigenciaHasta + "</b>. Un raspado por " +
-    "celular por día. El beneficio se reclama únicamente en <b>" + CONFIG.direccion + "</b>, " +
-    "presentando esta pantalla junto con el pedido del almuerzo; no es transferible ni " +
-    "canjeable por dinero. " +
-    "<b>Sellos:</b> un sello por visita, puesto por el personal en el local cuando se " +
-    "confirma el consumo; al completar <b>" + CONFIG.sellosParaAlmuerzo + "</b> sellos se " +
-    "obtiene un almuerzo del día sin costo. Los sellos no se compran, no se transfieren y " +
-    "no se dan por dejar reseñas. <b>Esta página no guarda ningún dato personal:</b> los " +
-    "sellos y los beneficios se guardan solo en este celular, así que si borras los datos " +
-    "del navegador se pierden. Restaurante Aury · " + CONFIG.direccion + " · WhatsApp " +
-    CONFIG.whatsapp.replace(/^57/, "") + ".";
+  const t = "<b>Condiciones.</b> Esto <b>no es un sorteo</b>: el beneficio es el mismo para " +
+    "todas las personas y está anunciado de antemano, no se decide por azar. Vigencia del <b>" +
+    CONFIG.vigenciaDesde + "</b> al <b>" + CONFIG.vigenciaHasta + "</b>. Un raspado por celular " +
+    "por día. El beneficio se reclama únicamente en <b>" + CONFIG.direccion + "</b>, presentando " +
+    "esta pantalla junto con el pedido del almuerzo; no es transferible ni canjeable por dinero. " +
+    "<b>Sellos:</b> un sello por visita, puesto por el personal en el local cuando se confirma " +
+    "el consumo; al completar <b>" + CONFIG.sellosParaAlmuerzo + "</b> sellos se obtiene un " +
+    "almuerzo del día sin costo. Los sellos no se compran, no se transfieren y no se dan por " +
+    "dejar reseñas. <b>Esta página no guarda ningún dato personal:</b> los sellos y los " +
+    "beneficios se guardan solo en este celular, así que si borras los datos del navegador se " +
+    "pierden. Restaurante Aury · " + CONFIG.direccion + " · WhatsApp " +
+    CONFIG.whatsapp.replace(/^57/,"") + ".";
   $("tycInicio").innerHTML = t;
   $("tycMio").innerHTML = t;
   $("pieWa").innerHTML = '<a target="_blank" rel="noopener" href="https://wa.me/' +
-    CONFIG.whatsapp + '">WhatsApp ' + CONFIG.whatsapp.replace(/^57/, "") + '</a>';
+    CONFIG.whatsapp + '">WhatsApp ' + CONFIG.whatsapp.replace(/^57/,"") + '</a>';
 })();
 
-/* ---------------- Arranque ---------------- */
 pintarSellos(false);
 if(CONFIG.unoPorDia && E.ultimoRaspado === hoy()){
-  /* Ya raspó hoy: no se le muestra la boleta otra vez, se le muestra su tarjeta. */
-  pintarLista();
-  pantalla("pMio");
-  $("mFaltan").insertAdjacentHTML("afterend",
-    '<div class="aviso">Ya raspaste hoy. Vuelve mañana ❤️</div>');
+  /* Ya raspó hoy: se le muestra SU BENEFICIO en la pantalla de inicio, con
+     la boleta ya destapada. Antes saltaba a "Mi tarjeta", que esconde la
+     banda de comida: el que volvía a abrir la página no veía ni la foto ni
+     lo que se había ganado, solo una grilla de sellos vacíos. */
+  const b = CONFIG.beneficio;
+  $("bIco").textContent = b.ico;
+  $("bQue").textContent = b.que;
+  $("bNota").textContent = b.nota || "";
+  $("boleta").classList.add("abierta");
+  $("antes").style.display = "none";
+  $("btnDestapar").style.display = "none";
+  $("pieInicio").style.display = "none";
+  $("despues").style.display = "";
+  pintarResena();
+  pintarCarta();
+  $("despues").insertAdjacentHTML("afterbegin",
+    '<div class="aviso" style="margin:0 0 4px">Ya raspaste hoy. Vuelve mañana ❤️</div>');
 }else{
   montar();
 }

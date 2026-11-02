@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Raspa y descubre · Restaurante Aury</title>
+<meta name="description" content="Raspa y descubre el beneficio de la semana en Restaurante Aury. Se te guarda en el celular.">
+<meta name="theme-color" content="#2a1206">
+<link rel="icon" href="img/logo.jpg">
+<link rel="apple-touch-icon" href="img/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================================
+   Paleta oficial de Restaurante Aury (docs/brand-guidelines.md)
+   Contraste medido contra el marrón y contra la crema:
+     crema 100%  sobre marrón  14.78:1
+     crema  .58  sobre marrón   5.4:1   <- piso del texto chico
+     naranja     sobre marrón   8.38:1
+     marrón      sobre crema   14.78:1
+     rojo marca  sobre crema    3.92:1  <- NO sirve para texto chico
+     rojo texto  sobre crema    5.34:1  <- el que se usa en texto chico
+   =========================================================== */
+:root{
+  --naranja:#f2a20f;
+  --rojo:#d8362a;          /* el rojo de marca: superficies y botones grandes */
+  --rojo-texto:#b5281e;    /* el mismo rojo, más profundo, para texto chico sobre crema */
+  --crema:#f8e9cf;
+  --marron:#2a1206;
+  --marron-2:#4a2812;
+  --crema-sombra:#d9c6a4;
+
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --body:"Public Sans",system-ui,sans-serif;
+
+  /* Una sola curva de llegada, la de desaceleración natural. Sin rebotes. */
+  --salida:cubic-bezier(.16,1,.3,1);
+  --t-feedback:140ms;
+  --t-estado:220ms;
+  --t-foco:600ms;
+
+  --radio:14px;            /* el piso de calidad pide 12-16 en tarjetas */
+  --radio-chico:11px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+body{
+  font-family:var(--body);background:var(--marron);color:var(--crema);
+  line-height:1.5;min-height:100svh;display:flex;flex-direction:column;align-items:center;
+  padding:0 16px calc(28px + env(safe-area-inset-bottom));overflow-x:hidden;
+}
+.app{width:100%;max-width:420px;display:flex;flex-direction:column;flex:1}
+
+/* ---------------- Encabezado ---------------- */
+.top{display:flex;align-items:center;gap:11px;padding:calc(14px + env(safe-area-inset-top)) 0 12px}
+.top img{width:40px;height:40px;border-radius:50%;object-fit:cover;
+  border:2px solid var(--naranja);flex:none;cursor:pointer}
+.top .marca{font-family:var(--display);font-weight:800;font-size:15.5px;
+  letter-spacing:-.01em;line-height:1.15}
+.top .sub{font-size:11.5px;color:rgba(248,233,207,.62)}
+.sellos-chip{margin-left:auto;display:flex;align-items:center;gap:7px;background:none;
+  border:1px solid rgba(248,233,207,.2);padding:6px 12px 6px 9px;border-radius:999px;
+  color:var(--crema);font-family:var(--display);font-weight:700;font-size:13.5px;
+  min-height:40px;cursor:pointer;transition:border-color var(--t-feedback) var(--salida)}
+.sellos-chip b{color:var(--naranja);font-size:15.5px}
+.sellos-chip:active{transform:scale(.97)}
+
+/* ---------------- Pantallas: sin animación de entrada ----------------
+   El piso de calidad prohíbe repetir la misma entrada en cada pantalla.
+   El único momento con autoría es destapar la boleta.                  */
+.pantalla{display:none;flex:1;flex-direction:column}
+.pantalla.on{display:flex}
+
+h1{font-family:var(--display);font-weight:800;font-size:29px;line-height:1.1;letter-spacing:-.028em}
+h2{font-family:var(--display);font-weight:700;font-size:18px;line-height:1.22;letter-spacing:-.018em}
+.lead{font-size:14.5px;color:rgba(248,233,207,.76);margin-top:8px}
+.menor{font-size:13px;color:rgba(248,233,207,.7)}
+
+/* ---------------- Botones ---------------- */
+.btn{font-family:var(--display);font-weight:800;font-size:16.5px;background:var(--naranja);
+  color:var(--marron);border:0;border-radius:var(--radio);padding:16px 22px;min-height:54px;
+  width:100%;display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  cursor:pointer;text-decoration:none;
+  transition:transform var(--t-feedback) var(--salida),opacity var(--t-feedback) linear}
+.btn:active{transform:scale(.975)}
+.btn[disabled],.btn[aria-disabled=true]{opacity:.42;pointer-events:none}
+.btn.rojo{background:var(--rojo);color:#fff}
+.btn.fantasma{background:none;color:var(--crema);border:1.5px solid rgba(248,233,207,.28);
+  font-weight:700;font-size:15px;min-height:48px;padding:13px 18px}
+.btn:focus-visible,.top img:focus-visible,.sellos-chip:focus-visible,
+input:focus-visible,[role=button]:focus-visible{outline:3px solid var(--naranja);outline-offset:3px}
+
+/* ================= LA BOLETA: el objeto protagonista ================= */
+.boleta-zona{position:relative;padding:4px 0 2px}
+.boleta{
+  position:relative;width:100%;aspect-ratio:1/1.06;
+  background:var(--crema);color:var(--marron);border-radius:var(--radio);
+  /* una sola declaración de elevación: sombra con desplazamiento y difuminado */
+  box-shadow:0 2px 0 var(--crema-sombra),0 20px 40px rgba(0,0,0,.45);
+  overflow:hidden;display:grid;place-items:center;
+  transform:rotate(-1.2deg);
+  transition:transform var(--t-foco) var(--salida);
+}
+.boleta.abierta{transform:rotate(0deg)}
+/* muescas de boleta troquelada: el detalle que la vuelve papel y no un div */
+.boleta::before,.boleta::after{content:"";position:absolute;width:20px;height:20px;
+  border-radius:50%;background:var(--marron);top:50%;transform:translateY(-50%);z-index:5}
+.boleta::before{left:-10px}
+.boleta::after{right:-10px}
+
+.debajo{position:absolute;inset:0;display:grid;place-items:center;align-content:center;
+  text-align:center;padding:30px 26px;gap:2px}
+.debajo .eti{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--rojo-texto)}
+.debajo .ico{font-size:40px;line-height:1;margin:8px 0 2px}
+.debajo .que{font-family:var(--display);font-weight:800;font-size:30px;line-height:1.04;
+  letter-spacing:-.032em}
+.debajo .nota{font-size:13.5px;color:var(--marron-2);margin-top:10px;max-width:24ch}
+/* el beneficio llega con la curva de salida, no aparece de golpe */
+.boleta.abierta .debajo{animation:llega 520ms var(--salida) 110ms both}
+@keyframes llega{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:none}}
+
+#capa{position:absolute;inset:0;width:100%;height:100%;z-index:3;
+  touch-action:none;cursor:grab;transition:opacity 420ms var(--salida),filter 420ms var(--salida)}
+.boleta.abierta #capa{opacity:0;filter:blur(4px);pointer-events:none}
+.pista{position:absolute;inset:0;z-index:2;display:grid;place-items:center;pointer-events:none;
+  text-align:center;font-family:var(--display);font-weight:800;font-size:16px;letter-spacing:.11em;
+  text-transform:uppercase;color:rgba(42,18,6,.46);transition:opacity 200ms linear}
+.boleta.abierta .pista,.pista.ida{opacity:0}
+
+/* ================= TARJETA DE SELLOS =================
+   El producto es la tarjeta de sellos de papel, pero que no se pierde.
+   Entonces se dibuja la tarjeta, no una barra de progreso.             */
+.tarjeta{background:rgba(248,233,207,.055);border:1px solid rgba(248,233,207,.15);
+  border-radius:var(--radio);padding:16px}
+.tarjeta-cab{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.tarjeta-cab .n{font-family:var(--display);font-weight:800;font-size:26px;color:var(--naranja);
+  line-height:1}
+.tarjeta-cab .de{font-size:13px;color:rgba(248,233,207,.7)}
+.sellos{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}
+.sello{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
+  border:1.5px dashed rgba(248,233,207,.26);color:rgba(248,233,207,.3)}
+.sello svg{width:56%;height:56%;display:block}
+.sello.lleno{border-style:solid;border-color:var(--naranja);background:var(--naranja);
+  color:var(--marron)}
+.sello.nuevo{animation:sella 460ms var(--salida) both}
+@keyframes sella{
+  from{transform:scale(.2) rotate(-18deg);opacity:0}
+  to{transform:none;opacity:1}
+}
+.sellos-pie{font-size:13px;color:rgba(248,233,207,.72);margin-top:13px}
+.sellos-pie b{color:var(--naranja)}
+
+/* ================= Bloques de contenido =================
+   Texto plano sobre el fondo, no una pila de tarjetas iguales:
+   el piso de calidad trata la tarjeta como el contenedor perezoso.     */
+.bloque{padding:18px 0;border-top:1px solid rgba(248,233,207,.12)}
+.bloque:first-of-type{border-top:0}
+.bloque h2+p{margin-top:7px}
+
+.sello-ok{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);
+  font-weight:800;font-size:14.5px;color:#7ddc9f}
+
+/* cupones */
+.cupon{display:flex;align-items:center;gap:13px;background:var(--crema);color:var(--marron);
+  border-radius:var(--radio-chico);padding:13px 15px;margin-top:9px;width:100%;
+  text-align:left;border:0;font-family:var(--body);cursor:pointer}
+.cupon .ico{font-size:23px;flex:none}
+.cupon .tx{flex:1;min-width:0}
+.cupon .tx b{font-family:var(--display);font-size:15.5px;display:block;letter-spacing:-.012em}
+.cupon .tx span{font-size:12px;color:var(--marron-2)}
+.cupon .accion{font-size:10.5px;font-weight:700;color:var(--rojo-texto);
+  letter-spacing:.06em;text-align:right;line-height:1.3}
+.cupon.usado{opacity:.5;cursor:default}
+.cupon.usado .tx b{text-decoration:line-through}
+.vacio{text-align:center;padding:30px 18px;color:rgba(248,233,207,.6);font-size:14px}
+
+.pie{margin-top:auto;padding-top:24px;text-align:center;font-size:12px;
+  color:rgba(248,233,207,.58);line-height:1.6}
+.pie a{color:rgba(248,233,207,.72)}
+
+input[type=text],input[type=number]{width:100%;font-family:var(--body);font-size:16px;
+  background:rgba(0,0,0,.3);color:var(--crema);border:1.5px solid rgba(248,233,207,.22);
+  border-radius:var(--radio-chico);padding:13px 14px;min-height:48px}
+input::placeholder{color:rgba(248,233,207,.5)}
+label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgba(248,233,207,.74)}
+
+.aviso{background:rgba(216,54,42,.16);border:1px solid rgba(216,54,42,.45);
+  border-radius:var(--radio-chico);padding:12px 14px;font-size:13.5px;margin-top:12px}
+.aviso.ok{background:rgba(47,125,79,.18);border-color:rgba(47,125,79,.5)}
+
+.tyc{font-size:11.5px;color:rgba(248,233,207,.58);margin-top:18px;line-height:1.7;
+  padding-top:14px;border-top:1px solid rgba(248,233,207,.12)}
+.tyc b{color:rgba(248,233,207,.8)}
+
+.cuenta{display:flex;justify-content:space-between;font-size:13px;margin-top:5px}
+.cuenta.total{border-top:1px solid rgba(248,233,207,.18);margin-top:11px;padding-top:11px;
+  font-family:var(--display);font-weight:800;font-size:15px}
+.cuenta.total span:last-child{color:var(--naranja)}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:1ms!important;animation-duration:1ms!important}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- plato de sopa con vapor: el sello viene del mundo del restaurante -->
+  <symbol id="g-plato" viewBox="0 0 24 24">
+    <path d="M3.2 11.4h17.6a8.8 8.8 0 0 1-17.6 0z" fill="currentColor"/>
+    <path d="M9 7.6c0-1.3 1.6-1.4 1.6-2.8M13.4 7.6c0-1.3 1.6-1.4 1.6-2.8"
+          fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  </symbol>
+</defs></svg>
+
+<div class="app">
+
+  <header class="top">
+    <img id="logo" src="img/logo.jpg" alt="Restaurante Aury" tabindex="0"
+         aria-label="Restaurante Aury. Personal: mantener pulsado tres segundos para abrir el panel.">
+    <div>
+      <div class="marca">Restaurante Aury</div>
+      <div class="sub">Comida casera · Cartagena</div>
+    </div>
+    <button class="sellos-chip" id="chipSellos" aria-label="Ver mi tarjeta de sellos">
+      <svg width="16" height="16" aria-hidden="true" style="color:var(--naranja)"><use href="#g-plato"/></svg>
+      <span><b id="chipNum">0</b>/<span id="chipMeta">20</span></span>
+    </button>
+  </header>
+
+  <!-- ===================== INICIO: la boleta es lo primero ===================== -->
+  <section class="pantalla on" id="pInicio">
+
+    <div id="antes">
+      <h1>Raspa y descubre<br>lo de esta semana</h1>
+      <p class="lead">Es lo mismo para todos, sin sorteo ni suerte.
+        Pasa el dedo por la boleta y <b>se te guarda en el celular</b>.</p>
+    </div>
+
+    <div class="boleta-zona">
+      <div class="boleta" id="boleta">
+        <div class="debajo">
+          <div class="eti">Esta semana</div>
+          <div class="ico" id="bIco"></div>
+          <div class="que" id="bQue">—</div>
+          <div class="nota" id="bNota"></div>
+        </div>
+        <div class="pista" id="pista">Rasca aquí</div>
+        <canvas id="capa" aria-label="Capa para raspar"></canvas>
+      </div>
+    </div>
+
+    <button class="btn fantasma" id="btnDestapar" style="margin-top:14px">
+      No puedo raspar, destápalo
+    </button>
+
+    <!-- lo que aparece después de destapar -->
+    <div id="despues" style="display:none">
+      <div class="bloque">
+        <div class="sello-ok">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          Guardado en tu celular
+        </div>
+        <p class="menor" style="margin-top:7px">No se te va a perder. Lo encuentras arriba,
+          en tu tarjeta de sellos, cuando vengas.</p>
+      </div>
+
+      <div class="bloque">
+        <h2>¿Cómo lo reclamo?</h2>
+        <p class="menor">Muéstrale esta pantalla a la cajera cuando pidas tu almuerzo.
+          Ella te lo marca y de paso te pone el sello de la visita.</p>
+      </div>
+
+      <div id="zonaResena"></div>
+
+      <button class="btn" id="btnVerSellos" style="margin-top:16px">Ver mi tarjeta de sellos</button>
+      <div class="tyc" id="tycInicio"></div>
+    </div>
+
+    <div class="pie" id="pieInicio">
+      Cocinado por madres cabeza de hogar,<br>en la herencia de la abuela Aura.<br>
+      <span id="pieWa"></span>
+    </div>
+  </section>
+
+  <!-- ===================== MI TARJETA ===================== -->
+  <section class="pantalla" id="pMio">
+    <div style="padding:12px 0 14px"><h1 style="font-size:25px">Mi tarjeta</h1></div>
+
+    <div class="tarjeta">
+      <div class="tarjeta-cab">
+        <div><span class="n" id="mNum">0</span> <span class="de">de <b id="mMeta">20</b> sellos</span></div>
+      </div>
+      <div class="sellos" id="grid" aria-live="polite"></div>
+      <div class="sellos-pie" id="mFaltan"></div>
+    </div>
+
+    <div class="bloque" style="margin-top:6px">
+      <h2>Lo que tengo guardado</h2>
+      <div id="lista" style="margin-top:4px"></div>
+    </div>
+
+    <button class="btn fantasma" id="btnVolver">Volver</button>
+    <div class="tyc" id="tycMio"></div>
+  </section>
+
+  <!-- ===================== PANEL DEL PERSONAL ===================== -->
+  <section class="pantalla" id="pPersonal">
+    <div style="padding:12px 0 2px">
+      <h1 style="font-size:25px">Panel del personal</h1>
+      <p class="lead">Solo para quien atiende la caja.</p>
+    </div>
+
+    <div id="cerrado">
+      <label for="pin">Clave del mes</label>
+      <input type="text" id="pin" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="····">
+      <button class="btn" id="btnPin" style="margin-top:12px">Entrar</button>
+      <div id="pinError"></div>
+      <button class="btn fantasma" id="btnSalir1" style="margin-top:12px">Volver</button>
+    </div>
+
+    <div id="abierto" style="display:none">
+      <div class="bloque">
+        <h2>Ponerle el sello de la visita</h2>
+        <p class="menor">En el celular del cliente, delante de ti, cuando ya pagó.
+          Un sello por visita.</p>
+        <button class="btn" id="btnSellar" style="margin-top:13px">+1 sello a este celular</button>
+        <div id="sellarMsg"></div>
+      </div>
+
+      <div class="bloque">
+        <h2>Marcar como entregado</h2>
+        <p class="menor">Abre la tarjeta del cliente y toca lo que le acabas de entregar.</p>
+        <button class="btn fantasma" id="btnIrMio" style="margin-top:13px">Abrir su tarjeta</button>
+      </div>
+
+      <div class="bloque">
+        <h2>¿Cuánto me cuesta?</h2>
+        <p class="menor">Para decidir si está muy regalado.</p>
+        <label for="cVisitas">Visitas al mes (más o menos)</label>
+        <input type="number" id="cVisitas" value="300" min="1" max="100000">
+        <label for="cPrecio">Precio del almuerzo (COP)</label>
+        <input type="number" id="cPrecio" value="15000" min="1000" max="200000">
+        <label for="cBenef">Lo que te cuesta el beneficio de la semana (COP)</label>
+        <input type="number" id="cBenef" value="2000" min="0" max="200000">
+        <button class="btn fantasma" id="btnCalc" style="margin-top:13px">Calcular</button>
+        <div id="calcOut"></div>
+      </div>
+
+      <button class="btn fantasma" id="btnSalir2">Salir del panel</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ===================================================================
+   ░░ CONFIGURACIÓN — LO ÚNICO QUE HAY QUE EDITAR ░░
+   ===================================================================
+
+   ⚠️ REGLA LEGAL QUE NO SE PUEDE ROMPER — leer antes de tocar esto.
+
+   Esto NO es un sorteo y no puede volverse uno. En Colombia un premio
+   decidido por azar es un "juego promocional" (Ley 643 de 2001, arts. 5
+   y 31) y necesita autorización previa de la Lotería de Bolívar más el
+   14% del plan de premios. La excepción que tenían los comerciantes fue
+   DEROGADA por el art. 94 de la Ley 1753 de 2015.
+
+   Por eso el beneficio es UNO SOLO, el mismo para todos y anunciado de
+   antemano. Si algún día se pone una lista de premios y se sortea cuál
+   toca, aunque todos ganen algo, esto pasa a ser juego promocional.
+
+   ⚠️ La reseña de Google se PIDE, nunca se PAGA. Nada de sellos,
+   descuentos ni beneficios a cambio de reseñar, y no se filtra a quién
+   se le pide según si quedó contento. Google lo prohíbe expresamente
+   (support.google.com/contributionpolicy/answer/7400114) y la sanción
+   cae sobre el perfil del negocio, no sobre la reseña.
+   =================================================================== */
+const CONFIG = {
+
+  whatsapp: "573002679611",
+  /* La Ley 1480 de 2011 exige decir DÓNDE se reclama, no basta "en el local". */
+  direccion: "Cl. 31b #52-29, Villa Olímpica, Cartagena",
+
+  /* --- EL BENEFICIO DE LA SEMANA ---------------------------------
+     Uno solo, igual para todos. Se puede cambiar cada semana; lo que
+     no se puede es ofrecer varios y sortear cuál sale.             */
+  beneficio: {
+    ico:  "🥤",
+    que:  "Jugo natural gratis",
+    nota: "Con tu corrientazo de esta semana."
+  },
+
+  /* --- SELLOS (determinista, no necesita permiso) --- */
+  sellosParaAlmuerzo: 20,
+  claveDelMes: "2611",        // CÁMBIALA cada mes
+
+  /* --- Reseña en Google -------------------------------------------
+     PENDIENTE: pegar el link corto de reseñas de Aury.
+     Perfil de Empresa de Google → Inicio → "Pide reseñas" → copiar.
+     Queda como https://g.page/r/XXXXXXXX/review
+     Mientras esté vacío la pantalla de reseña no se muestra, para no
+     dejar un botón roto.                                            */
+  googleReview: "",
+
+  /* --- Vigencia: la Ley 1480 de 2011 (art. 33) obliga a publicarla.
+     Sin fecha de cierre la promoción queda vigente indefinidamente
+     hasta publicar la revocatoria por el mismo medio.               */
+  vigenciaDesde: "3 de noviembre de 2026",
+  vigenciaHasta: "31 de diciembre de 2026",
+
+  unoPorDia: true
+};
+
+/* =================================================================== */
+(function(){
+"use strict";
+
+const LLAVE = "aury_raspa_v3";
+const mem = {};
+function leer(){
+  try{ const v = localStorage.getItem(LLAVE); if(v) return JSON.parse(v); }catch(e){}
+  return mem.d || null;
+}
+function guardar(d){
+  mem.d = d;
+  try{ localStorage.setItem(LLAVE, JSON.stringify(d)); }catch(e){}
+}
+function inicial(){ return { sellos:0, cupones:[], ultimoRaspado:null, ultimoSello:null }; }
+let E = leer() || inicial();
+if(typeof E.sellos !== "number" || !Array.isArray(E.cupones)) E = inicial();
+
+const $ = id => document.getElementById(id);
+const hoy = () => new Date().toLocaleDateString("sv-SE");
+function esc(s){ return String(s).replace(/[&<>"']/g,
+  c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+const menosMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function pantalla(id){
+  document.querySelectorAll(".pantalla").forEach(s => s.classList.toggle("on", s.id === id));
+  window.scrollTo(0, 0);
+}
+
+/* ---------------- La tarjeta de sellos ---------------- */
+let sellosPintados = -1;
+function pintarSellos(nuevo){
+  const meta = CONFIG.sellosParaAlmuerzo;
+  $("chipNum").textContent = E.sellos;
+  $("chipMeta").textContent = meta;
+  $("mNum").textContent = E.sellos;
+  $("mMeta").textContent = meta;
+
+  const g = $("grid");
+  if(sellosPintados !== E.sellos || !g.children.length){
+    g.innerHTML = "";
+    for(let i = 0; i < meta; i++){
+      const d = document.createElement("div");
+      const lleno = i < E.sellos;
+      d.className = "sello" + (lleno ? " lleno" : "") +
+        (lleno && nuevo && i === E.sellos - 1 && !menosMotion() ? " nuevo" : "");
+      d.innerHTML = lleno ? '<svg viewBox="0 0 24 24"><use href="#g-plato"/></svg>' : "";
+      g.appendChild(d);
+    }
+    sellosPintados = E.sellos;
+  }
+
+  const faltan = Math.max(0, meta - E.sellos);
+  $("mFaltan").innerHTML = faltan === 0
+    ? "<b>¡Tarjeta llena! Pídele tu almuerzo gratis a la cajera.</b>"
+    : "Te faltan <b>" + faltan + "</b> " + (faltan === 1 ? "sello" : "sellos") +
+      " para el almuerzo gratis.";
+}
+
+/* ===================================================================
+   LA BOLETA — revela un beneficio YA DETERMINADO. No sortea nada.
+   =================================================================== */
+let canvas = null, ctx = null, abierta = false, raspando = false;
+
+function montar(reintento){
+  const b = CONFIG.beneficio;
+  abierta = false;
+  $("boleta").classList.remove("abierta");
+  $("pista").classList.remove("ida");
+  $("bIco").textContent = b.ico;
+  $("bQue").textContent = b.que;
+  $("bNota").textContent = b.nota || "";
+
+  canvas = $("capa");
+  const r = $("boleta").getBoundingClientRect();
+  /* Si todavía no hay layout, reintentar. Antes esto hacía return a secas
+     y la boleta quedaba sin capa: el cliente veía el premio destapado. */
+  if(!r.width){
+    if((reintento || 0) < 12) setTimeout(() => montar((reintento || 0) + 1), 60);
+    return;
+  }
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = Math.round(r.width * dpr);
+  canvas.height = Math.round(r.height * dpr);
+  ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  /* Volver a modo pintar. Al final de esta función el contexto queda en
+     "destination-out" (borrar), y montar() se vuelve a llamar en cada resize:
+     sin esta línea, el fillRect de abajo BORRA la lámina en vez de pintarla y
+     la boleta aparece destapada sola. En un celular pasa al hacer scroll,
+     cuando se esconde la barra de direcciones y eso dispara un resize. */
+  ctx.globalCompositeOperation = "source-over";
+  ctx.clearRect(0, 0, r.width, r.height);
+
+  const g = ctx.createLinearGradient(0, 0, r.width, r.height);
+  g.addColorStop(0,"#b9a98f"); g.addColorStop(.42,"#d6c9b2"); g.addColorStop(.52,"#efe6d4");
+  g.addColorStop(.62,"#d6c9b2"); g.addColorStop(1,"#ad9d83");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, r.width, r.height);
+
+  ctx.globalAlpha = .07;
+  for(let i = 0; i < 1100; i++){
+    ctx.fillStyle = i % 2 ? "#6b5c45" : "#fff";
+    ctx.fillRect(Math.random()*r.width, Math.random()*r.height, 2, 2);
+  }
+  /* "RASCA AQUÍ" va PINTADO EN LA LÁMINA, como en una boleta de verdad.
+     Antes estaba en una capa del DOM debajo del canvas opaco, así que no
+     se veía nunca: el cliente abría la página y encontraba un rectángulo
+     crema en blanco, sin saber que había que raspar. */
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = "rgba(42,18,6,.40)";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "800 17px system-ui, sans-serif";
+  const cx0 = r.width/2, cy0 = r.height/2;
+  ctx.fillText("R A S C A   A Q U Í", cx0, cy0);
+  ctx.font = "600 13px system-ui, sans-serif";
+  ctx.fillStyle = "rgba(42,18,6,.30)";
+  ctx.fillText("pasa el dedo por encima", cx0, cy0 + 26);
+  ctx.strokeStyle = "rgba(42,18,6,.26)";
+  ctx.lineWidth = 2; ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(cx0-26, cy0+52); ctx.lineTo(cx0+26, cy0+52);
+  ctx.moveTo(cx0+16, cy0+45); ctx.lineTo(cx0+26, cy0+52);
+  ctx.moveTo(cx0+16, cy0+59); ctx.lineTo(cx0+26, cy0+52);
+  ctx.stroke();
+
+  /* El pincel tiene que ser OPACO. En destination-out se borra tanto como
+     el alfa del relleno: si queda el rgba(...,.30) del subtítulo de arriba,
+     cada pasada del dedo borra solo un 30% y la boleta se siente muerta. */
+  ctx.fillStyle = "#000";
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "destination-out";
+  raspar.n = 0;
+}
+
+function raspar(ev){
+  if(!raspando || abierta || !ctx) return;
+  const r = canvas.getBoundingClientRect();
+  ctx.beginPath();
+  ctx.arc(ev.clientX - r.left, ev.clientY - r.top, 32, 0, Math.PI*2);
+  ctx.fill();
+  $("pista").classList.add("ida");
+  if(++raspar.n % 6 === 0) medir();
+}
+raspar.n = 0;
+
+/* Muestrea una rejilla: leer el canvas entero en cada movimiento va a
+   tirones en celulares de gama baja. */
+function medir(){
+  try{
+    const d = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    let vacios = 0, total = 0;
+    for(let i = 3; i < d.length; i += 4*48){ total++; if(d[i] < 24) vacios++; }
+    /* 35%, no 50%. Medido: con el umbral en la mitad hacían falta unos 460
+       movimientos de dedo para que se abriera. Nadie rasca tanto. */
+    if(total && vacios/total > .35) abrir();
+  }catch(e){ /* el botón de destapar cubre este caso */ }
+}
+
+/* El único momento con autoría: la lámina se va con desenfoque, la boleta
+   se endereza y el beneficio llega con la curva de salida. */
+function abrir(){
+  if(abierta) return;
+  abierta = true;
+  raspando = false;
+  $("boleta").classList.add("abierta");
+  if(navigator.vibrate && !menosMotion()){ try{ navigator.vibrate(18); }catch(e){} }
+  setTimeout(entregar, menosMotion() ? 0 : 560);
+}
+
+function entregar(){
+  const b = CONFIG.beneficio;
+  if(CONFIG.unoPorDia) E.ultimoRaspado = hoy();
+
+  /* El cupón NO lleva sellos. El sello sale de un solo lado: el botón del
+     panel, que la cajera toca una vez por visita. Tenerlo en los dos lados
+     hacía que una visita sumara 2 sellos, o sea el doble de almuerzos
+     regalados de los calculados. */
+  E.cupones.unshift({
+    id: "c" + Date.now().toString(36),
+    ico: b.ico, que: b.que, fecha: hoy(), usado: false
+  });
+  guardar(E);
+  pintarSellos(false);
+
+  $("antes").style.display = "none";
+  $("btnDestapar").style.display = "none";
+  $("pieInicio").style.display = "none";
+  $("despues").style.display = "";
+  pintarResena();
+}
+
+/* ===================================================================
+   RESEÑA — se pide, nunca se paga. Mismo mensaje para todos, sin
+   preguntar antes si quedó contento (eso sería review gating, también
+   prohibido por Google).
+   =================================================================== */
+function pintarResena(){
+  const z = $("zonaResena");
+  const link = (CONFIG.googleReview || "").trim();
+  if(!link){ z.innerHTML = ""; return; }
+  z.innerHTML =
+    '<div class="bloque">' +
+      '<h2>¿Qué tal todo?</h2>' +
+      '<p class="menor">Si te gustó, cuéntalo en Google. A un restaurante de barrio una ' +
+        'reseña le sirve más que cualquier anuncio. Y si algo no estuvo bien, escríbenos ' +
+        'por WhatsApp y lo arreglamos.</p>' +
+      '<a class="btn rojo" style="margin-top:13px" target="_blank" rel="noopener" href="' +
+        esc(link) + '">Dejar mi reseña en Google</a>' +
+      '<a class="btn fantasma" style="margin-top:9px" target="_blank" rel="noopener" href="' +
+        'https://wa.me/' + esc(CONFIG.whatsapp) + '">Contarnos algo por WhatsApp</a>' +
+      '<p class="menor" style="margin-top:11px;font-size:11.5px">La reseña es un favor, no ' +
+        'un requisito. Tu beneficio y tus sellos no dependen de que la dejes, ni de lo que ' +
+        'escribas.</p>' +
+    '</div>';
+}
+
+/* ---------------- Cupones guardados ---------------- */
+function pintarLista(){
+  const l = $("lista");
+  if(!E.cupones.length){
+    l.innerHTML = '<div class="vacio">Todavía no has raspado.</div>';
+    return;
+  }
+  l.innerHTML = E.cupones.map(c =>
+    '<button class="cupon' + (c.usado ? " usado" : "") + '" data-id="' + esc(c.id) + '"' +
+      (c.usado ? " disabled" : "") + '>' +
+      '<span class="ico">' + esc(c.ico) + '</span>' +
+      '<span class="tx"><b>' + esc(c.que) + '</b><span>' +
+        (c.usado ? "Entregado" : "Sin usar · " + esc(c.fecha)) + '</span></span>' +
+      (c.usado ? "" : '<span class="accion">LO TOCA<br>LA CAJERA</span>') +
+    '</button>'
+  ).join("");
+
+  l.querySelectorAll(".cupon:not([disabled])").forEach(el => {
+    el.addEventListener("click", () => {
+      if(!panelAbierto){
+        alert("Este botón lo toca la cajera cuando te entregue el beneficio.");
+        return;
+      }
+      const c = E.cupones.find(x => x.id === el.dataset.id);
+      if(!c || c.usado) return;
+      if(!confirm('¿Entregaste "' + c.que + '"?\n\nSe marca como usado y no se puede deshacer.')) return;
+      c.usado = true;   // marcar entregado NO pone sello: eso lo hace el botón +1
+      guardar(E);
+      pintarLista();
+    });
+  });
+}
+
+/* ===================================================================
+   PANEL DEL PERSONAL
+   =================================================================== */
+let panelAbierto = false;
+
+function abrirPanel(){
+  pantalla("pPersonal");
+  $("cerrado").style.display = panelAbierto ? "none" : "";
+  $("abierto").style.display = panelAbierto ? "" : "none";
+  $("pinError").innerHTML = "";
+  $("pin").value = "";
+}
+
+/* Mantener pulsado el logo 3 s: incómodo a propósito, para que ningún
+   cliente lo encuentre de casualidad. */
+(function(){
+  let t = null;
+  const logo = $("logo");
+  logo.addEventListener("pointerdown", () => { t = setTimeout(abrirPanel, 3000); });
+  ["pointerup","pointerleave","pointercancel"].forEach(e =>
+    logo.addEventListener(e, () => clearTimeout(t)));
+  logo.addEventListener("keydown", e => { if(e.key === "Enter") abrirPanel(); });
+})();
+
+$("btnPin").addEventListener("click", () => {
+  if($("pin").value.trim() === String(CONFIG.claveDelMes)){
+    panelAbierto = true;
+    abrirPanel();
+  }else{
+    $("pinError").innerHTML = '<div class="aviso">Clave incorrecta.</div>';
+  }
+});
+
+$("btnSellar").addEventListener("click", () => {
+  /* El error típico de caja es tocar esto dos veces por la misma visita.
+     A 20 sellos el almuerzo, cada toque de más es plata regalada. */
+  const ahora = Date.now();
+  if(E.ultimoSello && ahora - E.ultimoSello < 120000){
+    const seg = Math.round((ahora - E.ultimoSello)/1000);
+    if(!confirm("Ya le pusiste un sello a este celular hace " + seg + " segundos.\n\n" +
+                "¿Es otra visita distinta?")) return;
+  }
+  E.sellos += 1;
+  E.ultimoSello = ahora;
+  guardar(E);
+  pintarSellos(true);
+  $("sellarMsg").innerHTML = '<div class="aviso ok">Listo: este celular va en <b>' +
+    E.sellos + '</b> ' + (E.sellos === 1 ? "sello" : "sellos") + '.</div>';
+});
+
+$("btnIrMio").addEventListener("click", () => { pintarSellos(false); pintarLista(); pantalla("pMio"); });
+$("btnSalir1").addEventListener("click", () => pantalla("pInicio"));
+$("btnSalir2").addEventListener("click", () => { panelAbierto = false; pantalla("pInicio"); });
+
+$("btnCalc").addEventListener("click", () => {
+  const visitas = Math.max(1, +$("cVisitas").value || 0);
+  const precio  = Math.max(1, +$("cPrecio").value  || 0);
+  const costoB  = Math.max(0, +$("cBenef").value   || 0);
+  const almuerzos = visitas / CONFIG.sellosParaAlmuerzo;
+  const cAlm = almuerzos * precio, cBen = visitas * costoB, venta = visitas * precio;
+  const fmt = n => "$" + Math.round(n).toLocaleString("es-CO");
+  const fila = (a,b) => '<div class="cuenta"><span>' + a + '</span><b>' + b + '</b></div>';
+  $("calcOut").innerHTML =
+    '<div style="margin-top:14px">' +
+      fila("Almuerzos gratis al mes", almuerzos.toFixed(1)) +
+      fila("Lo que cuestan", fmt(cAlm)) +
+      fila("Beneficio de la semana", fmt(cBen)) +
+      '<div class="cuenta total"><span>Total al mes</span><span>' + fmt(cAlm+cBen) + '</span></div>' +
+      '<p class="menor" style="margin-top:10px;font-size:12px">Es el <b>' +
+        (((cAlm+cBen)/venta)*100).toFixed(1) + '%</b> de la venta del mes. Un programa de ' +
+        'fidelización sano anda entre el 3% y el 6%. Si te sale más alto, súbele los sellos ' +
+        'que cuesta el almuerzo o escoge un beneficio más barato.</p>' +
+    '</div>';
+});
+
+/* ===================================================================
+   NAVEGACIÓN E INTERACCIÓN
+   =================================================================== */
+$("btnDestapar").addEventListener("click", abrir);
+$("chipSellos").addEventListener("click", () => { pintarSellos(false); pintarLista(); pantalla("pMio"); });
+$("btnVerSellos").addEventListener("click", () => { pintarSellos(false); pintarLista(); pantalla("pMio"); });
+$("btnVolver").addEventListener("click", () => pantalla("pInicio"));
+
+(function(){
+  const c = $("capa");
+  c.addEventListener("pointerdown", e => {
+    raspando = true;
+    try{ c.setPointerCapture(e.pointerId); }catch(err){}
+    raspar(e);
+  });
+  c.addEventListener("pointermove", raspar);
+  ["pointerup","pointercancel"].forEach(e => c.addEventListener(e, () => {
+    raspando = false;
+    if(!abierta) medir();
+  }));
+})();
+
+let tRe = null;
+window.addEventListener("resize", () => {
+  if(abierta || !$("pInicio").classList.contains("on")) return;
+  clearTimeout(tRe);
+  tRe = setTimeout(montar, 240);
+});
+
+/* ---------------- Términos (Ley 1480 de 2011, art. 33) ---------------- */
+(function(){
+  const t =
+    "<b>Condiciones.</b> Esto <b>no es un sorteo</b>: el beneficio es el mismo para todas " +
+    "las personas y está anunciado de antemano, no se decide por azar. Vigencia del <b>" +
+    CONFIG.vigenciaDesde + "</b> al <b>" + CONFIG.vigenciaHasta + "</b>. Un raspado por " +
+    "celular por día. El beneficio se reclama únicamente en <b>" + CONFIG.direccion + "</b>, " +
+    "presentando esta pantalla junto con el pedido del almuerzo; no es transferible ni " +
+    "canjeable por dinero. " +
+    "<b>Sellos:</b> un sello por visita, puesto por el personal en el local cuando se " +
+    "confirma el consumo; al completar <b>" + CONFIG.sellosParaAlmuerzo + "</b> sellos se " +
+    "obtiene un almuerzo del día sin costo. Los sellos no se compran, no se transfieren y " +
+    "no se dan por dejar reseñas. <b>Esta página no guarda ningún dato personal:</b> los " +
+    "sellos y los beneficios se guardan solo en este celular, así que si borras los datos " +
+    "del navegador se pierden. Restaurante Aury · " + CONFIG.direccion + " · WhatsApp " +
+    CONFIG.whatsapp.replace(/^57/, "") + ".";
+  $("tycInicio").innerHTML = t;
+  $("tycMio").innerHTML = t;
+  $("pieWa").innerHTML = '<a target="_blank" rel="noopener" href="https://wa.me/' +
+    CONFIG.whatsapp + '">WhatsApp ' + CONFIG.whatsapp.replace(/^57/, "") + '</a>';
+})();
+
+/* ---------------- Arranque ---------------- */
+pintarSellos(false);
+if(CONFIG.unoPorDia && E.ultimoRaspado === hoy()){
+  /* Ya raspó hoy: no se le muestra la boleta otra vez, se le muestra su tarjeta. */
+  pintarLista();
+  pantalla("pMio");
+  $("mFaltan").insertAdjacentHTML("afterend",
+    '<div class="aviso">Ya raspaste hoy. Vuelve mañana ❤️</div>');
+}else{
+  montar();
+}
+})();
+</script>
+</body>
+</html>
