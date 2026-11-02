@@ -104,10 +104,18 @@ body{
 /* Dos capas, cada una con su trabajo:
    - arriba, un velo corto que le da contraste al encabezado
    - abajo, el fundido que disuelve la foto en el fondo, sin borde duro */
+/* Velo suave. Antes eran dos cosas distintas y ninguna servia ya:
+   la foto venia oscurecida al 46% en el archivo (por eso se veia
+   apagada), y encima habia un fundido a negro solido que, dentro de una
+   caja redondeada, no difuminaba nada: dejaba una franja oscura abajo.
+   Ahora la foto va a brillo pleno y el velo es solo lo justo para que no
+   grite al lado del fondo oscuro, con algo mas de peso abajo. */
 .hero::after{
   content:"";position:absolute;inset:0;
-  /* solo un fundido corto abajo, para que la foto no termine en un borde seco */
-  background:linear-gradient(180deg, rgba(21,21,26,0) 62%, rgba(21,21,26,.86) 92%, var(--noche) 100%);
+  background:
+    linear-gradient(180deg, rgba(10,10,13,.24) 0%, rgba(10,10,13,.30) 55%,
+                    rgba(10,10,13,.60) 100%),
+    radial-gradient(ellipse 120% 80% at 50% 38%, transparent 38%, rgba(10,10,13,.40) 100%);
 }
 
 /* ---- La luz que sigue al dedo ----
@@ -249,6 +257,28 @@ input:focus-visible,.cupon:focus-visible{outline:3px solid var(--naranja-claro);
 .sellos-pie{font-size:13px;color:rgba(255,255,255,.84);margin-top:13px}
 .sellos-pie b{color:var(--naranja-claro)}
 
+/* ---------------- La carta ---------------- */
+.carta h3{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--naranja);margin:18px 0 2px}
+.carta h3:first-child{margin-top:0}
+.carta .nota-grupo{font-size:12px;color:rgba(247,246,241,.66);margin-bottom:6px}
+.carta .linea{display:flex;align-items:baseline;gap:8px;padding:6px 0;
+  border-bottom:1px solid rgba(255,255,255,.07)}
+.carta .linea:last-child{border-bottom:0}
+.carta .pl{font-size:14.5px;flex:1;min-width:0}
+.carta .pr{font-family:var(--display);font-weight:700;font-size:14.5px;
+  color:var(--tinta);white-space:nowrap}
+.bandeja{display:flex;align-items:center;gap:13px;background:var(--naranja);
+  color:#1a1a1e;border-radius:var(--radio-chico);padding:13px 15px;margin-top:16px}
+.bandeja .bt{flex:1;min-width:0}
+.bandeja .bt b{font-family:var(--display);font-size:15.5px;display:block}
+.bandeja .bt span{font-size:12.5px;opacity:.82}
+.bandeja .bp{font-family:var(--display);font-weight:800;font-size:19px;white-space:nowrap}
+.bebida{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.bebida:last-child{border-bottom:0}
+.bebida b{font-size:13.5px;white-space:nowrap}
+.bebida span{font-size:12.5px;color:rgba(247,246,241,.72)}
+
 /* ---------------- Bloques ---------------- */
 .panel{padding:17px;margin-top:11px}
 .panel h2+p{margin-top:7px}
@@ -369,6 +399,8 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 
       <div id="zonaResena"></div>
 
+      <div class="vidrio panel carta" id="carta"></div>
+
       <button class="btn" id="btnVerSellos" style="margin-top:14px">Ver mi tarjeta de sellos</button>
       <div class="tyc" id="tycInicio"></div>
     </div>
@@ -485,6 +517,50 @@ const CONFIG = {
        única foto que hay viene de una captura de 750px y se ve borrosa
        al lado de las demás. Cuando aparezca el original, descomentar:
        , { img:"img/plato-5.jpg", nombre:"Sancocho de costilla" }        */
+  ],
+
+  /* --- LA CARTA ------------------------------------------------------
+     Tomada de las dos fotos del menú que pasó Lina. Confirmado por ella
+     el 2 nov 2026: los precios están vigentes y los platos son los
+     mismos, pero NO todos están disponibles todos los días.
+     Por eso la página lo dice de frente: prometer veinte platos y no
+     tenerlos molesta más que no poner la carta, y además la Ley 1480
+     obliga a cumplir lo que se anuncia.
+     Si suben los precios, se cambian aquí y ya.                        */
+  carta: [
+    { grupo:"Sancochos", nota:"El del día cambia: unos días es de costilla, otros de mondongo.",
+      platos:[
+        ["Sancocho (costilla o mondongo)", 18000],
+        ["Sancocho mediano", 14000]
+      ]},
+    { grupo:"Carnes", platos:[
+        ["Albóndigas en salsa", 14000],
+        ["Carne desmechada", 16000],
+        ["Sobrebarriga guisada", 16000],
+        ["Mondongo guisado", 16000],
+        ["Lengua en salsa", 17000],
+        ["Carne en bistec", 18000],
+        ["Carne asada", 18000]
+      ]},
+    { grupo:"Pollo y cerdo", platos:[
+        ["Alitas de pollo BBQ", 14000],
+        ["Pollo frito", 16000],
+        ["Pollo guisado", 16000],
+        ["Cerdo asado", 18000],
+        ["Cerdo asado a la pimienta", 19000],
+        ["Pechuga asada", 18000],
+        ["Pechuga a la pimienta", 19000],
+        ["Pechuga BBQ o gratinada", 19000],
+        ["Chicharrones fritos o BBQ", 18000],
+        ["Costillas de cerdo frita o BBQ", 20000]
+      ]}
+  ],
+  bandeja: { precio:22000,
+    texto:"Con la proteína que escojas, patacones o papas fritas, ensalada y sopa." },
+  bebidas: [
+    ["Jugos naturales", "Guayaba · mora · tomate de árbol · guanábana · maracuyá · sapote"],
+    ["Gaseosas", "Coca-Cola · Kola Román · Sprite · Quatro · soda"],
+    ["Cervezas", "Club Colombia · Corona · Águila · Águila Light"]
   ],
 
   sellosParaAlmuerzo: 20,
@@ -719,6 +795,7 @@ function entregar(){
   $("pieInicio").style.display = "none";
   $("despues").style.display = "";
   pintarResena();
+  pintarCarta();
 }
 
 /* ---------------- Reseña: se pide, nunca se paga ---------------- */
@@ -740,6 +817,39 @@ function pintarResena(){
         'un requisito. Tu beneficio y tus sellos no dependen de que la dejes, ni de lo que ' +
         'escribas.</p>' +
     '</div>';
+}
+
+/* ---------------- La carta ----------------
+   Se pinta una vez, al destapar. No se actualiza a diario porque no hace
+   falta: los platos y los precios son fijos. Lo que sí cambia es qué hay
+   disponible cada día, y eso la página lo dice en vez de prometerlo. */
+function pintarCarta(){
+  const c = $("carta");
+  if(!c || !CONFIG.carta) return;
+  const pesos = n => "$" + n.toLocaleString("es-CO");
+  let h = '<h2 style="margin-bottom:4px">La carta</h2>' +
+    '<p class="menor" style="margin-bottom:14px">Los precios son estos. ' +
+    '<b>No todos los días están todos los platos</b>, así que pregunta por los de hoy.</p>';
+  CONFIG.carta.forEach(g => {
+    h += "<h3>" + esc(g.grupo) + "</h3>";
+    if(g.nota) h += '<div class="nota-grupo">' + esc(g.nota) + "</div>";
+    g.platos.forEach(p => {
+      h += '<div class="linea"><span class="pl">' + esc(p[0]) +
+           '</span><span class="pr">' + pesos(p[1]) + "</span></div>";
+    });
+  });
+  if(CONFIG.bandeja){
+    h += '<div class="bandeja"><span class="bt"><b>Bandeja especial</b><span>' +
+         esc(CONFIG.bandeja.texto) + '</span></span><span class="bp">' +
+         pesos(CONFIG.bandeja.precio) + "</span></div>";
+  }
+  if(CONFIG.bebidas && CONFIG.bebidas.length){
+    h += "<h3>Para tomar</h3>";
+    CONFIG.bebidas.forEach(b => {
+      h += '<div class="bebida"><b>' + esc(b[0]) + "</b><span>" + esc(b[1]) + "</span></div>";
+    });
+  }
+  c.innerHTML = h;
 }
 
 /* ---------------- Cupones ---------------- */
@@ -879,6 +989,7 @@ if(CONFIG.unoPorDia && E.ultimoRaspado === hoy()){
   $("pieInicio").style.display = "none";
   $("despues").style.display = "";
   pintarResena();
+  pintarCarta();
   $("despues").insertAdjacentHTML("afterbegin",
     '<div class="aviso" style="margin:0 0 4px">Ya raspaste hoy. Vuelve mañana ❤️</div>');
 }else{
