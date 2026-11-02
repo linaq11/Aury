@@ -88,7 +88,7 @@ body{
      escritorio el full-bleed estiraba una foto de 840px a 1900 y quedaba
      una mancha borrosa — que es justo lo que Lina estaba viendo. */
   position:absolute;top:0;left:50%;transform:translateX(-50%);
-  width:100%;max-width:420px;height:300px;z-index:-2;
+  width:100%;max-width:420px;height:360px;z-index:-2;
   border-radius:0 0 22px 22px;overflow:hidden;
   background-image:url("data:image/jpeg;base64,C:/Program Files/Git/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAOABQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC3JJKCwTdBD1VIxyx+tMW/mBQu7Lg7SVP8+1Pv7YQofKcqrN+IHcD/ABqjInkRjyiVXPA64P41xOVpanUo3Rpw65EVInQ7gSMg4yPWiqkGnRiFTK5ywz8o/n70VpzVOhFon/Z");
   background-size:cover;background-position:50% 42%;
@@ -109,10 +109,13 @@ body{
        y recién ahí se abre. Medido: la foto tiene blancos puros en el borde del
        plato, y contra blanco puro hace falta .71 para que el texto crema llegue
        a 4.5:1. Antes caía a .18 en el 26% y el subtítulo quedaba en 3.17:1. */
-    linear-gradient(180deg, rgba(10,10,13,.82) 0%, rgba(10,10,13,.78) 28%,
-                    rgba(10,10,13,.30) 38%, rgba(10,10,13,0) 48%),
+    /* El encabezado ocupa 96px de 360 = 27%. El velo se mantiene hasta ahi
+       y se abre rapido: antes llegaba al 48% y, con el fundido empezando en
+       el 68%, solo quedaban 60px de foto limpia. */
+    linear-gradient(180deg, rgba(10,10,13,.84) 0%, rgba(10,10,13,.80) 27%,
+                    rgba(10,10,13,.22) 35%, rgba(10,10,13,0) 42%),
     /* el fundido empieza tarde: entre el 40% y el 72% la comida se ve limpia */
-    linear-gradient(180deg, rgba(21,21,26,0) 68%, rgba(21,21,26,.92) 90%, var(--noche) 100%);
+    linear-gradient(180deg, rgba(21,21,26,0) 80%, rgba(21,21,26,.92) 94%, var(--noche) 100%);
 }
 
 /* ---- La luz que sigue al dedo ----
@@ -328,8 +331,8 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 
   <!-- ===================== INICIO ===================== -->
   <section class="pantalla on" id="pInicio">
-    <!-- arranca debajo de la banda de comida (300px) menos el encabezado -->
-    <div id="antes" style="padding-top:196px">
+    <!-- arranca debajo de la banda de comida (360px) menos el encabezado -->
+    <div id="antes" style="padding-top:252px">
       <h1>Raspa y descubre<br>lo de esta semana</h1>
       <p class="lead">Lo mismo para todos, sin sorteo ni suerte.
         Pasa el dedo y <b>se te guarda en el celular</b>.</p>

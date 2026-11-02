@@ -3,9 +3,10 @@
 """
 Cambia la foto de la banda superior de vitrina.html.
 
-    python escoger-foto.py 3          # usa plato-3
-    python escoger-foto.py 3 --cerca  # el mismo plato, mas de cerca
-    python escoger-foto.py            # muestra las opciones
+    python escoger-foto.py 2              # usa plato-2
+    python escoger-foto.py 2 --cerca      # el mismo plato, mas de cerca
+    python escoger-foto.py 2 --banda=45   # sube o baja la franja (% de alto)
+    python escoger-foto.py                # muestra las opciones
 
 Por defecto el recorte es el MAS LEJOS que cabe en la banda: toma todo el
 ancho de la foto. Con --cerca se acerca un 25%.
@@ -69,18 +70,19 @@ W, H = im.size
 ancho = int(W * 0.75) if cerca else W
 bh = int(ancho / PROP)
 
-# buscar la franja mas nitida
-mejor = (-1, 0, 0)
-for cy in range(25, 80, 3):
-    top = int(H * cy / 100 - bh / 2)
-    izq = (W - ancho) // 2
-    if top < 0 or top + bh > H:
-        continue
-    v = nitidez(im.crop((izq, top, izq + ancho, top + bh)))
-    if v > mejor[0]:
-        mejor = (v, top, izq)
+# Posicion de la banda, en % de alto. Elegida MIRANDO las fotos, no con la
+# metrica de nitidez: esa se deja enganar por el ruido del desenfoque y
+# mandaba la banda a la zona borrosa de encima del plato.
+BANDA = {"1": 42, "2": 35, "3": 45, "4": 46, "5": 50, "6": 45}
 
-_, top, izq = mejor
+cy = BANDA.get(num, 45)
+for a in sys.argv[2:]:
+    if a.startswith("--banda="):
+        cy = int(a.split("=")[1])
+
+izq = (W - ancho) // 2
+top = max(0, min(H - bh, int(H * cy / 100 - bh / 2)))
+mejor = (nitidez(im.crop((izq, top, izq + ancho, top + bh))), top, izq)
 crop = im.crop((izq, top, izq + ancho, top + bh)).resize(SALIDA, Image.LANCZOS)
 crop.save(DESTINO, quality=84, optimize=True, progressive=True)
 
