@@ -99,7 +99,10 @@ body{
      960 bytes que el JS reemplazaba al cargar: si faltaba la carpeta img/
      o el JS no corria, quedaba el borron y parecia que no habia foto. */
   background-image:url("img/plato-2.jpg");
-  background-size:cover;background-position:50% 50%;
+  /* Mismo encuadre que lleva ese plato en CONFIG.platos. Si aqui quedara
+     el 50% y el JS no corriera, la foto de respaldo saldria encuadrada en
+     el arroz. */
+  background-size:cover;background-position:50% 82%;
 }
 /* Una foto real ya en el CSS. Antes la ponia solo el JS tras img.onload:
    si faltaba la carpeta img/ o el JS no corria, quedaba el borron de
@@ -380,6 +383,22 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
   font-family:var(--display);font-weight:800;font-size:15px}
 .cuenta.total span:last-child{color:var(--naranja-claro)}
 
+/* Tabla de la mezcla del raspado, en el panel del personal. Tres columnas
+   porque el numero suelto no dice nada: hay que leerlo al lado del premio
+   y en la escala en que piensa Eli, que son los clientes de un dia y no
+   de cien. */
+.mezcla{margin-top:13px}
+.mezcla .fila{display:grid;grid-template-columns:1fr 48px 58px;gap:7px;align-items:baseline;
+  font-size:13px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.mezcla .fila b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+.mezcla .enc{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+  color:rgba(255,255,255,.58);border-bottom-color:rgba(255,255,255,.26)}
+.mezcla .nada,.mezcla .nada b{color:rgba(255,255,255,.62)}
+.mezcla .caro b{color:var(--naranja-claro)}
+.mezcla .sum{border-bottom:0;padding:4px 0 0}
+.mezcla .sum span{font-family:var(--display);font-weight:800}
+.mezcla .sum.top{border-top:1px solid rgba(255,255,255,.24);margin-top:9px;padding-top:10px}
+
 
 /* ---- Pantallas anchas ----------------------------------------------
    Esto no es para computadores: es para los celulares que abren en modo
@@ -572,6 +591,13 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
         <button class="btn cristal" id="btnIrMio" style="margin-top:13px">Abrir su tarjeta</button>
       </div>
 
+      <div class="vidrio panel" id="panelMezcla">
+        <h2>Qué le sale a la gente</h2>
+        <p class="menor">Cómo está repartido el raspado ahora mismo. Los números son
+          clientes, no porcentajes.</p>
+        <div class="mezcla" id="mezclaOut"></div>
+      </div>
+
       <div class="vidrio panel">
         <h2>¿Cuánto me cuesta?</h2>
         <p class="menor">Para decidir si está muy regalado.</p>
@@ -638,11 +664,19 @@ const CONFIG = {
      Para agregar o quitar: correr `python preparar-platos.py` y editar
      esta lista. Quitar la "5" si el sancocho se ve muy borroso: es la
      foto de peor calidad del lote.                                   */
+  /* "foco" es que parte de la foto queda a la vista. La banda es mucho
+     mas ancha que alta, asi que de cada foto solo se ve una franja: con
+     50% 50% quedaba la del medio, que en casi todas es el arroz y la
+     ensalada. El segundo numero baja la franja hasta la proteina, que es
+     lo que vende. Solo manda el segundo: a lo ancho la foto entra justa
+     y no hay nada que correr. */
   platos: [
-    { img:"img/plato-2.jpg", nombre:"Pollo frito" },
-    { img:"img/plato-1.jpg", nombre:"Carne desmechada" },
-    { img:"img/plato-6.jpg", nombre:"Pescado frito con patacones" },
-    { img:"img/plato-4.jpg", nombre:"Carne asada" }
+    { img:"img/plato-2.jpg", nombre:"Pollo frito",      foco:"50% 82%" },
+    { img:"img/plato-1.jpg", nombre:"Carne desmechada", foco:"50% 78%" },
+    /* El pescado es el unico que va arriba: los patacones estan abajo. */
+    { img:"img/plato-6.jpg", nombre:"Pescado frito con patacones", foco:"50% 30%" },
+    /* La carne ocupa todo el costado derecho, de arriba abajo. */
+    { img:"img/plato-4.jpg", nombre:"Carne asada",      foco:"50% 50%" }
     /* El sancocho está fuera a propósito: es el plato insignia pero la
        única foto que hay viene de una captura de 750px y se ve borrosa
        al lado de las demás. Cuando aparezca el original, descomentar:
@@ -886,6 +920,7 @@ CONFIG.beneficio = (function(){
   const img = new Image();
   img.onload = () => {
     hero.style.backgroundImage = 'url("' + hoyPlato.img + '")';
+    hero.style.backgroundPosition = hoyPlato.foco || "50% 50%";
   };
   img.src = hoyPlato.img;
 })();
@@ -1339,18 +1374,96 @@ $("btnSalir2").addEventListener("click", () => { panelAbierto = false; pantalla(
 function resumenSorteo(){
   if(!CONFIG.modoSorteo || !CONFIG.sorteo) return null;
   const tot = CONFIG.sorteo.reduce((t,o)=>t+(o.peso||0),0);
-  let puntoProm=0, pNada=0, pPremio=0, costoProm=0;
+  let puntoProm=0, pNada=0, pPremio=0, costoProm=0, pPuntos=0;
   CONFIG.sorteo.forEach(o=>{
     const p=(o.peso||0)/tot;
-    if(o.tipo==="puntos") puntoProm += p*(o.n||1);
+    if(o.tipo==="puntos"){ puntoProm += p*(o.n||1); pPuntos += p; }
     if(o.tipo==="nada")   pNada += p;
     if(o.tipo==="premio"){ pPremio += p; costoProm += p*(o.costo||0); }
   });
   /* costoProm es lo que cuestan los premios POR RASPADO, ya ponderado.
      Antes todos los premios se multiplicaban por un mismo valor escrito a
      mano, que servía cuando el premio era uno solo. */
-  return {puntoProm, pNada, pPremio, costoProm};
+  return {puntoProm, pNada, pPremio, costoProm, pPuntos};
 }
+
+/* Cuanto puede costar un dia cargado. Se mide, no se estima: cuatro mil
+   dias de cincuenta raspados, y se toma el que deja por debajo a diecinueve
+   de cada veinte. La formula de campana se quedaba un 2% corta porque el
+   costo es muy sesgado: casi todos los raspados no cuestan nada y unos
+   pocos cuestan tres mil. El sorteo del dia a dia sigue siendo del
+   Math.random de siempre; esta cuenta usa su propia semilla fija para que
+   el numero no baile cada vez que Eli abre el panel. */
+function diaCargado(tot){
+  const corte = []; let c = 0;
+  CONFIG.sorteo.forEach(o => { c += (o.peso||0)/tot; corte.push(c); });
+  const ult = CONFIG.sorteo.length - 1;
+  /* xorshift de 32 bits: todas sus operaciones son exactas en JavaScript.
+     Un generador con multiplicacion grande pierde precision pasados los
+     2^53 y degenera sin avisar. */
+  let x = 20261103;
+  const az = () => {
+    x ^= x << 13; x ^= x >>> 17; x ^= x << 5;
+    return (x >>> 0) / 4294967296;
+  };
+  const dias = [];
+  for(let d = 0; d < 4000; d++){
+    let suma = 0;
+    for(let i = 0; i < 50; i++){
+      const r = az();
+      let k = 0; while(k < ult && r > corte[k]) k++;
+      suma += CONFIG.sorteo[k].costo || 0;
+    }
+    dias.push(suma);
+  }
+  dias.sort((a,b) => a-b);
+  return dias[Math.floor(4000*0.95)];
+}
+
+/* La mezcla del raspado dibujada desde CONFIG.sorteo, no escrita a mano:
+   si Lina cambia un peso, la tabla cambia con el. En clientes y no en
+   porcentajes porque Eli piensa en "de los que entraron hoy". */
+function pintarMezcla(){
+  const z = $("mezclaOut"), caja = $("panelMezcla");
+  if(!z || !caja) return;
+  const rs = resumenSorteo();
+  /* Sin sorteo no hay mezcla que mostrar: el beneficio es uno solo. */
+  if(!rs){ caja.style.display = "none"; return; }
+  const tot = CONFIG.sorteo.reduce((t,o) => t + (o.peso||0), 0);
+  /* "7 u 8" y no "7,5": media persona no existe y esto se lee de pie. */
+  const de50 = pr => {
+    /* Redondear ANTES de partir: 0.14*50 da 7.000000000000001 en coma
+       flotante, y sin esto la tabla decia "7 u 8" donde son 7 clavados. */
+    const v = Math.round(pr*5000)/100, b = Math.floor(v), a = Math.ceil(v);
+    return b === a ? String(b) : b + " o " + a;
+  };
+  const fila = (q, pr, cls) => '<div class="fila' + (cls ? " " + cls : "") + '"><span>' +
+    esc(q) + '</span><b>' + Math.round(pr*100) + '</b><b>' + de50(pr) + '</b></div>';
+
+  let h = '<div class="fila enc"><span>Lo que sale</span><b>de 100</b><b>de 50</b></div>';
+  CONFIG.sorteo.forEach(o => {
+    h += fila(o.que, (o.peso||0)/tot,
+      o.tipo === "premio" ? "caro" : (o.tipo === "nada" ? "nada" : ""));
+  });
+  h += fila("Le salen puntos", rs.pPuntos, "sum top") +
+       fila("No le sale nada", rs.pNada, "sum") +
+       fila("Algo gratis o descuento", rs.pPremio, "sum caro");
+
+  const pes = x => "$" + (Math.round(x/100)*100).toLocaleString("es-CO");
+  const media = 50*rs.costoProm, alto = diaCargado(tot);
+  h += '<p class="menor" style="margin-top:14px">Cada <b>50 raspados</b>, las bebidas y ' +
+    'los descuentos cuestan <b>' + pes(media) + '</b> en promedio, y en un día cargado ' +
+    'hasta unos <b>' + pes(alto) + '</b>. Son promedios, no una cuota: ningún día sale ' +
+    'clavado, y solo sobre varios cientos de raspados se pega al número.</p>' +
+    '<p class="menor" style="margin-top:8px">Los puntos no van en esa cuenta porque se pagan ' +
+    'solos al llegar al almuerzo gratis: salen <b>' + rs.puntoProm.toFixed(2).replace(".", ",") + '</b> por ' +
+    'raspado, o sea un almuerzo por la casa cada <b>' +
+    Math.round(CONFIG.puntosParaAlmuerzo/rs.puntoProm) + '</b> visitas de la misma persona.</p>' +
+    '<p class="menor" style="margin-top:8px;opacity:.72">Esto lo cambia Lina: es un número ' +
+    'por premio, y los nueve suman 100.</p>';
+  z.innerHTML = h;
+}
+pintarMezcla();
 
 $("btnCalc").addEventListener("click", () => {
   const vis = Math.max(1,+$("cVisitas").value||0), pre = Math.max(1,+$("cPrecio").value||0),
