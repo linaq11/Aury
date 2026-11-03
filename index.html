@@ -804,9 +804,29 @@ const LLAVE = "aury_raspa_v3";   // mismo almacén que index.html: los puntos no
 const mem = {};
 function leer(){ try{ const v=localStorage.getItem(LLAVE); if(v) return JSON.parse(v);}catch(e){} return mem.d||null; }
 function guardar(d){ mem.d=d; try{ localStorage.setItem(LLAVE, JSON.stringify(d)); }catch(e){} }
-function inicial(){ return { puntos:0, cupones:[], ultimoRaspado:null, ultimoPunto:null }; }
-let E = leer() || inicial();
-if(typeof E.puntos !== "number" || !Array.isArray(E.cupones)) E = inicial();
+function inicial(){ return { puntos:0, cupones:[], ultimoRaspado:null, ultimoPunto:null,
+                             ultimoPremio:null }; }
+
+/* Las primeras versiones guardaban "sellos" y "ultimoSello"; al cambiarles
+   el nombre a puntos, el arranque veia un registro sin "puntos" y lo tiraba
+   ENTERO. El cliente perdia lo acumulado y, como tambien se perdia
+   ultimoRaspado, volvia a tener raspado cada vez que recargaba la pagina.
+   Pasa los campos viejos a los nuevos en vez de borrar. */
+function migrar(d){
+  if(!d || typeof d !== "object" || Array.isArray(d)) return false;
+  let toco = false;
+  if(typeof d.puntos !== "number" && typeof d.sellos === "number"){ d.puntos = d.sellos; toco = true; }
+  if(d.ultimoPunto == null && d.ultimoSello != null){ d.ultimoPunto = d.ultimoSello; toco = true; }
+  if("sellos" in d || "ultimoSello" in d){ delete d.sellos; delete d.ultimoSello; toco = true; }
+  if(typeof d.puntos !== "number"){ d.puntos = 0; toco = true; }
+  if(!Array.isArray(d.cupones)){ d.cupones = []; toco = true; }
+  return toco;
+}
+let E = leer();
+const migrado = migrar(E);
+if(!E) E = inicial();
+/* Se graba de una para que la conversion pase una sola vez. */
+if(migrado) guardar(E);
 
 const $ = id => document.getElementById(id);
 const hoy = () => new Date().toLocaleDateString("sv-SE");
@@ -1085,7 +1105,14 @@ function abrir(){
 
 function entregar(){
   const b = resultado || CONFIG.beneficio;
-  if(CONFIG.unoPorDia) E.ultimoRaspado = hoy();
+  if(CONFIG.unoPorDia){
+    E.ultimoRaspado = hoy();
+    /* Hay que guardar LO QUE SALIO. Antes, al recargar, la pantalla volvia
+       a mostrar el beneficio fijo de la configuracion: al que le habian
+       salido 2 puntos le aparecia "Escoge tu bebida", y con esa pantalla
+       en la mano le podia pedir el jugo a la cajera. */
+    E.ultimoPremio = { ico:b.ico || "", que:b.que, nota:b.nota || "", tipo:b.tipo || "" };
+  }
 
   /* Lo ganado queda PENDIENTE hasta que la cajera lo confirme en el
      local. Si se abonara al raspar, una foto del QR circulando por
@@ -1446,15 +1473,39 @@ if(CONFIG.unoPorDia && E.ultimoRaspado === hoy()){
      la boleta ya destapada. Antes saltaba a "Mi tarjeta", que esconde la
      banda de comida: el que volvía a abrir la página no veía ni la foto ni
      lo que se había ganado, solo una grilla de puntos vacíos. */
-  const b = CONFIG.beneficio;
+  /* Lo que le salio a ESTE celular, no el beneficio fijo de la
+     configuracion. Si el registro es viejo y no lo trae, se cae al fijo. */
+  const b = E.ultimoPremio || CONFIG.beneficio;
+  const vacio = (b.tipo === "nada");
   $("bIco").textContent = b.ico;
   $("bQue").textContent = b.que;
   $("bNota").textContent = b.nota || "";
+  /* El rotulo lo pone montar(), que aqui no corre: sin esto la boleta
+     recargada seguia diciendo "Esta semana", que es del modo sin sorteo. */
+  const eti = document.querySelector(".debajo .eti");
+  if(eti){
+    eti.style.display = vacio ? "none" : "";
+    eti.textContent = CONFIG.modoSorteo ? "¡Bien!" : "Esta semana";
+  }
   $("boleta").classList.add("abierta");
+  /* Y tambien la bandera de JavaScript, no solo la clase del CSS. El
+     listener de resize vuelve a montar la boleta si abierta es false, y en
+     un celular resize salta cada vez que se esconde la barra de direcciones
+     al bajar: bastaba recargar, deslizar un poco y la boleta quedaba otra
+     vez raspable, ademas con un premio recien sorteado. Raspadas infinitas. */
+  abierta = true; raspando = false;
   $("antes").style.display = "none";
   $("btnDestapar").style.display = "none";
   $("pieInicio").style.display = "none";
   $("despues").style.display = "";
+
+  /* Igual que al raspar: al que no le salio nada no se le explica como
+     reclamar un premio que no tiene. */
+  const cg = document.querySelector("#despues .vidrio.panel");
+  if(cg) cg.style.display = vacio ? "none" : "";
+  const comoR = document.querySelectorAll("#despues .vidrio.panel")[1];
+  if(comoR) comoR.style.display = vacio ? "none" : "";
+
   pintarResena();
   pintarCarta();
   $("despues").insertAdjacentHTML("afterbegin",
