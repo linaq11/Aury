@@ -13,7 +13,7 @@ Sin servidor, sin base de datos, sin cuentas. Un archivo HTML.
 Estas dos cosas no son opinión de diseño: romperlas tiene consecuencias
 concretas sobre el negocio.
 
-### 1. Esto NO es un sorteo, y no puede volverse uno
+### 1. Esto HOY es un sorteo, y eso tiene un trámite pendiente
 
 En Colombia, un premio que decide el azar es un **juego promocional** y necesita
 autorización previa. La excepción que tenían los comerciantes **fue derogada**
@@ -22,7 +22,7 @@ por el art. 94 de la Ley 1753 de 2015, y Coljuegos lo dice con esas palabras:
 industriales que desarrollen juegos promocionales para impulsar sus ventas."*
 Coljuegos además lista "raspa y gana" entre los métodos de azar cubiertos.
 
-Lo que implicaría hacerlo con azar:
+Lo que implica hacerlo con azar, que es lo que se está haciendo:
 
 - Autorización previa de la **Lotería de Bolívar** (los municipales no los
   autoriza Coljuegos, los autoriza la Sociedad de Capital Público Departamental)
@@ -30,10 +30,23 @@ Lo que implicaría hacerlo con azar:
 - No se puede publicitar antes de tener el permiso
 - No hay exención por monto del premio, por tamaño del negocio, ni por ser local
 
-Por eso el beneficio acá es **uno solo, igual para todos y anunciado de
-antemano**: así no hay azar y no hay trámite. Se puede cambiar cada semana.
-Lo que no se puede es poner una lista de premios y sortear cuál toca —
-**ni aunque todos ganen algo**.
+**El 2 de noviembre de 2026 Lina decidió operarlo con azar de todas formas**,
+sabiendo lo anterior y con la consulta a una abogada pendiente. Desde
+entonces `modoSorteo` está en `true` y el raspado reparte premios al azar,
+así que la lista de arriba no es teórica: es lo que falta.
+
+La pregunta concreta para la abogada, que no se resuelve con fuentes
+públicas: si la derogatoria del art. 94 dejó alguna puerta abierta para
+juegos promocionales de bajo valor o de un solo establecimiento.
+
+Para devolverlo al estado sin trámite basta poner `modoSorteo` en `false`:
+vuelve a haber **un beneficio solo, igual para todos y anunciado de
+antemano**, que se puede cambiar cada semana. No hay punto medio: una lista
+de premios sorteada es azar **aunque todos ganen algo**.
+
+Lo que sí se mantuvo mientras tanto: la página nunca promete que siempre
+salga premio (Ley 1480), y la hoja de la caja le dice a quien atiende que no
+lo llame rifa ni sorteo delante del cliente.
 
 Fuentes: Ley 643 de 2001 arts. 5 y 31 · Ley 1753 de 2015 art. 94 ·
 coljuegos.gov.co/publicaciones/301146/operadores_de_juegos_promocionales/

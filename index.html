@@ -619,19 +619,25 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 
 <script>
 /* ===================================================================
-   ░░ CONFIGURACIÓN ░░  (idéntica a index.html — misma mecánica,
-   lo único que cambia entre las dos versiones es el aspecto)
+   ░░ CONFIGURACIÓN ░░  Todo lo que Lina cambia sin tocar el resto.
 
-   ⚠️ Esto NO es un sorteo y no puede volverse uno. En Colombia un premio
-   decidido por azar es "juego promocional" (Ley 643 de 2001, arts. 5 y 31)
-   y exige autorización previa de la Lotería de Bolívar más el 14% del plan
-   de premios. La excepción para comerciantes fue DEROGADA por el art. 94
-   de la Ley 1753 de 2015. Por eso el beneficio es UNO SOLO, igual para
-   todos y anunciado de antemano.
+   ⚠️ HOY ESTO SÍ ES UN SORTEO. El interruptor `modoSorteo` está en true,
+   así que el resultado del raspado sale al azar. Lina lo pidió así el 2 de
+   noviembre de 2026, sabiendo lo que implica, y lo que implica está
+   escrito completo al lado del interruptor: autorización previa de la
+   Sociedad de Capital Público Departamental de Bolívar y 14% del plan de
+   premios (Ley 643 de 2001, arts. 5 y 31; la excepción que tenían los
+   comerciantes la derogó el art. 94 de la Ley 1753 de 2015, y no hay
+   umbral por tamaño de negocio).
+   Poner `modoSorteo` en false devuelve la mecánica sin azar: un beneficio
+   igual para todos, anunciado de antemano, que no necesita permiso.
+   Antes aquí decía que esto NO era un sorteo. Lo era desde hacía días: el
+   comentario se quedó de la versión anterior y contradecía al código
+   veinte líneas más abajo.
 
    ⚠️ La reseña de Google se PIDE, nunca se PAGA, y se le muestra igual a
    todo el mundo. Google prohíbe incentivarlas y también el review gating;
-   la sanción cae sobre el perfil del negocio.
+   la sanción cae sobre el perfil del negocio. Esto no ha cambiado.
    =================================================================== */
 const CONFIG = {
   whatsapp: "573002679611",
