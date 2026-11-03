@@ -69,8 +69,8 @@ if os.path.exists(LOGO):
 centrado(252, "RESTAURANTE AURY", semi(26), NARANJA, espaciado=5)
 centrado(300, "Raspa y mira", negra(66), TINTA)
 centrado(376, "qué te salió hoy", negra(66), TINTA)
-centrado(468, "Un raspado por día. A veces salen puntos,", normal(29), (190, 188, 182))
-centrado(508, "a veces un beneficio. Junta 20 y comes gratis.", normal(29), (190, 188, 182))
+centrado(468, "Un raspado al día. La mayoría de las veces", normal(29), (190, 188, 182))
+centrado(508, "salen puntos. Junta 20 y comes gratis.", normal(29), (190, 188, 182))
 
 # ---- tarjeta del QR ----
 TX, TY, TW_, TH_ = 215, 572, 650, 650
