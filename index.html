@@ -1477,15 +1477,28 @@ if(CONFIG.unoPorDia && E.ultimoRaspado === hoy()){
      configuracion. Si el registro es viejo y no lo trae, se cae al fijo. */
   const b = E.ultimoPremio || CONFIG.beneficio;
   const vacio = (b.tipo === "nada");
+  /* Si la cajera YA marco el cupon de hoy, esta pantalla no puede seguir
+     ofreciendo el premio. Tal como estaba, el que se tomo su jugo al
+     almuerzo volvia a abrir la pagina en la noche, le aparecia "Escoge tu
+     bebida" con el "como lo reclamo" intacto, y se lo pedia otra vez. */
+  const cupHoy = E.cupones.find(c => c.fecha === hoy());
+  const entregado = !!(cupHoy && cupHoy.usado);
   $("bIco").textContent = b.ico;
   $("bQue").textContent = b.que;
-  $("bNota").textContent = b.nota || "";
+  /* "Entregamos" sirve para un jugo o un descuento; para un punto lo que
+     paso es que se abono a la tarjeta. */
+  $("bNota").textContent = entregado
+    ? (b.tipo === "puntos"
+        ? "Ya quedó abonado a tu tarjeta. Mañana tienes otro raspado."
+        : "Ya te lo entregamos hoy. Mañana tienes otro raspado.")
+    : (b.nota || "");
   /* El rotulo lo pone montar(), que aqui no corre: sin esto la boleta
      recargada seguia diciendo "Esta semana", que es del modo sin sorteo. */
   const eti = document.querySelector(".debajo .eti");
   if(eti){
     eti.style.display = vacio ? "none" : "";
-    eti.textContent = CONFIG.modoSorteo ? "¡Bien!" : "Esta semana";
+    eti.textContent = entregado ? "Entregado"
+                                : (CONFIG.modoSorteo ? "¡Bien!" : "Esta semana");
   }
   $("boleta").classList.add("abierta");
   /* Y tambien la bandera de JavaScript, no solo la clase del CSS. El
@@ -1500,11 +1513,13 @@ if(CONFIG.unoPorDia && E.ultimoRaspado === hoy()){
   $("despues").style.display = "";
 
   /* Igual que al raspar: al que no le salio nada no se le explica como
-     reclamar un premio que no tiene. */
+     reclamar un premio que no tiene. Y al que ya se lo entregaron,
+     tampoco. */
+  const ocultar = vacio || entregado;
   const cg = document.querySelector("#despues .vidrio.panel");
-  if(cg) cg.style.display = vacio ? "none" : "";
+  if(cg) cg.style.display = ocultar ? "none" : "";
   const comoR = document.querySelectorAll("#despues .vidrio.panel")[1];
-  if(comoR) comoR.style.display = vacio ? "none" : "";
+  if(comoR) comoR.style.display = ocultar ? "none" : "";
 
   pintarResena();
   pintarCarta();
