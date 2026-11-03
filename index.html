@@ -921,8 +921,11 @@ function montar(reintento){
   const dj = document.querySelector(".debajo");
   if(dj) dj.classList.toggle("sin-premio", b.tipo === "nada");
   const eti = document.querySelector(".debajo .eti");
+  /* El rótulo no puede repetir lo que ya dice el resultado: "Te ganaste"
+     encima de "Ganaste 1 punto" repetía la palabra, y "Esta vez" encima
+     de "Hoy no fue" era redundante y frío. */
   if(eti) eti.textContent = CONFIG.modoSorteo
-    ? (b.tipo === "nada" ? "Esta vez" : "Te ganaste")
+    ? (b.tipo === "nada" ? "Uy" : "¡Bien!")
     : "Esta semana";
 
   canvas = $("capa");
@@ -1304,9 +1307,15 @@ window.addEventListener("resize", () => {
 if(CONFIG.modoSorteo){
   const th = $("tituloHero"), lh = $("leadHero");
   if(th) th.innerHTML = "Raspa y mira<br>qué te salió hoy";
-  if(lh) lh.innerHTML = "Un raspado por día. A veces salen puntos, a veces un beneficio, " +
-    "y a veces nada. Junta <b>" + CONFIG.puntosParaAlmuerzo + " puntos</b> y el almuerzo " +
-    "va por la casa.";
+  /* Decía "a veces salen puntos, a veces un beneficio, y a veces nada".
+     Arrancar avisando que puede no salir nada mata las ganas de raspar,
+     y encima no es lo más común: el 68% de las veces sí salen puntos.
+     Esta versión dice la verdad por el lado bueno, sin prometer que
+     siempre sale: eso sería mentir y la Ley 1480 obliga a que lo
+     anunciado sea cierto. "Beneficio" tampoco lo dice nadie. */
+  if(lh) lh.innerHTML = "Un raspado al día. La mayoría de las veces salen puntos, y de " +
+    "vez en cuando algo rico para acompañar. Junta <b>" + CONFIG.puntosParaAlmuerzo +
+    " puntos</b> y el almuerzo va por cuenta de la casa ❤️";
   document.title = "Raspa y gana · Restaurante Aury";
 }
 
