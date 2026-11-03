@@ -51,7 +51,10 @@
   --t-feedback:140ms;
   --t-foco:600ms;
 
-  --banda:232px;        /* alto de la banda de comida */
+  /* Alto de la banda de comida. Con 232px la boleta terminaba en 826px y
+     la pantalla de un iPhone mide 812: habia que bajar para ver el raspado
+     completo y la linea de los 20 puntos no aparecia nunca. */
+  --banda:170px;
   --radio:16px;
   --radio-chico:12px;
 
@@ -402,7 +405,7 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
   .top .sub{font-size:15px}
   .chip{font-size:18px;min-height:52px;padding:8px 17px 8px 13px}
   .chip b{font-size:21px}
-  :root{--banda:310px}
+  :root{--banda:230px}
   .debajo .que{font-size:40px}
   .debajo .eti{font-size:15px}
   .debajo .nota{font-size:17px}
