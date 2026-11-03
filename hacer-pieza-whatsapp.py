@@ -67,10 +67,10 @@ if os.path.exists(LOGO):
 
 # ---- titulares ----
 centrado(252, "RESTAURANTE AURY", semi(26), NARANJA, espaciado=5)
-centrado(300, "Raspa y descubre", negra(66), TINTA)
-centrado(376, "lo de esta semana", negra(66), TINTA)
-centrado(468, "Un raspado por día. Siempre te ganas algo,", normal(29), (190, 188, 182))
-centrado(508, "y se te guarda en el celular.", normal(29), (190, 188, 182))
+centrado(300, "Raspa y mira", negra(66), TINTA)
+centrado(376, "qué te salió hoy", negra(66), TINTA)
+centrado(468, "Un raspado por día. A veces salen puntos,", normal(29), (190, 188, 182))
+centrado(508, "a veces un beneficio. Junta 20 y comes gratis.", normal(29), (190, 188, 182))
 
 # ---- tarjeta del QR ----
 TX, TY, TW_, TH_ = 215, 572, 650, 650
@@ -93,7 +93,7 @@ d.text((W/2, TY + 596), "Apunta la cámara", font=semi(27), fill=MARRON, anchor=
 
 # ---- el link, que es lo que de verdad sirve en WhatsApp ----
 centrado(1262, URL_VIS, semi(30), NARANJA)
-centrado(1300, "Junta un punto por visita · a los 20, almuerzo gratis",
+centrado(1300, "Junta puntos y a los 20 el almuerzo va por la casa",
          normal(24), (150, 148, 143))
 
 im.save(SALIDA, quality=90, optimize=True, progressive=True)
