@@ -7,23 +7,29 @@
 <style>
   @page{ size:letter; margin:14mm; }
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:"Public Sans",sans-serif;color:#2a1206;background:#fff;line-height:1.5}
+  body{font-family:"Public Sans",sans-serif;color:#2a1206;background:#fff;line-height:1.4}
   .hoja{max-width:180mm;margin:0 auto}
 
-  h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:26pt;
+  h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:23pt;
      letter-spacing:-.02em;line-height:1.05}
-  .sub{font-size:11pt;color:#6b4a2e;margin-top:3mm}
+  .sub{font-size:10.5pt;color:#6b4a2e;margin-top:2.5mm}
 
-  .paso{display:flex;gap:5mm;margin-top:7mm;page-break-inside:avoid}
-  .num{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:15pt;
-       background:#f4940a;color:#1a1a1e;width:11mm;height:11mm;border-radius:50%;
+  .paso{display:flex;gap:4.5mm;margin-top:3.8mm;page-break-inside:avoid}
+  .num{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:13pt;
+       background:#f4940a;color:#1a1a1e;width:9.5mm;height:9.5mm;border-radius:50%;
        display:flex;align-items:center;justify-content:center;flex:none}
-  .paso h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:13pt;
+  .paso h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:12pt;
            letter-spacing:-.01em}
-  .paso p{font-size:10.5pt;margin-top:1.5mm}
-  .paso .ojo{font-size:9.5pt;color:#8a5a33;margin-top:1.5mm}
+  .paso p{font-size:10pt;margin-top:1.2mm}
+  .paso .ojo{font-size:9pt;color:#8a5a33;margin-top:1.2mm}
 
-  .clave{border:1.6px solid #f4940a;border-radius:4mm;padding:5mm 6mm;margin-top:8mm;
+  .tabla{border-collapse:collapse;margin-top:2.2mm;font-size:9.5pt;width:100%}
+  .tabla td{border-bottom:1px solid #e8dcc6;padding:1.1mm 2mm;vertical-align:top}
+  .tabla td:first-child{width:62%}
+  .tabla td:last-child{font-weight:700;color:#b5281e;white-space:nowrap}
+  .tabla tr:last-child td{border-bottom:0}
+
+  .clave{border:1.6px solid #f4940a;border-radius:4mm;padding:4mm 5mm;margin-top:6mm;
          display:flex;align-items:center;gap:6mm;page-break-inside:avoid}
   .clave .et{font-size:9.5pt;color:#6b4a2e;letter-spacing:.1em;text-transform:uppercase;
              font-weight:700}
@@ -32,7 +38,7 @@
   .clave .n{font-size:9.5pt;color:#6b4a2e;flex:1}
 
 
-  .pie{margin-top:9mm;border-top:1.4px solid #e0d2bb;padding-top:4mm;
+  .pie{margin-top:5mm;border-top:1.4px solid #e0d2bb;padding-top:3mm;
        font-size:9pt;color:#8a5a33;line-height:1.6}
   .pie b{color:#2a1206}
 </style>
@@ -47,8 +53,8 @@
     <div class="num">1</div>
     <div>
       <h2>El cliente escanea el QR de la mesa y raspa</h2>
-      <p>Le sale el beneficio de la semana y se le guarda en el celular. No hay que
-        hacer nada de nuestro lado.</p>
+      <p>Le sale puntos, un descuento, una bebida o nada, y se le guarda en el celular.
+        No hay que hacer nada de nuestro lado.</p>
     </div>
   </div>
 
@@ -86,6 +92,23 @@
   <div class="paso">
     <div class="num">5</div>
     <div>
+      <h2>Si le salió un descuento, lo bajas t&uacute; de la cuenta</h2>
+      <p>La p&aacute;gina no cobra ni descuenta nada: solo deja el premio marcado como
+        entregado. El descuento se lo quitas t&uacute; del total en la caja.</p>
+      <table class="tabla">
+        <tr><td>&iexcl;Tienes 5% de descuento!</td><td>5% de <b>un</b> almuerzo</td></tr>
+        <tr><td>&iexcl;Tienes $1.000 de descuento!</td><td>$1.000 menos</td></tr>
+        <tr><td>&iexcl;Tienes $2.000 de descuento!</td><td>$2.000 menos</td></tr>
+        <tr><td>Escoge tu bebida</td><td>Jugo o gaseosa, no cerveza</td></tr>
+      </table>
+      <p class="ojo">Siempre sobre <b>un</b> almuerzo, no sobre la cuenta de toda la mesa.
+        Y solo con almuerzo: el descuento no se usa para llevarse una gaseosa sola.</p>
+    </div>
+  </div>
+
+  <div class="paso">
+    <div class="num">6</div>
+    <div>
       <h2>Si no le salió nada, no pasa nada</h2>
       <p>A veces sale &laquo;&iexcl;Hoy no fue tu d&iacute;a!&raquo;. Dile que vuelva a raspar
         ma&ntilde;ana: es un raspado por d&iacute;a y al d&iacute;a siguiente le cambia.</p>
@@ -106,7 +129,7 @@
     <b>Si alguien borra los datos de su celular</b>, pierde sus puntos: están guardados
     ahí, no en un servidor. Si pasa y la persona es clienta conocida, usa el criterio de
     la casa.<br>
-    <b>El beneficio de la semana</b> y la clave los cambia Lina.
+    <b>Los premios, lo que sale cada uno y la clave</b> los cambia Lina.
   </div>
 
 </div>
