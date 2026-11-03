@@ -69,6 +69,8 @@ if os.path.exists(LOGO):
 # ---- titulares ----
 # Redaccion de Lina. Los emojis van con Segoe UI Emoji y embedded_color,
 # porque con la fuente de texto salen en blanco y negro.
+# "premios" en plural: confirmado por Lina el 2 nov 2026, porque la
+# bebida ya trae varias opciones (seis jugos y varias gaseosas).
 def emo_texto(y, emo, txt, f, color, tam_emo, al_final=False):
     """Dibuja emoji + texto (o texto + emoji) centrado como un bloque."""
     fe = emoji(tam_emo)
@@ -88,7 +90,7 @@ emo_texto(300, "🎉", "¡Raspa, gana", negra(60), TINTA, 52)
 centrado(372, "y acumula!", negra(60), TINTA)
 centrado(458, "¡Tienes un raspado cada día! Descubre", normal(27), (190, 188, 182))
 centrado(494, "cuántos puntos te llevas y sorpréndete", normal(27), (190, 188, 182))
-emo_texto(530, "🎁", "con el premio que puede aparecer.", normal(27), (190, 188, 182), 26, al_final=True)
+emo_texto(530, "🎁", "con los premios que pueden aparecer.", normal(27), (190, 188, 182), 26, al_final=True)
 
 # ---- tarjeta del QR ----
 TX, TY, TW_, TH_ = 232, 582, 616, 616
