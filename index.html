@@ -182,6 +182,8 @@ h2{font-family:var(--display);font-weight:700;font-size:18px;line-height:1.22;le
 .lead{font-size:14.5px;color:rgba(255,255,255,.88);margin-top:9px;
   text-shadow:0 1px 12px rgba(0,0,0,.75)}
 .menor{font-size:13px;color:rgba(255,255,255,.82)}
+.meta{font-size:13px;font-weight:600;color:var(--naranja);margin-top:8px;
+  text-shadow:0 1px 12px rgba(0,0,0,.8)}
 
 /* ---------------- Botones ---------------- */
 .btn{font-family:var(--display);font-weight:800;font-size:16.5px;
@@ -364,6 +366,7 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
   h2{font-size:24px}
   .lead{font-size:19px}
   .menor,.puntos-pie,.tarjeta .de{font-size:17px}
+  .meta{font-size:16px}
   .btn{font-size:21px;min-height:68px;border-radius:18px}
   .btn.cristal{font-size:19px;min-height:62px}
   .top img{width:54px;height:54px}
@@ -429,9 +432,9 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
     <div class="hero" id="hero" aria-hidden="true"></div>
     <!-- arranca debajo de la banda de comida (232px) que empieza bajo el encabezado -->
     <div id="antes">
-      <h1 id="tituloHero">Raspa y descubre<br>lo de esta semana</h1>
-      <p class="lead" id="leadHero">Lo mismo para todos, sin sorteo ni suerte.
-        Pasa el dedo y <b>se te guarda en el celular</b>.</p>
+      <h1 id="tituloHero">🎉 ¡Raspa, gana<br>y acumula!</h1>
+      <p class="lead" id="leadHero">¡Tienes un raspado cada día! Descubre cuántos puntos
+        te llevas y sorpréndete con los premios que pueden aparecer. 🎁</p>
     </div>
 
     <div class="boleta" id="boleta">
@@ -444,6 +447,11 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
       <div class="pista" id="pista">Rasca aquí</div>
       <canvas id="capa" aria-label="Capa para raspar"></canvas>
     </div>
+
+    <!-- va DEBAJO de la boleta, igual que en la tarjeta de la mesa y en la
+         pieza de WhatsApp: arriba empujaba la boleta fuera de la pantalla -->
+    <p class="meta" id="metaHero">⭐ ¡Acumula <b>20 puntos</b> y el almuerzo va por
+      cuenta de la casa!</p>
 
     <button class="btn cristal" id="btnDestapar" style="margin-top:14px">
       No puedo raspar, destápalo
@@ -676,8 +684,10 @@ const CONFIG = {
   /* Los pesos NO son porcentajes: son proporciones. El panel de la caja
      calcula qué cuesta de verdad con estos números. */
   sorteo: [
-    { peso:28, tipo:"nada",   ico:"🥺", que:"Hoy no fue",
-      nota:"Vuelve a intentar mañana, mi amor." },
+    /* Redacción de Lina. Mira a la próxima visita, no a la de hoy, que es
+       justo lo que hay que dejarle al que no se ganó nada. */
+    { peso:28, tipo:"nada",   ico:"🥺", que:"¡Hoy no fue tu día!",
+      nota:"¡Pero mañana puede ser! Vuelve y prueba tu suerte. ✨" },
     { peso:42, tipo:"puntos", n:1, que:"Ganaste 1 punto",  nota:"Un paso más para tu almuerzo gratis." },
     { peso:18, tipo:"puntos", n:2, que:"Ganaste 2 puntos", nota:"Doble hoy." },
     { peso:8,  tipo:"puntos", n:3, que:"Ganaste 3 puntos", nota:"Triple hoy." },
@@ -910,6 +920,11 @@ function sortear(){
 }
 
 function montar(reintento){
+  /* Si ya está destapada, no se vuelve a montar: el bucle de reintentos de
+     abajo corre hasta 720 ms después de cargar, y en un celular lento el
+     que alcanzaba a raspar en esa ventana veía cómo la lámina le volvía a
+     tapar el premio Y le salía otro resultado distinto. */
+  if(abierta) return;
   resultado = sortear();
   const b = resultado;
   abierta = false;
@@ -924,9 +939,13 @@ function montar(reintento){
   /* El rótulo no puede repetir lo que ya dice el resultado: "Te ganaste"
      encima de "Ganaste 1 punto" repetía la palabra, y "Esta vez" encima
      de "Hoy no fue" era redundante y frío. */
-  if(eti) eti.textContent = CONFIG.modoSorteo
-    ? (b.tipo === "nada" ? "Uy" : "¡Bien!")
-    : "Esta semana";
+  if(eti){
+    /* Sin premio no va rótulo: "Uy" encima de "¡Hoy no fue tu día!" dice
+       dos veces lo mismo. */
+    const sinPremio = CONFIG.modoSorteo && b.tipo === "nada";
+    eti.style.display = sinPremio ? "none" : "";
+    eti.textContent = CONFIG.modoSorteo ? "¡Bien!" : "Esta semana";
+  }
 
   canvas = $("capa");
   const r = $("boleta").getBoundingClientRect();
@@ -1304,19 +1323,26 @@ window.addEventListener("resize", () => {
 /* Los textos de arriba dependen del modo: con azar no se puede prometer
    "lo mismo para todos" ni "lo de esta semana", porque seria mentirle al
    cliente y la Ley 1480 obliga a que lo anunciado sea cierto. */
+const th = $("tituloHero"), lh = $("leadHero"), mh = $("metaHero");
 if(CONFIG.modoSorteo){
-  const th = $("tituloHero"), lh = $("leadHero");
-  if(th) th.innerHTML = "Raspa y mira<br>qué te salió hoy";
-  /* Decía "a veces salen puntos, a veces un beneficio, y a veces nada".
-     Arrancar avisando que puede no salir nada mata las ganas de raspar,
-     y encima no es lo más común: el 68% de las veces sí salen puntos.
-     Esta versión dice la verdad por el lado bueno, sin prometer que
-     siempre sale: eso sería mentir y la Ley 1480 obliga a que lo
-     anunciado sea cierto. "Beneficio" tampoco lo dice nadie. */
-  if(lh) lh.innerHTML = "Un raspado al día. La mayoría de las veces salen puntos, y de " +
-    "vez en cuando algo rico para acompañar. Junta <b>" + CONFIG.puntosParaAlmuerzo +
-    " puntos</b> y el almuerzo va por cuenta de la casa.";
+  /* Redacción de Lina. Es la misma de la tarjeta de la mesa y de la pieza
+     de WhatsApp a propósito: si el papel dice una cosa y la pantalla otra,
+     parecen dos promociones distintas. No promete que siempre salga algo
+     ("pueden aparecer"), que es lo que exige la Ley 1480. */
+  if(th) th.innerHTML = "🎉 ¡Raspa, gana<br>y acumula!";
+  if(lh) lh.innerHTML = "¡Tienes un raspado cada día! Descubre cuántos puntos te llevas " +
+    "y sorpréndete con los premios que pueden aparecer. 🎁";
+  if(mh) mh.innerHTML = "⭐ ¡Acumula <b>" + CONFIG.puntosParaAlmuerzo + " puntos</b> y el " +
+    "almuerzo va por cuenta de la casa!";
   document.title = "Raspa y gana · Restaurante Aury";
+}else{
+  /* Sin sorteo el beneficio es el mismo para todos y está anunciado de
+     antemano, así que ahí sí se puede prometer. */
+  if(th) th.innerHTML = "Raspa y descubre<br>lo de esta semana";
+  if(lh) lh.innerHTML = "Lo mismo para todos, sin sorteo ni suerte. Pasa el dedo y " +
+    "<b>se te guarda en el celular</b>.";
+  if(mh) mh.innerHTML = "⭐ Junta <b>" + CONFIG.puntosParaAlmuerzo + " puntos</b> y el " +
+    "almuerzo va por cuenta de la casa.";
 }
 
 pintarPuntos(false);
