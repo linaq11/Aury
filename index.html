@@ -154,7 +154,35 @@ html.sin-blur .vidrio{background:rgba(16,16,18,.92)}
   padding:calc(13px + env(safe-area-inset-top)) 0 12px}
 .top img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none;
   border:2px solid var(--naranja);cursor:pointer;
-  box-shadow:0 3px 14px rgba(0,0,0,.5)}
+  box-shadow:0 3px 14px rgba(0,0,0,.5);
+  /* Sin esto el panel NO se puede abrir en un celular: al mantener pulsada
+     una imagen, Android y iOS sacan su propio menu ("descargar imagen",
+     "copiar") como a los 500 ms, y al hacerlo el navegador cancela el
+     toque. El contador de 3 segundos se borraba antes de llegar a 1. */
+  -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;
+  touch-action:none;-webkit-tap-highlight-color:transparent}
+
+/* El aro que se va llenando mientras la cajera mantiene pulsado. Tres
+   segundos sin ninguna senal se sienten como que la pagina esta rota: se
+   suelta antes de tiempo y parece que el panel no existe.
+   Va en CSS y no en JavaScript a proposito: requestAnimationFrame se
+   congela cuando la pestana no esta al frente y el aro se quedaba quieto. */
+@property --av{syntax:"<percentage>";inherits:false;initial-value:0%}
+.logoHold{position:relative;flex:none;display:block;line-height:0}
+/* Separado del logo y en blanco a proposito: pegado y en naranja se perdia
+   contra el borde naranja del propio logo y no se veia nada. */
+.logoHold::before,.logoHold::after{
+  content:"";position:absolute;inset:-8px;border-radius:50%;pointer-events:none;
+  opacity:0;transition:opacity 140ms linear;
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3.5px),#000 0);
+          mask:radial-gradient(farthest-side,transparent calc(100% - 3.5px),#000 0)}
+/* El carril apagado se ve desde el primer instante, incluso en navegadores
+   viejos que no saben animar la variable: asi nunca se queda sin senal. */
+.logoHold::before{background:rgba(255,255,255,.26)}
+.logoHold::after{background:conic-gradient(var(--tinta) var(--av), transparent 0)}
+.logoHold.pulsando::before{opacity:1}
+.logoHold.pulsando::after{opacity:1;animation:llenarAro 3s linear forwards}
+@keyframes llenarAro{from{--av:0%} to{--av:100%}}
 .top .marca{font-family:var(--display);font-weight:800;font-size:15.5px;
   letter-spacing:-.01em;line-height:1.15;text-shadow:0 1px 10px rgba(0,0,0,.65)}
 .top .sub{font-size:11.5px;color:rgba(255,255,255,.76);text-shadow:0 1px 8px rgba(0,0,0,.7)}
@@ -415,8 +443,10 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 <div class="app">
 
   <header class="top">
-    <img id="logo" src="img/logo.jpg" alt="Restaurante Aury" tabindex="0"
-         aria-label="Restaurante Aury. Personal: mantener pulsado tres segundos para abrir el panel.">
+    <span class="logoHold" id="logoHold">
+      <img id="logo" src="img/logo.jpg" alt="Restaurante Aury" tabindex="0" draggable="false"
+           aria-label="Restaurante Aury. Personal: mantener pulsado tres segundos para abrir el panel.">
+    </span>
     <div>
       <div class="marca">Restaurante Aury</div>
       <div class="sub">Comida casera · Cartagena</div>
@@ -1185,9 +1215,43 @@ function abrirPanel(){
   $("pinError").innerHTML = ""; $("pin").value = "";
 }
 (function(){
-  let t = null; const logo = $("logo");
-  logo.addEventListener("pointerdown", () => { t = setTimeout(abrirPanel, 3000); });
-  ["pointerup","pointerleave","pointercancel"].forEach(e => logo.addEventListener(e, () => clearTimeout(t)));
+  const logo = $("logo"), aro = $("logoHold");
+  const ESPERA = 3000;              // los mismos 3 s del @keyframes de arriba
+  let t = null, x0 = 0, y0 = 0;
+
+  function soltar(){
+    clearTimeout(t); t = null;
+    aro.classList.remove("pulsando");
+  }
+
+  logo.addEventListener("pointerdown", e => {
+    if(e.button) return;                 // solo el toque o el clic izquierdo
+    soltar();
+    x0 = e.clientX; y0 = e.clientY;
+    /* Captura el puntero: si el dedo se sale del logo mientras aguanta, el
+       evento sigue llegando aqui y no se pierde a mitad de camino. */
+    try{ logo.setPointerCapture(e.pointerId); }catch(_){}
+    /* Reiniciar la animacion: sin esto, el segundo intento seguido arranca
+       con el aro donde lo dejo el primero. */
+    aro.classList.remove("pulsando"); void aro.offsetWidth;
+    aro.classList.add("pulsando");
+    t = setTimeout(() => { soltar(); abrirPanel(); }, ESPERA);
+  });
+
+  /* El pulgar nunca se queda quieto tres segundos. Antes cualquier
+     micromovimiento disparaba pointerleave y cancelaba; ahora solo
+     cancela si de verdad se arrastro el dedo. */
+  logo.addEventListener("pointermove", e => {
+    if(!t) return;
+    if(Math.hypot(e.clientX - x0, e.clientY - y0) > 16) soltar();
+  });
+  ["pointerup","pointercancel"].forEach(e => logo.addEventListener(e, soltar));
+
+  /* Android Chrome abre su menu de imagen al mantener pulsado y eso cancela
+     el toque. Bloquearlo es lo que hace que el panel se pueda abrir. */
+  logo.addEventListener("contextmenu", e => e.preventDefault());
+  logo.addEventListener("dragstart", e => e.preventDefault());
+
   logo.addEventListener("keydown", e => { if(e.key === "Enter") abrirPanel(); });
 })();
 
