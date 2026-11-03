@@ -422,8 +422,8 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
     <div class="hero" id="hero" aria-hidden="true"></div>
     <!-- arranca debajo de la banda de comida (232px) que empieza bajo el encabezado -->
     <div id="antes">
-      <h1>Raspa y descubre<br>lo de esta semana</h1>
-      <p class="lead">Lo mismo para todos, sin sorteo ni suerte.
+      <h1 id="tituloHero">Raspa y descubre<br>lo de esta semana</h1>
+      <p class="lead" id="leadHero">Lo mismo para todos, sin sorteo ni suerte.
         Pasa el dedo y <b>se te guarda en el celular</b>.</p>
     </div>
 
@@ -647,6 +647,35 @@ const CONFIG = {
 
   sellosParaAlmuerzo: 20,
 
+  /* ====================================================================
+     MODO SORTEO  —  decisión de Lina y Eli, 2 nov 2026
+     ====================================================================
+     Con esto en true el resultado del raspado es ALEATORIO: a veces
+     sellos, a veces un premio, a veces nada.
+
+     Lo que eso significa, para que quede escrito y nadie lo olvide:
+     esto es un JUEGO PROMOCIONAL bajo la Ley 643 de 2001 (arts. 5 y 31)
+     y requiere autorización previa de la Sociedad de Capital Público
+     Departamental de Bolívar, más derechos de explotación del 14% del
+     plan de premios. La excepción que tenían los comerciantes fue
+     derogada por el art. 94 de la Ley 1753 de 2015; no hay umbral por
+     tamaño de negocio. Operar sin autorización expone a multa, y la
+     publicidad no puede empezar antes del acto administrativo en firme.
+
+     Poner esto en false devuelve la mecánica sin azar (sellos según lo
+     consumido), que no necesita ningún permiso.                      */
+  modoSorteo: true,
+
+  /* Los pesos NO son porcentajes: son proporciones. El panel de la caja
+     calcula qué cuesta de verdad con estos números. */
+  sorteo: [
+    { peso:34, tipo:"nada",   que:"Hoy no",            nota:"Vuelve a intentar mañana." },
+    { peso:30, tipo:"sellos", n:1, que:"1 sello",      nota:"Un paso más para tu almuerzo gratis." },
+    { peso:20, tipo:"sellos", n:2, que:"2 sellos",     nota:"Doble hoy." },
+    { peso:11, tipo:"sellos", n:3, que:"3 sellos",     nota:"Triple hoy." },
+    { peso:5,  tipo:"premio", que:"Jugo natural gratis", nota:"Con tu almuerzo de hoy." }
+  ],
+
   /* --- CUÁNTOS SELLOS DA CADA VISITA ----------------------------------
      Lo que pidió Eli —que no a todos les salga lo mismo— resuelto SIN
      azar: los sellos dependen de lo que consumió. Una bandeja da más
@@ -849,14 +878,38 @@ function pintarSellos(nuevo){
    =================================================================== */
 let canvas = null, ctx = null, abierta = false, raspando = false;
 
+/* Resultado del raspado. En modo sorteo sale por peso; si no, es el
+   beneficio fijo de la semana. */
+let resultado = null;
+function sortear(){
+  if(!CONFIG.modoSorteo || !CONFIG.sorteo || !CONFIG.sorteo.length){
+    const b = CONFIG.beneficio;
+    return { tipo:"premio", ico:b.ico, que:b.que, nota:b.nota };
+  }
+  const total = CONFIG.sorteo.reduce((t,o) => t + (o.peso||0), 0);
+  let r = Math.random() * total;
+  for(const o of CONFIG.sorteo){
+    r -= (o.peso||0);
+    if(r <= 0) return Object.assign({}, o, {
+      ico: o.ico || (o.tipo==="nada" ? "🙈" : o.tipo==="sellos" ? "🍲" : "🥤")
+    });
+  }
+  return CONFIG.sorteo[CONFIG.sorteo.length-1];
+}
+
 function montar(reintento){
-  const b = CONFIG.beneficio;
+  resultado = sortear();
+  const b = resultado;
   abierta = false;
   $("boleta").classList.remove("abierta");
   $("pista").classList.remove("ida");
   $("bIco").textContent = b.ico;
   $("bQue").textContent = b.que;
   $("bNota").textContent = b.nota || "";
+  const eti = document.querySelector(".debajo .eti");
+  if(eti) eti.textContent = CONFIG.modoSorteo
+    ? (b.tipo === "nada" ? "Esta vez" : "Te ganaste")
+    : "Esta semana";
 
   canvas = $("capa");
   const r = $("boleta").getBoundingClientRect();
@@ -946,18 +999,34 @@ function abrir(){
 }
 
 function entregar(){
-  const b = CONFIG.beneficio;
+  const b = resultado || CONFIG.beneficio;
   if(CONFIG.unoPorDia) E.ultimoRaspado = hoy();
-  /* El cupón NO lleva sellos: el sello sale solo del botón de la cajera.
-     Tenerlo en los dos lados hacía que una visita sumara 2 sellos. */
-  E.cupones.unshift({ id:"c"+Date.now().toString(36), ico:b.ico, que:b.que,
-    fecha:hoy(), usado:false });
+
+  /* Lo ganado queda PENDIENTE hasta que la cajera lo confirme en el
+     local. Si se abonara al raspar, una foto del QR circulando por
+     WhatsApp acuñaría sellos sin que nadie pise el restaurante. */
+  if(b.tipo !== "nada"){
+    E.cupones.unshift({
+      id:"c"+Date.now().toString(36), ico:b.ico, que:b.que,
+      tipo:b.tipo, sellos:(b.tipo === "sellos" ? (b.n || 1) : 0),
+      fecha:hoy(), usado:false
+    });
+  }
   guardar(E);
   pintarSellos(false);
   $("antes").style.display = "none";
   $("btnDestapar").style.display = "none";
   $("pieInicio").style.display = "none";
   $("despues").style.display = "";
+
+  /* Cuando no salió nada no hay que pedirle nada ni explicarle cómo
+     reclamar: se le dice la verdad y que vuelva. */
+  const vacio = (b.tipo === "nada");
+  const cg = document.querySelector("#despues .vidrio.panel");
+  if(cg) cg.style.display = vacio ? "none" : "";
+  const comoR = document.querySelectorAll("#despues .vidrio.panel")[1];
+  if(comoR) comoR.style.display = vacio ? "none" : "";
+
   pintarResena();
   pintarCarta();
 }
@@ -1033,8 +1102,11 @@ function pintarLista(){
       const c = E.cupones.find(x => x.id === el.dataset.id);
       if(!c || c.usado) return;
       if(!confirm('¿Entregaste "'+c.que+'"?\n\nSe marca como usado y no se puede deshacer.')) return;
-      c.usado = true;            // marcar entregado NO pone sello
-      guardar(E); pintarLista();
+      c.usado = true;
+      /* Aquí sí se abonan: el cupón trae los sellos que salieron en el
+         raspado y se suman cuando la cajera confirma la visita. */
+      if(c.sellos){ E.sellos += c.sellos; }
+      guardar(E); pintarSellos(true); pintarLista();
     });
   });
 }
@@ -1065,6 +1137,17 @@ $("btnPin").addEventListener("click", () => {
 (function(){
   const z = $("nivelesBtns");
   if(!z || !CONFIG.nivelesSello) return;
+
+  /* En modo sorteo los sellos los trae el cupón del raspado. Si además
+     quedaran los botones por consumo, la cajera podría sumar dos veces
+     por la misma visita: tocar el botón Y marcar el cupón. Un sello solo
+     puede entrar por un camino. */
+  if(CONFIG.modoSorteo){
+    z.innerHTML = '<div class="aviso">Con el raspado activo, los sellos los trae el ' +
+      'premio del cliente. Solo tienes que <b>marcar lo que le entregaste</b> en su ' +
+      'tarjeta, abajo.</div>';
+    return;
+  }
   z.innerHTML = CONFIG.nivelesSello.map((n, i) =>
     '<button class="btn' + (i ? " cristal" : "") + '" data-s="' + n.sellos +
     '" style="margin-top:' + (i ? 9 : 0) + 'px;flex-direction:column;gap:2px">' +
@@ -1092,13 +1175,37 @@ $("btnIrMio").addEventListener("click", () => { pintarSellos(false); pintarLista
 $("btnSalir1").addEventListener("click", () => pantalla("pInicio"));
 $("btnSalir2").addEventListener("click", () => { panelAbierto = false; pantalla("pInicio"); });
 
+/* Con sorteo, lo que cuesta ya no es una cuenta fija: depende de los
+   pesos. Esto lo calcula para que Eli vea si se quiebra o no. */
+function resumenSorteo(){
+  if(!CONFIG.modoSorteo || !CONFIG.sorteo) return null;
+  const tot = CONFIG.sorteo.reduce((t,o)=>t+(o.peso||0),0);
+  let selloProm=0, pNada=0, pPremio=0;
+  CONFIG.sorteo.forEach(o=>{
+    const p=(o.peso||0)/tot;
+    if(o.tipo==="sellos") selloProm += p*(o.n||1);
+    if(o.tipo==="nada")   pNada += p;
+    if(o.tipo==="premio") pPremio += p;
+  });
+  return {selloProm, pNada, pPremio};
+}
+
 $("btnCalc").addEventListener("click", () => {
   const vis = Math.max(1,+$("cVisitas").value||0), pre = Math.max(1,+$("cPrecio").value||0),
         cb = Math.max(0,+$("cBenef").value||0);
-  const alm = vis/CONFIG.sellosParaAlmuerzo, cA = alm*pre, cB = vis*cb, venta = vis*pre;
+  const rs = resumenSorteo();
+  /* sin sorteo: 1 sello por visita. con sorteo: el promedio que sale */
+  const sellosPorVisita = rs ? rs.selloProm : 1;
+  const alm = vis*sellosPorVisita/CONFIG.sellosParaAlmuerzo;
+  const cA = alm*pre;
+  const cB = rs ? vis*rs.pPremio*cb : vis*cb;
+  const venta = vis*pre;
   const fmt = n => "$"+Math.round(n).toLocaleString("es-CO");
   const fila = (a,b) => '<div class="cuenta"><span>'+a+'</span><b>'+b+'</b></div>';
   $("calcOut").innerHTML = '<div style="margin-top:14px">' +
+    (rs ? fila("De cada 10 raspados, salen sin nada", (rs.pNada*10).toFixed(1)) +
+          fila("Sellos que salen por raspado (promedio)", rs.selloProm.toFixed(2)) +
+          fila("Beneficios que salen al mes", Math.round(vis*rs.pPremio)) : "") +
     fila("Almuerzos gratis al mes", alm.toFixed(1)) +
     fila("Lo que cuestan", fmt(cA)) +
     fila("Beneficio de la semana", fmt(cB)) +
@@ -1136,9 +1243,14 @@ window.addEventListener("resize", () => {
 
 /* ---------------- Términos (Ley 1480 de 2011, art. 33) ---------------- */
 (function(){
-  const t = "<b>Condiciones.</b> Esto <b>no es un sorteo</b>: el beneficio es el mismo para " +
-    "todas las personas durante toda la semana y está anunciado de antemano, no se decide " +
-    "por azar; cambia cada lunes. Vigencia del <b>" +
+  const base = CONFIG.modoSorteo
+    ? "<b>Condiciones.</b> En cada raspado puede salir un número variable de sellos, un " +
+      "beneficio, o nada. El resultado es <b>aleatorio</b> y no todas las veces hay premio. " +
+      "Vigencia del <b>"
+    : "<b>Condiciones.</b> Esto <b>no es un sorteo</b>: el beneficio es el mismo para " +
+      "todas las personas durante toda la semana y está anunciado de antemano, no se decide " +
+      "por azar; cambia cada lunes. Vigencia del <b>";
+  const t = base +
     CONFIG.vigenciaDesde + "</b> al <b>" + CONFIG.vigenciaHasta + "</b>. Un raspado por celular " +
     "por día. El beneficio se reclama únicamente en <b>" + CONFIG.direccion + "</b>, presentando " +
     "esta pantalla junto con el pedido del almuerzo y dentro del horario de atención (<b>" +
@@ -1158,6 +1270,18 @@ window.addEventListener("resize", () => {
   $("pieWa").innerHTML = '<a target="_blank" rel="noopener" href="https://wa.me/' +
     CONFIG.whatsapp + '">WhatsApp ' + CONFIG.whatsapp.replace(/^57/,"") + '</a>';
 })();
+
+/* Los textos de arriba dependen del modo: con azar no se puede prometer
+   "lo mismo para todos" ni "lo de esta semana", porque seria mentirle al
+   cliente y la Ley 1480 obliga a que lo anunciado sea cierto. */
+if(CONFIG.modoSorteo){
+  const th = $("tituloHero"), lh = $("leadHero");
+  if(th) th.innerHTML = "Raspa y mira<br>qué te salió hoy";
+  if(lh) lh.innerHTML = "Un raspado por día. A veces salen sellos, a veces un beneficio, " +
+    "y a veces nada. Junta <b>" + CONFIG.sellosParaAlmuerzo + " sellos</b> y el almuerzo " +
+    "va por la casa.";
+  document.title = "Raspa y gana · Restaurante Aury";
+}
 
 pintarSellos(false);
 if(CONFIG.unoPorDia && E.ultimoRaspado === hoy()){
