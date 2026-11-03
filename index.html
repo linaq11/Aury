@@ -762,11 +762,11 @@ const CONFIG = {
   sorteo: [
     /* Redacción de Lina. Mira a la próxima visita, no a la de hoy, que es
        justo lo que hay que dejarle al que no se ganó nada. */
-    { peso:26, tipo:"nada",   ico:"🥺", que:"¡Hoy no fue tu día!",
+    { peso:35, tipo:"nada",   ico:"🥺", que:"¡Hoy no fue tu día!",
       nota:"¡Pero mañana puede ser! Vuelve y prueba tu suerte. ✨" },
-    { peso:38, tipo:"puntos", n:1, que:"Ganaste 1 punto",  nota:"Un paso más para tu almuerzo gratis." },
-    { peso:15, tipo:"puntos", n:2, que:"Ganaste 2 puntos", nota:"Doble hoy." },
-    { peso:7,  tipo:"puntos", n:3, que:"Ganaste 3 puntos", nota:"Triple hoy." },
+    { peso:36, tipo:"puntos", n:1, que:"Ganaste 1 punto",  nota:"Un paso más para tu almuerzo gratis." },
+    { peso:11, tipo:"puntos", n:2, que:"Ganaste 2 puntos", nota:"Doble hoy." },
+    { peso:4,  tipo:"puntos", n:3, que:"Ganaste 3 puntos", nota:"Triple hoy." },
     /* "Escoge tu bebida" y no "jugo gratis": no a todo el mundo le gusta
        el jugo natural. Cubre jugo o gaseosa; la cerveza queda fuera
        porque cuesta mas y regalar alcohol abre otro problema. */
@@ -1485,16 +1485,19 @@ $("btnCalc").addEventListener("click", () => {
   const venta = vis*pre;
   const fmt = n => "$"+Math.round(n).toLocaleString("es-CO");
   const fila = (a,b) => '<div class="cuenta"><span>'+a+'</span><b>'+b+'</b></div>';
+  /* Decimal con coma, igual que la tabla de arriba: dos formatos en el
+     mismo panel se ven a simple vista. */
+  const coma = x => String(x).replace(".", ",");
   $("calcOut").innerHTML = '<div style="margin-top:14px">' +
-    (rs ? fila("De cada 10 raspados, salen sin nada", (rs.pNada*10).toFixed(1)) +
-          fila("Puntos que salen por raspado (promedio)", rs.puntoProm.toFixed(2)) +
+    (rs ? fila("De cada 10 raspados, salen sin nada", coma((rs.pNada*10).toFixed(1))) +
+          fila("Puntos que salen por raspado (promedio)", coma(rs.puntoProm.toFixed(2))) +
           fila("Beneficios que salen al mes", Math.round(vis*rs.pPremio)) : "") +
-    fila("Almuerzos gratis al mes", alm.toFixed(1)) +
+    fila("Almuerzos gratis al mes", coma(alm.toFixed(1))) +
     fila("Lo que cuestan", fmt(cA)) +
     fila(rs ? "Bebidas y descuentos" : "Beneficio de la semana", fmt(cB)) +
     '<div class="cuenta total"><span>Total al mes</span><span>'+fmt(cA+cB)+'</span></div>' +
     '<p class="menor" style="margin-top:10px;font-size:12px">Es el <b>'+
-      (((cA+cB)/venta)*100).toFixed(1)+'%</b> de la venta del mes. Un programa de fidelización '+
+      coma((((cA+cB)/venta)*100).toFixed(1))+'%</b> de la venta del mes. Un programa de fidelización '+
       'sano anda entre el 3% y el 6%. Si te sale más alto, súbele los puntos que cuesta el '+
       'almuerzo o ' + (rs ? 'bájale el peso a los premios caros.' : 'escoge un beneficio más barato.') +
       '</p></div>';
