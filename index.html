@@ -677,7 +677,7 @@ const CONFIG = {
      calcula qué cuesta de verdad con estos números. */
   sorteo: [
     { peso:28, tipo:"nada",   ico:"🥺", que:"Hoy no fue",
-      nota:"Vuelve a intentar mañana, mi amor ❤️" },
+      nota:"Vuelve a intentar mañana, mi amor." },
     { peso:42, tipo:"puntos", n:1, que:"Ganaste 1 punto",  nota:"Un paso más para tu almuerzo gratis." },
     { peso:18, tipo:"puntos", n:2, que:"Ganaste 2 puntos", nota:"Doble hoy." },
     { peso:8,  tipo:"puntos", n:3, que:"Ganaste 3 puntos", nota:"Triple hoy." },
@@ -1315,7 +1315,7 @@ if(CONFIG.modoSorteo){
      anunciado sea cierto. "Beneficio" tampoco lo dice nadie. */
   if(lh) lh.innerHTML = "Un raspado al día. La mayoría de las veces salen puntos, y de " +
     "vez en cuando algo rico para acompañar. Junta <b>" + CONFIG.puntosParaAlmuerzo +
-    " puntos</b> y el almuerzo va por cuenta de la casa ❤️";
+    " puntos</b> y el almuerzo va por cuenta de la casa.";
   document.title = "Raspa y gana · Restaurante Aury";
 }
 
@@ -1337,7 +1337,7 @@ if(CONFIG.unoPorDia && E.ultimoRaspado === hoy()){
   pintarResena();
   pintarCarta();
   $("despues").insertAdjacentHTML("afterbegin",
-    '<div class="aviso" style="margin:0 0 4px">Ya raspaste hoy. Vuelve mañana ❤️</div>');
+    '<div class="aviso" style="margin:0 0 4px">Ya raspaste hoy. Vuelve mañana.</div>');
 }else{
   montar();
 }

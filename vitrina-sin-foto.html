@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Raspa y descubre · Aury (sin foto)</title>
+<title>Raspa y gana · Aury (sin foto)</title>
 <meta name="description" content="Raspa y descubre el beneficio de la semana en Restaurante Aury.">
 <meta name="theme-color" content="#1a0b03">
 <link rel="icon" href="img/logo.jpg">
@@ -51,6 +51,7 @@
   --t-feedback:140ms;
   --t-foco:600ms;
 
+  --banda:232px;        /* alto de la banda de comida */
   --radio:16px;
   --radio-chico:12px;
 
@@ -104,8 +105,7 @@ body{
 html.sin-blur .vidrio{background:rgba(16,16,18,.92)}
 
 /* ---------------- Encabezado ---------------- */
-/* Sin foto, el encabezado se apoya en una franja propia: si no, el logo
-   y el chip quedan flotando en negro sin nada que los contenga. */
+/* Sin foto, el encabezado se apoya en una franja propia. */
 .top{position:relative;display:flex;align-items:center;gap:11px;
   padding:calc(13px + env(safe-area-inset-top)) 0 12px}
 .top img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none;
@@ -129,6 +129,11 @@ html.sin-blur .vidrio{background:rgba(16,16,18,.92)}
 
 /* ---------------- Pantallas ---------------- */
 .pantalla{display:none;flex:1;flex-direction:column}
+/* El hueco de la banda se calcula de su propio alto, y la banda se
+   posiciona DENTRO de esta pantalla. Antes ambos eran numeros fijos
+   calculados sobre un encabezado de 96px que en realidad mide 65: la
+   boleta caia encima de la foto y la tapaba. */
+#pInicio{position:relative;padding-top:10px}
 .pantalla.on{display:flex}
 
 h1{font-family:var(--display);font-weight:800;font-size:30px;line-height:1.08;
@@ -182,6 +187,13 @@ input:focus-visible,.cupon:focus-visible{outline:3px solid var(--naranja-claro);
 .debajo .eti{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.15em;
   text-transform:uppercase;color:var(--rojo-texto)}
 .debajo .ico{font-size:42px;line-height:1;margin:8px 0 2px}
+/* Cuando no sale nada, el emoji manda y el titular baja de tamaño: un
+   "Hoy no fue" a 31px en negrita se siente un portazo.
+   OJO con el nombre: se llamaba .vacio y chocaba con la clase .vacio de
+   las listas sin contenido, que pinta el texto en blanco. Sobre el papel
+   crema de la boleta quedaba invisible. */
+.debajo.sin-premio .ico{font-size:62px;margin:4px 0 6px}
+.debajo.sin-premio .que{font-size:25px}
 .debajo .que{font-family:var(--display);font-weight:800;font-size:31px;line-height:1.04;
   letter-spacing:-.032em}
 .debajo .nota{font-size:13.5px;color:var(--marron-2);margin-top:10px;max-width:24ch}
@@ -196,21 +208,61 @@ input:focus-visible,.cupon:focus-visible{outline:3px solid var(--naranja-claro);
   text-transform:uppercase;color:rgba(42,18,6,.46);transition:opacity 200ms linear}
 .boleta.abierta .pista,.pista.ida{opacity:0}
 
-/* ================= TARJETA DE SELLOS ================= */
+/* ================= TARJETA DE PUNTOS ================= */
 .tarjeta{padding:17px}
 .tarjeta .n{font-family:var(--display);font-weight:800;font-size:27px;
   color:var(--naranja-claro);line-height:1}
 .tarjeta .de{font-size:13px;color:rgba(255,255,255,.82)}
-.sellos{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}
-.sello{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
+.puntos{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}
+.punto{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
   border:1.5px dashed rgba(255,255,255,.3);color:rgba(255,255,255,.34)}
-.sello svg{width:56%;height:56%;display:block}
-.sello.lleno{border-style:solid;border-color:var(--naranja-claro);
+.punto svg{width:56%;height:56%;display:block}
+.punto.lleno{border-style:solid;border-color:var(--naranja-claro);
   background:var(--naranja);color:var(--marron)}
-.sello.nuevo{animation:sella 460ms var(--salida) both}
-@keyframes sella{from{transform:scale(.2) rotate(-18deg);opacity:0}to{transform:none;opacity:1}}
-.sellos-pie{font-size:13px;color:rgba(255,255,255,.84);margin-top:13px}
-.sellos-pie b{color:var(--naranja-claro)}
+.punto.nuevo{animation:marca 460ms var(--salida) both}
+@keyframes marca{from{transform:scale(.2) rotate(-18deg);opacity:0}to{transform:none;opacity:1}}
+.puntos-pie{font-size:13px;color:rgba(255,255,255,.84);margin-top:13px}
+.puntos-pie b{color:var(--naranja-claro)}
+
+/* ---------------- Metas del camino ---------------- */
+.hitos{margin-top:14px;border-top:1px solid rgba(255,255,255,.1);padding-top:12px}
+.hito{display:flex;align-items:center;gap:10px;padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,.07)}
+.hito:last-child{border-bottom:0}
+.hito .hs{font-family:var(--display);font-weight:800;font-size:13px;
+  width:30px;height:30px;flex:none;border-radius:50%;display:grid;place-items:center;
+  border:1.5px dashed rgba(255,255,255,.3);color:rgba(247,246,241,.6)}
+.hito .hi{font-size:18px;flex:none}
+.hito .hq{flex:1;min-width:0;font-size:14px}
+.hito .hf{font-size:12px;color:rgba(247,246,241,.6);white-space:nowrap}
+.hito .hl{font-family:var(--display);font-weight:800;font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;color:#86e3a6;white-space:nowrap}
+.hito.logrado .hs{border-style:solid;border-color:var(--naranja);
+  background:var(--naranja);color:#1a1a1e}
+.hito.logrado .hq{color:var(--tinta)}
+.hito.meta .hq{font-family:var(--display);font-weight:700}
+
+/* ---------------- La carta ---------------- */
+.carta h3{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--naranja);margin:18px 0 2px}
+.carta h3:first-child{margin-top:0}
+.carta .nota-grupo{font-size:12px;color:rgba(247,246,241,.66);margin-bottom:6px}
+.carta .linea{display:flex;align-items:baseline;gap:8px;padding:6px 0;
+  border-bottom:1px solid rgba(255,255,255,.07)}
+.carta .linea:last-child{border-bottom:0}
+.carta .pl{font-size:14.5px;flex:1;min-width:0}
+.carta .pr{font-family:var(--display);font-weight:700;font-size:14.5px;
+  color:var(--tinta);white-space:nowrap}
+.bandeja{display:flex;align-items:center;gap:13px;background:var(--naranja);
+  color:#1a1a1e;border-radius:var(--radio-chico);padding:13px 15px;margin-top:16px}
+.bandeja .bt{flex:1;min-width:0}
+.bandeja .bt b{font-family:var(--display);font-size:15.5px;display:block}
+.bandeja .bt span{font-size:12.5px;opacity:.82}
+.bandeja .bp{font-family:var(--display);font-weight:800;font-size:19px;white-space:nowrap}
+.bebida{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.bebida:last-child{border-bottom:0}
+.bebida b{font-size:13.5px;white-space:nowrap}
+.bebida span{font-size:12.5px;color:rgba(247,246,241,.72)}
 
 /* ---------------- Bloques ---------------- */
 .panel{padding:17px;margin-top:11px}
@@ -255,6 +307,44 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
   font-family:var(--display);font-weight:800;font-size:15px}
 .cuenta.total span:last-child{color:var(--naranja-claro)}
 
+
+/* ---- Pantallas anchas ----------------------------------------------
+   Esto no es para computadores: es para los celulares que abren en modo
+   "Sitio para computadoras". Ese modo ignora el viewport, maqueta a unos
+   980px y despues achica todo para que quepa, asi que una columna de
+   420px queda diminuta en medio de dos franjas negras. Algunos lectores
+   de QR abren asi y no lo podemos controlar.
+   Al ensanchar la columna y agrandar el contenido, ocupa mucho mas de
+   esos 980px y se sigue leyendo despues del achique. En un computador de
+   verdad tambien se ve mejor que una columna perdida en el centro. */
+@media (min-width:680px){
+  .app{max-width:560px}
+  body{font-size:19px}
+  h1{font-size:40px}
+  h2{font-size:24px}
+  .lead{font-size:19px}
+  .menor,.puntos-pie,.tarjeta .de{font-size:17px}
+  .btn{font-size:21px;min-height:68px;border-radius:18px}
+  .btn.cristal{font-size:19px;min-height:62px}
+  .top img{width:54px;height:54px}
+  .top .marca{font-size:21px}
+  .top .sub{font-size:15px}
+  .chip{font-size:18px;min-height:52px;padding:8px 17px 8px 13px}
+  .chip b{font-size:21px}
+  :root{--banda:310px}
+  .debajo .que{font-size:40px}
+  .debajo .eti{font-size:15px}
+  .debajo .nota{font-size:17px}
+  .puntos{gap:11px}
+  .carta .pl,.carta .pr{font-size:19px}
+  .carta h3{font-size:15px}
+  .cupon .tx b{font-size:20px}
+  .cupon .tx span{font-size:15px}
+  .tyc{font-size:15px}
+  input[type=text],input[type=number]{font-size:20px;min-height:60px}
+  label{font-size:16px}
+}
+
 @media (prefers-reduced-motion:reduce){
   *{transition-duration:1ms!important;animation-duration:1ms!important}
   .reflejo{display:none}
@@ -266,10 +356,16 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 <div class="reflejo" id="reflejo" aria-hidden="true"></div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- Plato visto de frente. El dibujo anterior (media luna + dos volutas
+       de vapor) a 30px leia como una CARITA SONRIENTE: las volutas
+       parecian ojos y el borde del plato, una boca. Este tiene ala ancha
+       y una sola linea de vapor centrada, que no se confunde. -->
   <symbol id="g-plato" viewBox="0 0 24 24">
-    <path d="M3.2 11.4h17.6a8.8 8.8 0 0 1-17.6 0z" fill="currentColor"/>
-    <path d="M9 7.6c0-1.3 1.6-1.4 1.6-2.8M13.4 7.6c0-1.3 1.6-1.4 1.6-2.8"
-          fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    <ellipse cx="12" cy="15.4" rx="9.6" ry="3.1" fill="none"
+             stroke="currentColor" stroke-width="1.7"/>
+    <path d="M4.2 14.6a7.8 7.8 0 0 0 15.6 0z" fill="currentColor"/>
+    <path d="M12 9.6c0-1.8 1.9-1.9 1.9-3.8" fill="none" stroke="currentColor"
+          stroke-width="1.7" stroke-linecap="round"/>
   </symbol>
 </defs></svg>
 
@@ -282,7 +378,7 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
       <div class="marca">Restaurante Aury</div>
       <div class="sub">Comida casera · Cartagena</div>
     </div>
-    <button class="chip" id="chip" aria-label="Ver mi tarjeta de sellos">
+    <button class="chip" id="chip" aria-label="Ver mi tarjeta de puntos">
       <svg width="16" height="16" aria-hidden="true" style="color:var(--naranja-claro)"><use href="#g-plato"/></svg>
       <span><b id="chipNum">0</b>/<span id="chipMeta">20</span></span>
     </button>
@@ -290,10 +386,10 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 
   <!-- ===================== INICIO ===================== -->
   <section class="pantalla on" id="pInicio">
-    <!-- arranca debajo de la banda de comida sin banda: el titulo arranca arriba -->
-    <div id="antes" style="padding-top:10px">
-      <h1>Raspa y descubre<br>lo de esta semana</h1>
-      <p class="lead">Lo mismo para todos, sin sorteo ni suerte.
+    <!-- arranca debajo de la banda de comida (232px) que empieza bajo el encabezado -->
+    <div id="antes">
+      <h1 id="tituloHero">Raspa y descubre<br>lo de esta semana</h1>
+      <p class="lead" id="leadHero">Lo mismo para todos, sin sorteo ni suerte.
         Pasa el dedo y <b>se te guarda en el celular</b>.</p>
     </div>
 
@@ -320,22 +416,25 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
           Guardado en tu celular
         </div>
         <p class="menor" style="margin-top:7px">No se te va a perder. Está arriba, en tu
-          tarjeta de sellos, para cuando vengas.</p>
+          tarjeta de puntos, para cuando vengas.</p>
       </div>
 
       <div class="vidrio panel">
         <h2>¿Cómo lo reclamo?</h2>
         <p class="menor">Muéstrale esta pantalla a la cajera cuando pidas tu almuerzo.
-          Ella te lo marca y de paso te pone el sello de la visita.</p>
+          Ella te lo marca y de paso te pone el punto de la visita.</p>
       </div>
 
       <div id="zonaResena"></div>
 
-      <button class="btn" id="btnVerSellos" style="margin-top:14px">Ver mi tarjeta de sellos</button>
+      <div class="vidrio panel carta" id="carta"></div>
+
+      <button class="btn" id="btnVerPuntos" style="margin-top:14px">Ver mi tarjeta de puntos</button>
       <div class="tyc" id="tycInicio"></div>
     </div>
 
     <div class="pie" id="pieInicio">
+      <span id="pieHorario"></span><br>
       Cocinado por madres cabeza de hogar,<br>en la herencia de la abuela Aura.<br>
       <span id="pieWa"></span>
     </div>
@@ -346,9 +445,10 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
     <div style="padding:10px 0 14px"><h1 style="font-size:26px">Mi tarjeta</h1></div>
 
     <div class="vidrio tarjeta">
-      <div><span class="n" id="mNum">0</span> <span class="de">de <b id="mMeta">20</b> sellos</span></div>
-      <div class="sellos" id="grid" aria-live="polite"></div>
-      <div class="sellos-pie" id="mFaltan"></div>
+      <div><span class="n" id="mNum">0</span> <span class="de">de <b id="mMeta">20</b> puntos</span></div>
+      <div class="puntos" id="grid" aria-live="polite"></div>
+      <div class="puntos-pie" id="mFaltan"></div>
+      <div class="hitos" id="hitos"></div>
     </div>
 
     <div class="vidrio panel">
@@ -377,11 +477,11 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 
     <div id="abierto" style="display:none">
       <div class="vidrio panel">
-        <h2>Ponerle el sello de la visita</h2>
+        <h2>Ponerle el punto de la visita</h2>
         <p class="menor">En el celular del cliente, delante de ti, cuando ya pagó.
-          Un sello por visita.</p>
-        <button class="btn" id="btnSellar" style="margin-top:13px">+1 sello a este celular</button>
-        <div id="sellarMsg"></div>
+          Toca lo que consumió: entre más grande el plato, más puntos.</p>
+        <div id="nivelesBtns" style="margin-top:13px"></div>
+        <div id="puntoMsg"></div>
       </div>
 
       <div class="vidrio panel">
@@ -395,8 +495,8 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
         <p class="menor">Para decidir si está muy regalado.</p>
         <label for="cVisitas">Visitas al mes (más o menos)</label>
         <input type="number" id="cVisitas" value="300" min="1" max="100000">
-        <label for="cPrecio">Precio del almuerzo (COP)</label>
-        <input type="number" id="cPrecio" value="15000" min="1000" max="200000">
+        <label for="cPrecio">Precio del almuerzo (COP) · tu carta va de 14.000 a 20.000</label>
+        <input type="number" id="cPrecio" value="17000" min="1000" max="200000">
         <label for="cBenef">Lo que te cuesta el beneficio semanal (COP)</label>
         <input type="number" id="cBenef" value="2000" min="0" max="200000">
         <button class="btn cristal" id="btnCalc" style="margin-top:13px">Calcular</button>
@@ -428,16 +528,151 @@ label{display:block;font-size:12.5px;font-weight:700;margin:13px 0 5px;color:rgb
 const CONFIG = {
   whatsapp: "573002679611",
   direccion: "Cl. 31b #52-29, Villa Olímpica, Cartagena",
+  /* Hora de cierre confirmada por Lina el 2 nov 2026. La de apertura
+     sale del reel del festivo ("desde las 8am"), así que va marcada:
+     si no es exacta, se corrige aquí. */
+  cierra: "5:00 p. m.",
+  abre: "8:00 a. m.",
 
-  beneficio: { ico:"🥤", que:"Jugo natural gratis", nota:"Con tu corrientazo de esta semana." },
+  /* --- EL BENEFICIO, SEMANA POR SEMANA -------------------------------
+     Rota solo: cambia cada lunes y vuelve a empezar cuando se acaba la
+     lista. Lo decide la fecha, no el azar — todos los que raspen esta
+     semana ven lo mismo, y está anunciado de antemano. Por eso sigue sin
+     ser sorteo y sigue sin necesitar permiso.
+     Cada uno cuesta distinto: pon solo los que a Eli le cuadren, y en el
+     orden que quieras. Si dejas uno solo, no rota. */
+  beneficios: [
+    { ico:"🥤", que:"Escoge tu bebida",     nota:"Jugo natural o gaseosa, con tu almuerzo." },
+    { ico:"🍮", que:"Postre gratis",        nota:"Con tu almuerzo de esta semana." },
+    { ico:"🍌", que:"Patacón extra gratis", nota:"Con tu almuerzo de esta semana." },
+    { ico:"🥤", que:"Escoge tu bebida",     nota:"Jugo natural o gaseosa, con tu almuerzo." },
+    { ico:"🍲", que:"Sopa extra gratis",    nota:"Con tu almuerzo de esta semana." }
+  ],
 
 
-  sellosParaAlmuerzo: 20,
+  /* --- LA CARTA ------------------------------------------------------
+     Tomada de las dos fotos del menú que pasó Lina. Confirmado por ella
+     el 2 nov 2026: los precios están vigentes y los platos son los
+     mismos, pero NO todos están disponibles todos los días.
+     Por eso la página lo dice de frente: prometer veinte platos y no
+     tenerlos molesta más que no poner la carta, y además la Ley 1480
+     obliga a cumplir lo que se anuncia.
+     Si suben los precios, se cambian aquí y ya.                        */
+  carta: [
+    { grupo:"Sancochos", nota:"El del día cambia: unos días es de costilla, otros de mondongo.",
+      platos:[
+        ["Sancocho (costilla o mondongo)", 18000],
+        ["Sancocho mediano", 14000]
+      ]},
+    { grupo:"Carnes", platos:[
+        ["Albóndigas en salsa", 14000],
+        ["Carne desmechada", 16000],
+        ["Sobrebarriga guisada", 16000],
+        ["Mondongo guisado", 16000],
+        ["Lengua en salsa", 17000],
+        ["Carne en bistec", 18000],
+        ["Carne asada", 18000]
+      ]},
+    { grupo:"Pollo y cerdo", platos:[
+        ["Alitas de pollo BBQ", 14000],
+        ["Pollo frito", 16000],
+        ["Pollo guisado", 16000],
+        ["Cerdo asado", 18000],
+        ["Cerdo asado a la pimienta", 19000],
+        ["Pechuga asada", 18000],
+        ["Pechuga a la pimienta", 19000],
+        ["Pechuga BBQ o gratinada", 19000],
+        ["Chicharrones fritos o BBQ", 18000],
+        ["Costillas de cerdo frita o BBQ", 20000]
+      ]}
+  ],
+  bandeja: { precio:22000,
+    texto:"Con la proteína que escojas, patacones o papas fritas, ensalada y sopa." },
+  bebidas: [
+    ["Jugos naturales", "Guayaba · mora · tomate de árbol · guanábana · maracuyá · sapote"],
+    ["Gaseosas", "Coca-Cola · Kola Román · Sprite · Quatro · soda"],
+    ["Cervezas", "Club Colombia · Corona · Águila · Águila Light"]
+  ],
+
+  puntosParaAlmuerzo: 20,
+
+  /* ====================================================================
+     MODO SORTEO  —  decisión de Lina y Eli, 2 nov 2026
+     ====================================================================
+     Con esto en true el resultado del raspado es ALEATORIO: a veces
+     puntos, a veces un premio, a veces nada.
+
+     Lo que eso significa, para que quede escrito y nadie lo olvide:
+     esto es un JUEGO PROMOCIONAL bajo la Ley 643 de 2001 (arts. 5 y 31)
+     y requiere autorización previa de la Sociedad de Capital Público
+     Departamental de Bolívar, más derechos de explotación del 14% del
+     plan de premios. La excepción que tenían los comerciantes fue
+     derogada por el art. 94 de la Ley 1753 de 2015; no hay umbral por
+     tamaño de negocio. Operar sin autorización expone a multa, y la
+     publicidad no puede empezar antes del acto administrativo en firme.
+
+     Poner esto en false devuelve la mecánica sin azar (puntos según lo
+     consumido), que no necesita ningún permiso.                      */
+  modoSorteo: true,
+
+  /* Los pesos NO son porcentajes: son proporciones. El panel de la caja
+     calcula qué cuesta de verdad con estos números. */
+  sorteo: [
+    { peso:28, tipo:"nada",   ico:"🥺", que:"Hoy no fue",
+      nota:"Vuelve a intentar mañana, mi amor." },
+    { peso:42, tipo:"puntos", n:1, que:"Ganaste 1 punto",  nota:"Un paso más para tu almuerzo gratis." },
+    { peso:18, tipo:"puntos", n:2, que:"Ganaste 2 puntos", nota:"Doble hoy." },
+    { peso:8,  tipo:"puntos", n:3, que:"Ganaste 3 puntos", nota:"Triple hoy." },
+    /* "Escoge tu bebida" y no "jugo gratis": no a todo el mundo le gusta
+       el jugo natural. Cubre jugo o gaseosa; la cerveza queda fuera
+       porque cuesta mas y regalar alcohol abre otro problema. */
+    { peso:4,  tipo:"premio", ico:"🥤", que:"Escoge tu bebida",
+      nota:"Jugo natural o gaseosa, con tu almuerzo de hoy." }
+  ],
+
+  /* --- CUÁNTOS PUNTOS DA CADA VISITA ----------------------------------
+     Lo que pidió Eli —que no a todos les salga lo mismo— resuelto SIN
+     azar: los puntos dependen de lo que consumió. Una bandeja da más
+     que un sancocho mediano. Varía por cliente y por visita, pero es
+     aritmética, no suerte, así que el art. 5 de la Ley 643 no se activa
+     por ninguna lectura.
+     Repartir puntos al azar es terreno gris: Coljuegos lista "raspa y
+     gana" como método de azar, y Puntos Colombia —cuyos puntos tampoco
+     son dinero ni transferibles— tramita autorización para sortearlos.
+     Los rangos salen de la carta real. Ajusta los puntos si quieres que
+     el almuerzo gratis llegue más rápido o más lento.               */
+  nivelesPunto: [
+    { puntos:1, titulo:"Almuerzo sencillo",  detalle:"$14.000 a $16.000" },
+    { puntos:2, titulo:"Almuerzo completo",  detalle:"$17.000 a $20.000" },
+    { puntos:3, titulo:"Bandeja especial",   detalle:"$22.000" }
+  ],
+
+  /* --- METAS EN EL CAMINO --------------------------------------------
+     Lo que pidió Eli: que la gente se quede "a ver qué me puedo ganar".
+     Se consigue con metas ANUNCIADAS, no con azar. Que el premio salga
+     al azar, o que a veces salga "sigue intentando", convierte esto en
+     juego promocional: permiso de la Lotería de Bolívar y 14% del plan
+     de premios. Una meta conocida de antemano no es azar, y engancha
+     igual o más, porque el cliente sabe cuánto le falta.
+     Cada una cuesta plata: ajusta cuáles y en qué punto.             */
+  hitos: [
+    { punto:5,  ico:"🥤", que:"Escoge tu bebida" },
+    { punto:10, ico:"🍮", que:"Postre gratis" },
+    { punto:15, ico:"🍌", que:"Porción de patacones" }
+  ],
   claveDelMes: "2611",
 
-  /* PENDIENTE: link corto de reseñas. Perfil de Empresa de Google → Inicio
-     → "Pide reseñas". Mientras esté vacío la pantalla no se muestra. */
-  googleReview: "",
+  /* Link a la ficha de Aury en Google. Sacado de la URL de Maps que pasó
+     Lina: el par 0x...:0xc3296041bbe6ed2b da el CID 14062877146882698539.
+     VERIFICADO el 2 nov 2026 abriéndolo: resuelve a Restaurante Aury,
+     Cl. 31b #52-29, Villa Olímpica, 5.0 estrellas.
+     En el celular abre la app de Maps en la ficha; la persona toca las
+     estrellas para escribir.
+     MEJOR AÚN: el link corto del Perfil de Empresa (Inicio → "Pide
+     reseñas", queda como https://g.page/r/XXXX/review) abre directo la
+     caja de reseña, sin ese toque de más. Cuando Eli lo saque, se
+     reemplaza aquí.                                                    */
+  googleReview: "https://maps.google.com/?cid=14062877146882698539",
 
   vigenciaDesde: "3 de noviembre de 2026",
   vigenciaHasta: "31 de diciembre de 2026",
@@ -448,18 +683,26 @@ const CONFIG = {
 (function(){
 "use strict";
 
-const LLAVE = "aury_raspa_v3";   // mismo almacén que index.html: los sellos no se pierden al cambiar de versión
+const LLAVE = "aury_raspa_v3";   // mismo almacén que index.html: los puntos no se pierden al cambiar de versión
 const mem = {};
 function leer(){ try{ const v=localStorage.getItem(LLAVE); if(v) return JSON.parse(v);}catch(e){} return mem.d||null; }
 function guardar(d){ mem.d=d; try{ localStorage.setItem(LLAVE, JSON.stringify(d)); }catch(e){} }
-function inicial(){ return { sellos:0, cupones:[], ultimoRaspado:null, ultimoSello:null }; }
+function inicial(){ return { puntos:0, cupones:[], ultimoRaspado:null, ultimoPunto:null }; }
 let E = leer() || inicial();
-if(typeof E.sellos !== "number" || !Array.isArray(E.cupones)) E = inicial();
+if(typeof E.puntos !== "number" || !Array.isArray(E.cupones)) E = inicial();
 
 const $ = id => document.getElementById(id);
 const hoy = () => new Date().toLocaleDateString("sv-SE");
 function esc(s){ return String(s).replace(/[&<>"']/g,
   c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+/* Días transcurridos en hora LOCAL, no UTC. Con UTC el cambio de día cae
+   a las 7 de la noche en Colombia (UTC-5) y tanto la foto como el
+   beneficio cambiarían con el restaurante abierto. */
+function diasLocales(){
+  const d = new Date();
+  return Math.floor((d.getTime() - d.getTimezoneOffset()*60000) / 86400000);
+}
+
 const menosMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function pantalla(id){
@@ -475,7 +718,18 @@ if(!(CSS.supports("backdrop-filter","blur(1px)") ||
   document.documentElement.classList.add("sin-blur");
 }
 
-/* ---- La foto grande entra cuando ya cargó, no antes ---- */
+/* ---- El beneficio de la semana ----
+   Por número de semana desde una fecha fija, no por Math.random(): todos
+   los que raspen esta semana ven lo mismo, y cambia cada lunes. */
+CONFIG.beneficio = (function(){
+  const lista = CONFIG.beneficios || [];
+  if(!lista.length) return { ico:"🎁", que:"Beneficio de la semana", nota:"" };
+  if(lista.length === 1) return lista[0];
+  /* el 1 ene 1970 fue jueves, así que el día 4 es lunes: con ese origen
+     la semana cambia los lunes a medianoche hora de Cartagena */
+  const semanas = Math.floor((diasLocales() - 4) / 7);
+  return lista[((semanas % lista.length) + lista.length) % lista.length];
+})();
 
 /* ---- El reflejo sigue al dedo ----
    Puntero grueso (dedo): se mueve con el toque. Puntero fino (mouse):
@@ -501,32 +755,54 @@ if(!(CSS.supports("backdrop-filter","blur(1px)") ||
   window.addEventListener("pointerup", () => r.classList.remove("viva"), {passive:true});
 })();
 
-/* ---------------- Tarjeta de sellos ---------------- */
+/* ---------------- Tarjeta de puntos ---------------- */
 let pintados = -1;
-function pintarSellos(nuevo){
-  const meta = CONFIG.sellosParaAlmuerzo;
-  $("chipNum").textContent = E.sellos;
+function pintarPuntos(nuevo){
+  const meta = CONFIG.puntosParaAlmuerzo;
+  $("chipNum").textContent = E.puntos;
   $("chipMeta").textContent = meta;
-  $("mNum").textContent = E.sellos;
+  $("mNum").textContent = E.puntos;
   $("mMeta").textContent = meta;
 
   const g = $("grid");
-  if(pintados !== E.sellos || !g.children.length){
+  if(pintados !== E.puntos || !g.children.length){
     g.innerHTML = "";
     for(let i = 0; i < meta; i++){
       const d = document.createElement("div");
-      const lleno = i < E.sellos;
-      d.className = "sello" + (lleno ? " lleno" : "") +
-        (lleno && nuevo && i === E.sellos - 1 && !menosMotion() ? " nuevo" : "");
+      const lleno = i < E.puntos;
+      d.className = "punto" + (lleno ? " lleno" : "") +
+        (lleno && nuevo && i === E.puntos - 1 && !menosMotion() ? " nuevo" : "");
       d.innerHTML = lleno ? '<svg viewBox="0 0 24 24"><use href="#g-plato"/></svg>' : "";
       g.appendChild(d);
     }
-    pintados = E.sellos;
+    pintados = E.puntos;
   }
-  const faltan = Math.max(0, meta - E.sellos);
+  // las metas del camino
+  const zh = $("hitos");
+  if(zh && CONFIG.hitos){
+    zh.innerHTML = CONFIG.hitos.map(h => {
+      const logrado = E.puntos >= h.punto;
+      return '<div class="hito' + (logrado ? " logrado" : "") + '">' +
+        '<span class="hs">' + h.punto + '</span>' +
+        '<span class="hi">' + esc(h.ico) + '</span>' +
+        '<span class="hq">' + esc(h.que) + '</span>' +
+        (logrado ? '<span class="hl">listo</span>'
+                 : '<span class="hf">faltan ' + (h.punto - E.puntos) + '</span>') +
+        '</div>';
+    }).join("") +
+    '<div class="hito meta' + (E.puntos >= meta ? " logrado" : "") + '">' +
+      '<span class="hs">' + meta + '</span>' +
+      '<span class="hi">🍲</span>' +
+      '<span class="hq">Almuerzo gratis</span>' +
+      (E.puntos >= meta ? '<span class="hl">listo</span>'
+                        : '<span class="hf">faltan ' + (meta - E.puntos) + '</span>') +
+    '</div>';
+  }
+
+  const faltan = Math.max(0, meta - E.puntos);
   $("mFaltan").innerHTML = faltan === 0
     ? "<b>¡Tarjeta llena! Pídele tu almuerzo gratis a la cajera.</b>"
-    : "Te faltan <b>" + faltan + "</b> " + (faltan === 1 ? "sello" : "sellos") + " para el almuerzo gratis.";
+    : "Te faltan <b>" + faltan + "</b> " + (faltan === 1 ? "punto" : "puntos") + " para el almuerzo gratis.";
 }
 
 /* ===================================================================
@@ -534,14 +810,43 @@ function pintarSellos(nuevo){
    =================================================================== */
 let canvas = null, ctx = null, abierta = false, raspando = false;
 
+/* Resultado del raspado. En modo sorteo sale por peso; si no, es el
+   beneficio fijo de la semana. */
+let resultado = null;
+function sortear(){
+  if(!CONFIG.modoSorteo || !CONFIG.sorteo || !CONFIG.sorteo.length){
+    const b = CONFIG.beneficio;
+    return { tipo:"premio", ico:b.ico, que:b.que, nota:b.nota };
+  }
+  const total = CONFIG.sorteo.reduce((t,o) => t + (o.peso||0), 0);
+  let r = Math.random() * total;
+  for(const o of CONFIG.sorteo){
+    r -= (o.peso||0);
+    if(r <= 0) return Object.assign({}, o, {
+      ico: o.ico || (o.tipo==="nada" ? "🥺" : o.tipo==="puntos" ? "🍲" : "🥤")
+    });
+  }
+  return CONFIG.sorteo[CONFIG.sorteo.length-1];
+}
+
 function montar(reintento){
-  const b = CONFIG.beneficio;
+  resultado = sortear();
+  const b = resultado;
   abierta = false;
   $("boleta").classList.remove("abierta");
   $("pista").classList.remove("ida");
   $("bIco").textContent = b.ico;
   $("bQue").textContent = b.que;
   $("bNota").textContent = b.nota || "";
+  const dj = document.querySelector(".debajo");
+  if(dj) dj.classList.toggle("sin-premio", b.tipo === "nada");
+  const eti = document.querySelector(".debajo .eti");
+  /* El rótulo no puede repetir lo que ya dice el resultado: "Te ganaste"
+     encima de "Ganaste 1 punto" repetía la palabra, y "Esta vez" encima
+     de "Hoy no fue" era redundante y frío. */
+  if(eti) eti.textContent = CONFIG.modoSorteo
+    ? (b.tipo === "nada" ? "Uy" : "¡Bien!")
+    : "Esta semana";
 
   canvas = $("capa");
   const r = $("boleta").getBoundingClientRect();
@@ -631,19 +936,49 @@ function abrir(){
 }
 
 function entregar(){
-  const b = CONFIG.beneficio;
+  const b = resultado || CONFIG.beneficio;
   if(CONFIG.unoPorDia) E.ultimoRaspado = hoy();
-  /* El cupón NO lleva sellos: el sello sale solo del botón de la cajera.
-     Tenerlo en los dos lados hacía que una visita sumara 2 sellos. */
-  E.cupones.unshift({ id:"c"+Date.now().toString(36), ico:b.ico, que:b.que,
-    fecha:hoy(), usado:false });
+
+  /* Lo ganado queda PENDIENTE hasta que la cajera lo confirme en el
+     local. Si se abonara al raspar, una foto del QR circulando por
+     WhatsApp acuñaría puntos sin que nadie pise el restaurante. */
+  if(b.tipo !== "nada"){
+    E.cupones.unshift({
+      id:"c"+Date.now().toString(36), ico:b.ico, que:b.que,
+      tipo:b.tipo, puntos:(b.tipo === "puntos" ? (b.n || 1) : 0),
+      fecha:hoy(), usado:false
+    });
+  }
   guardar(E);
-  pintarSellos(false);
+  pintarPuntos(false);
   $("antes").style.display = "none";
   $("btnDestapar").style.display = "none";
   $("pieInicio").style.display = "none";
   $("despues").style.display = "";
+
+  /* Cuando no salió nada no hay que pedirle nada ni explicarle cómo
+     reclamar: se le dice la verdad y que vuelva. */
+  const vacio = (b.tipo === "nada");
+  const cg = document.querySelector("#despues .vidrio.panel");
+  if(cg) cg.style.display = vacio ? "none" : "";
+  const comoR = document.querySelectorAll("#despues .vidrio.panel")[1];
+  if(comoR) comoR.style.display = vacio ? "none" : "";
+
+  /* Consuelo que además es útil: lo que ya tenía sigue ahí. */
+  const prev = $("consuelo");
+  if(prev) prev.remove();
+  if(vacio){
+    $("despues").insertAdjacentHTML("afterbegin",
+      '<div class="vidrio panel" id="consuelo">' +
+        '<h2>Tus ' + E.puntos + ' ' + (E.puntos === 1 ? "punto sigue" : "puntos siguen") +
+          ' ahí 🍲</h2>' +
+        '<p class="menor">No se pierde nada. Mañana vuelves a raspar, y de todas formas ' +
+          'cada visita te acerca al almuerzo gratis.</p>' +
+      '</div>');
+  }
+
   pintarResena();
+  pintarCarta();
 }
 
 /* ---------------- Reseña: se pide, nunca se paga ---------------- */
@@ -662,9 +997,42 @@ function pintarResena(){
       '<a class="btn cristal" style="margin-top:9px" target="_blank" rel="noopener" href="' +
         'https://wa.me/' + esc(CONFIG.whatsapp) + '">Contarnos algo por WhatsApp</a>' +
       '<p class="menor" style="margin-top:11px;font-size:11.5px">La reseña es un favor, no ' +
-        'un requisito. Tu beneficio y tus sellos no dependen de que la dejes, ni de lo que ' +
+        'un requisito. Tu beneficio y tus puntos no dependen de que la dejes, ni de lo que ' +
         'escribas.</p>' +
     '</div>';
+}
+
+/* ---------------- La carta ----------------
+   Se pinta una vez, al destapar. No se actualiza a diario porque no hace
+   falta: los platos y los precios son fijos. Lo que sí cambia es qué hay
+   disponible cada día, y eso la página lo dice en vez de prometerlo. */
+function pintarCarta(){
+  const c = $("carta");
+  if(!c || !CONFIG.carta) return;
+  const pesos = n => "$" + n.toLocaleString("es-CO");
+  let h = '<h2 style="margin-bottom:4px">La carta</h2>' +
+    '<p class="menor" style="margin-bottom:14px">Los precios son estos. ' +
+    '<b>No todos los días están todos los platos</b>, así que pregunta por los de hoy.</p>';
+  CONFIG.carta.forEach(g => {
+    h += "<h3>" + esc(g.grupo) + "</h3>";
+    if(g.nota) h += '<div class="nota-grupo">' + esc(g.nota) + "</div>";
+    g.platos.forEach(p => {
+      h += '<div class="linea"><span class="pl">' + esc(p[0]) +
+           '</span><span class="pr">' + pesos(p[1]) + "</span></div>";
+    });
+  });
+  if(CONFIG.bandeja){
+    h += '<div class="bandeja"><span class="bt"><b>Bandeja especial</b><span>' +
+         esc(CONFIG.bandeja.texto) + '</span></span><span class="bp">' +
+         pesos(CONFIG.bandeja.precio) + "</span></div>";
+  }
+  if(CONFIG.bebidas && CONFIG.bebidas.length){
+    h += "<h3>Para tomar</h3>";
+    CONFIG.bebidas.forEach(b => {
+      h += '<div class="bebida"><b>' + esc(b[0]) + "</b><span>" + esc(b[1]) + "</span></div>";
+    });
+  }
+  c.innerHTML = h;
 }
 
 /* ---------------- Cupones ---------------- */
@@ -684,8 +1052,11 @@ function pintarLista(){
       const c = E.cupones.find(x => x.id === el.dataset.id);
       if(!c || c.usado) return;
       if(!confirm('¿Entregaste "'+c.que+'"?\n\nSe marca como usado y no se puede deshacer.')) return;
-      c.usado = true;            // marcar entregado NO pone sello
-      guardar(E); pintarLista();
+      c.usado = true;
+      /* Aquí sí se abonan: el cupón trae los puntos que salieron en el
+         raspado y se suman cuando la cajera confirma la visita. */
+      if(c.puntos){ E.puntos += c.puntos; }
+      guardar(E); pintarPuntos(true); pintarLista();
     });
   });
 }
@@ -710,43 +1081,95 @@ $("btnPin").addEventListener("click", () => {
   else $("pinError").innerHTML = '<div class="aviso">Clave incorrecta.</div>';
 });
 
-$("btnSellar").addEventListener("click", () => {
-  const ahora = Date.now();
-  if(E.ultimoSello && ahora - E.ultimoSello < 120000){
-    const seg = Math.round((ahora - E.ultimoSello)/1000);
-    if(!confirm("Ya le pusiste un sello a este celular hace "+seg+" segundos.\n\n¿Es otra visita distinta?")) return;
-  }
-  E.sellos += 1; E.ultimoSello = ahora;
-  guardar(E); pintarSellos(true);
-  $("sellarMsg").innerHTML = '<div class="aviso ok">Listo: este celular va en <b>'+E.sellos+
-    '</b> '+(E.sellos===1?"sello":"sellos")+'.</div>';
-});
+/* Un botón por nivel de consumo. Lo que pidió Eli —que no a todos les
+   salga lo mismo— sin azar: los puntos los decide lo que se comió, que
+   es aritmética. Repartirlos al azar es terreno gris y lo evitamos. */
+(function(){
+  const z = $("nivelesBtns");
+  if(!z || !CONFIG.nivelesPunto) return;
 
-$("btnIrMio").addEventListener("click", () => { pintarSellos(false); pintarLista(); pantalla("pMio"); });
+  /* En modo sorteo los puntos los trae el cupón del raspado. Si además
+     quedaran los botones por consumo, la cajera podría sumar dos veces
+     por la misma visita: tocar el botón Y marcar el cupón. Un punto solo
+     puede entrar por un camino. */
+  if(CONFIG.modoSorteo){
+    z.innerHTML = '<div class="aviso">Con el raspado activo, los puntos los trae el ' +
+      'premio del cliente. Solo tienes que <b>marcar lo que le entregaste</b> en su ' +
+      'tarjeta, abajo.</div>';
+    return;
+  }
+  z.innerHTML = CONFIG.nivelesPunto.map((n, i) =>
+    '<button class="btn' + (i ? " cristal" : "") + '" data-s="' + n.puntos +
+    '" style="margin-top:' + (i ? 9 : 0) + 'px;flex-direction:column;gap:2px">' +
+      '<span>' + esc(n.titulo) + ' · +' + n.puntos + (n.puntos === 1 ? " punto" : " puntos") + '</span>' +
+      '<span style="font-weight:400;font-size:13px;opacity:.75">' + esc(n.detalle) + '</span>' +
+    '</button>').join("");
+
+  z.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    const suma = +b.dataset.s || 1;
+    /* El error típico de caja es tocar dos veces por la misma visita.
+       Cada toque de más es plata regalada. */
+    const ahora = Date.now();
+    if(E.ultimoPunto && ahora - E.ultimoPunto < 120000){
+      const seg = Math.round((ahora - E.ultimoPunto)/1000);
+      if(!confirm("Ya le pusiste puntos a este celular hace "+seg+" segundos.\n\n¿Es otra visita distinta?")) return;
+    }
+    E.puntos += suma; E.ultimoPunto = ahora;
+    guardar(E); pintarPuntos(true);
+    $("puntoMsg").innerHTML = '<div class="aviso ok">+'+suma+' · este celular va en <b>'+E.puntos+
+      '</b> '+(E.puntos===1?"punto":"puntos")+'.</div>';
+  }));
+})();
+
+$("btnIrMio").addEventListener("click", () => { pintarPuntos(false); pintarLista(); pantalla("pMio"); });
 $("btnSalir1").addEventListener("click", () => pantalla("pInicio"));
 $("btnSalir2").addEventListener("click", () => { panelAbierto = false; pantalla("pInicio"); });
+
+/* Con sorteo, lo que cuesta ya no es una cuenta fija: depende de los
+   pesos. Esto lo calcula para que Eli vea si se quiebra o no. */
+function resumenSorteo(){
+  if(!CONFIG.modoSorteo || !CONFIG.sorteo) return null;
+  const tot = CONFIG.sorteo.reduce((t,o)=>t+(o.peso||0),0);
+  let puntoProm=0, pNada=0, pPremio=0;
+  CONFIG.sorteo.forEach(o=>{
+    const p=(o.peso||0)/tot;
+    if(o.tipo==="puntos") puntoProm += p*(o.n||1);
+    if(o.tipo==="nada")   pNada += p;
+    if(o.tipo==="premio") pPremio += p;
+  });
+  return {puntoProm, pNada, pPremio};
+}
 
 $("btnCalc").addEventListener("click", () => {
   const vis = Math.max(1,+$("cVisitas").value||0), pre = Math.max(1,+$("cPrecio").value||0),
         cb = Math.max(0,+$("cBenef").value||0);
-  const alm = vis/CONFIG.sellosParaAlmuerzo, cA = alm*pre, cB = vis*cb, venta = vis*pre;
+  const rs = resumenSorteo();
+  /* sin sorteo: 1 punto por visita. con sorteo: el promedio que sale */
+  const puntosPorVisita = rs ? rs.puntoProm : 1;
+  const alm = vis*puntosPorVisita/CONFIG.puntosParaAlmuerzo;
+  const cA = alm*pre;
+  const cB = rs ? vis*rs.pPremio*cb : vis*cb;
+  const venta = vis*pre;
   const fmt = n => "$"+Math.round(n).toLocaleString("es-CO");
   const fila = (a,b) => '<div class="cuenta"><span>'+a+'</span><b>'+b+'</b></div>';
   $("calcOut").innerHTML = '<div style="margin-top:14px">' +
+    (rs ? fila("De cada 10 raspados, salen sin nada", (rs.pNada*10).toFixed(1)) +
+          fila("Puntos que salen por raspado (promedio)", rs.puntoProm.toFixed(2)) +
+          fila("Beneficios que salen al mes", Math.round(vis*rs.pPremio)) : "") +
     fila("Almuerzos gratis al mes", alm.toFixed(1)) +
     fila("Lo que cuestan", fmt(cA)) +
     fila("Beneficio de la semana", fmt(cB)) +
     '<div class="cuenta total"><span>Total al mes</span><span>'+fmt(cA+cB)+'</span></div>' +
     '<p class="menor" style="margin-top:10px;font-size:12px">Es el <b>'+
       (((cA+cB)/venta)*100).toFixed(1)+'%</b> de la venta del mes. Un programa de fidelización '+
-      'sano anda entre el 3% y el 6%. Si te sale más alto, súbele los sellos que cuesta el '+
+      'sano anda entre el 3% y el 6%. Si te sale más alto, súbele los puntos que cuesta el '+
       'almuerzo o escoge un beneficio más barato.</p></div>';
 });
 
 /* ---------------- Navegación ---------------- */
 $("btnDestapar").addEventListener("click", abrir);
-$("chip").addEventListener("click", () => { pintarSellos(false); pintarLista(); pantalla("pMio"); });
-$("btnVerSellos").addEventListener("click", () => { pintarSellos(false); pintarLista(); pantalla("pMio"); });
+$("chip").addEventListener("click", () => { pintarPuntos(false); pintarLista(); pantalla("pMio"); });
+$("btnVerPuntos").addEventListener("click", () => { pintarPuntos(false); pintarLista(); pantalla("pMio"); });
 $("btnVolver").addEventListener("click", () => pantalla("pInicio"));
 
 (function(){
@@ -770,29 +1193,71 @@ window.addEventListener("resize", () => {
 
 /* ---------------- Términos (Ley 1480 de 2011, art. 33) ---------------- */
 (function(){
-  const t = "<b>Condiciones.</b> Esto <b>no es un sorteo</b>: el beneficio es el mismo para " +
-    "todas las personas y está anunciado de antemano, no se decide por azar. Vigencia del <b>" +
+  const base = CONFIG.modoSorteo
+    ? "<b>Condiciones.</b> En cada raspado puede salir un número variable de puntos, un " +
+      "beneficio, o nada. El resultado es <b>aleatorio</b> y no todas las veces hay premio. " +
+      "Vigencia del <b>"
+    : "<b>Condiciones.</b> Esto <b>no es un sorteo</b>: el beneficio es el mismo para " +
+      "todas las personas durante toda la semana y está anunciado de antemano, no se decide " +
+      "por azar; cambia cada lunes. Vigencia del <b>";
+  const t = base +
     CONFIG.vigenciaDesde + "</b> al <b>" + CONFIG.vigenciaHasta + "</b>. Un raspado por celular " +
     "por día. El beneficio se reclama únicamente en <b>" + CONFIG.direccion + "</b>, presentando " +
-    "esta pantalla junto con el pedido del almuerzo; no es transferible ni canjeable por dinero. " +
-    "<b>Sellos:</b> un sello por visita, puesto por el personal en el local cuando se confirma " +
-    "el consumo; al completar <b>" + CONFIG.sellosParaAlmuerzo + "</b> sellos se obtiene un " +
-    "almuerzo del día sin costo. Los sellos no se compran, no se transfieren y no se dan por " +
-    "dejar reseñas. <b>Esta página no guarda ningún dato personal:</b> los sellos y los " +
+    "esta pantalla junto con el pedido del almuerzo y dentro del horario de atención (<b>" +
+    CONFIG.abre + " a " + CONFIG.cierra + "</b>); no es transferible ni canjeable por dinero. " +
+    "<b>Puntos:</b> un punto por visita, puesto por el personal en el local cuando se confirma " +
+    "el consumo; al completar <b>" + CONFIG.puntosParaAlmuerzo + "</b> puntos se obtiene un " +
+    "almuerzo del día sin costo. Los puntos no se compran, no se transfieren y no se dan por " +
+    "dejar reseñas. <b>Esta página no guarda ningún dato personal:</b> los puntos y los " +
     "beneficios se guardan solo en este celular, así que si borras los datos del navegador se " +
     "pierden. Restaurante Aury · " + CONFIG.direccion + " · WhatsApp " +
     CONFIG.whatsapp.replace(/^57/,"") + ".";
   $("tycInicio").innerHTML = t;
   $("tycMio").innerHTML = t;
+  const ph = $("pieHorario");
+  if(ph) ph.innerHTML = '<b style="color:var(--naranja)">Abrimos de ' + CONFIG.abre +
+    ' a ' + CONFIG.cierra + '</b>';
   $("pieWa").innerHTML = '<a target="_blank" rel="noopener" href="https://wa.me/' +
     CONFIG.whatsapp + '">WhatsApp ' + CONFIG.whatsapp.replace(/^57/,"") + '</a>';
 })();
 
-pintarSellos(false);
+/* Los textos de arriba dependen del modo: con azar no se puede prometer
+   "lo mismo para todos" ni "lo de esta semana", porque seria mentirle al
+   cliente y la Ley 1480 obliga a que lo anunciado sea cierto. */
+if(CONFIG.modoSorteo){
+  const th = $("tituloHero"), lh = $("leadHero");
+  if(th) th.innerHTML = "Raspa y mira<br>qué te salió hoy";
+  /* Decía "a veces salen puntos, a veces un beneficio, y a veces nada".
+     Arrancar avisando que puede no salir nada mata las ganas de raspar,
+     y encima no es lo más común: el 68% de las veces sí salen puntos.
+     Esta versión dice la verdad por el lado bueno, sin prometer que
+     siempre sale: eso sería mentir y la Ley 1480 obliga a que lo
+     anunciado sea cierto. "Beneficio" tampoco lo dice nadie. */
+  if(lh) lh.innerHTML = "Un raspado al día. La mayoría de las veces salen puntos, y de " +
+    "vez en cuando algo rico para acompañar. Junta <b>" + CONFIG.puntosParaAlmuerzo +
+    " puntos</b> y el almuerzo va por cuenta de la casa.";
+  document.title = "Raspa y gana · Restaurante Aury";
+}
+
+pintarPuntos(false);
 if(CONFIG.unoPorDia && E.ultimoRaspado === hoy()){
-  pintarLista(); pantalla("pMio");
-  $("mFaltan").insertAdjacentHTML("afterend",
-    '<div class="aviso">Ya raspaste hoy. Vuelve mañana ❤️</div>');
+  /* Ya raspó hoy: se le muestra SU BENEFICIO en la pantalla de inicio, con
+     la boleta ya destapada. Antes saltaba a "Mi tarjeta", que esconde la
+     banda de comida: el que volvía a abrir la página no veía ni la foto ni
+     lo que se había ganado, solo una grilla de puntos vacíos. */
+  const b = CONFIG.beneficio;
+  $("bIco").textContent = b.ico;
+  $("bQue").textContent = b.que;
+  $("bNota").textContent = b.nota || "";
+  $("boleta").classList.add("abierta");
+  $("antes").style.display = "none";
+  $("btnDestapar").style.display = "none";
+  $("pieInicio").style.display = "none";
+  $("despues").style.display = "";
+  pintarResena();
+  pintarCarta();
+  $("despues").insertAdjacentHTML("afterbegin",
+    '<div class="aviso" style="margin:0 0 4px">Ya raspaste hoy. Vuelve mañana.</div>');
 }else{
   montar();
 }
