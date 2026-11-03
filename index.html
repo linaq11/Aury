@@ -113,9 +113,9 @@ body{
 .hero::after{
   content:"";position:absolute;inset:0;
   background:
-    linear-gradient(180deg, rgba(10,10,13,.24) 0%, rgba(10,10,13,.30) 55%,
-                    rgba(10,10,13,.60) 100%),
-    radial-gradient(ellipse 120% 80% at 50% 38%, transparent 38%, rgba(10,10,13,.40) 100%);
+    linear-gradient(180deg, rgba(10,10,13,.36) 0%, rgba(10,10,13,.44) 55%,
+                    rgba(10,10,13,.72) 100%),
+    radial-gradient(ellipse 120% 80% at 50% 38%, transparent 34%, rgba(10,10,13,.52) 100%);
 }
 
 /* ---- La luz que sigue al dedo ----
@@ -689,7 +689,7 @@ const CONFIG = {
   sorteo: [
     /* Redacción de Lina. Mira a la próxima visita, no a la de hoy, que es
        justo lo que hay que dejarle al que no se ganó nada. */
-    { peso:28, tipo:"nada",   ico:"🥺", que:"¡Hoy no fue tu día!",
+    { peso:26, tipo:"nada",   ico:"🥺", que:"¡Hoy no fue tu día!",
       nota:"¡Pero mañana puede ser! Vuelve y prueba tu suerte. ✨" },
     { peso:38, tipo:"puntos", n:1, que:"Ganaste 1 punto",  nota:"Un paso más para tu almuerzo gratis." },
     { peso:15, tipo:"puntos", n:2, que:"Ganaste 2 puntos", nota:"Doble hoy." },
@@ -707,6 +707,8 @@ const CONFIG = {
     { peso:4,  tipo:"premio", ico:"🏷️", costo:850,  que:"¡Tienes 5% de descuento!",
       nota:"En tu almuerzo de hoy." },
     { peso:3,  tipo:"premio", ico:"💵", costo:1000, que:"¡Tienes $1.000 de descuento!",
+      nota:"En tu almuerzo de hoy." },
+    { peso:2,  tipo:"premio", ico:"🔥", costo:1700, que:"¡Tienes 10% de descuento!",
       nota:"En tu almuerzo de hoy." },
     { peso:1,  tipo:"premio", ico:"💰", costo:2000, que:"¡Tienes $2.000 de descuento!",
       nota:"En tu almuerzo de hoy." }
