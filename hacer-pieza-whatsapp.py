@@ -38,6 +38,7 @@ def fuente(nombre, tam):
 negra  = lambda t: fuente("ariblk.ttf", t)      # titulares
 semi   = lambda t: fuente("seguisb.ttf", t)     # apoyos
 normal = lambda t: fuente("segoeui.ttf", t)     # texto
+emoji  = lambda t: fuente("seguiemj.ttf", t)    # emojis a color
 
 im = Image.new("RGB", (W, H), NOCHE)
 d  = ImageDraw.Draw(im)
@@ -66,14 +67,31 @@ if os.path.exists(LOGO):
     im.paste(logo, ((W-lado)//2, 75), mask)
 
 # ---- titulares ----
-centrado(252, "RESTAURANTE AURY", semi(26), NARANJA, espaciado=5)
-centrado(300, "Raspa y mira", negra(66), TINTA)
-centrado(376, "qué te salió hoy", negra(66), TINTA)
-centrado(468, "Un raspado al día. La mayoría de las veces", normal(29), (190, 188, 182))
-centrado(508, "salen puntos. Junta 20 y comes gratis.", normal(29), (190, 188, 182))
+# Redaccion de Lina. Los emojis van con Segoe UI Emoji y embedded_color,
+# porque con la fuente de texto salen en blanco y negro.
+def emo_texto(y, emo, txt, f, color, tam_emo, al_final=False):
+    """Dibuja emoji + texto (o texto + emoji) centrado como un bloque."""
+    fe = emoji(tam_emo)
+    ae = d.textlength(emo, font=fe)
+    at = d.textlength(txt, font=f)
+    x = (W - (ae + 14 + at)) / 2
+    dy = y + (f.size - tam_emo)//2
+    if al_final:
+        d.text((x, y), txt, font=f, fill=color)
+        d.text((x + at + 14, dy), emo, font=fe, embedded_color=True)
+    else:
+        d.text((x, dy), emo, font=fe, embedded_color=True)
+        d.text((x + ae + 14, y), txt, font=f, fill=color)
+
+centrado(248, "RESTAURANTE AURY", semi(26), NARANJA, espaciado=5)
+emo_texto(300, "🎉", "¡Raspa, gana", negra(60), TINTA, 52)
+centrado(372, "y acumula!", negra(60), TINTA)
+centrado(458, "¡Tienes un raspado cada día! Descubre", normal(27), (190, 188, 182))
+centrado(494, "cuántos puntos te llevas y sorpréndete", normal(27), (190, 188, 182))
+emo_texto(530, "🎁", "con el premio que puede aparecer.", normal(27), (190, 188, 182), 26, al_final=True)
 
 # ---- tarjeta del QR ----
-TX, TY, TW_, TH_ = 215, 572, 650, 650
+TX, TY, TW_, TH_ = 232, 582, 616, 616
 tarjeta = Image.new("RGB", (TW_, TH_), CREMA)
 mr = Image.new("L", (TW_*4, TH_*4), 0)
 ImageDraw.Draw(mr).rounded_rectangle((0, 0, TW_*4, TH_*4), radius=130, fill=255)
@@ -85,16 +103,16 @@ qr.save(os.path.join(AQUI, "qr", "_tmp.png"), scale=20, border=0,
 # 500 y no 520, y subido: el rotulo de abajo quedaba a 12px del QR y le
 # comia la zona de silencio. En pantalla limpia leia igual, pero un
 # escaner apuntando a la pantalla de otro celular es menos indulgente.
-q = Image.open(os.path.join(AQUI, "qr", "_tmp.png")).convert("RGB").resize((500, 500), Image.LANCZOS)
-im.paste(q, (TX + (TW_-500)//2, TY + 58))
+q = Image.open(os.path.join(AQUI, "qr", "_tmp.png")).convert("RGB").resize((474, 474), Image.LANCZOS)
+im.paste(q, (TX + (TW_-474)//2, TY + 54))
 os.remove(os.path.join(AQUI, "qr", "_tmp.png"))
 
-d.text((W/2, TY + 596), "Apunta la cámara", font=semi(27), fill=MARRON, anchor="ma")
+d.text((W/2, TY + 566), "Apunta la cámara", font=semi(27), fill=MARRON, anchor="ma")
 
 # ---- el link, que es lo que de verdad sirve en WhatsApp ----
-centrado(1262, URL_VIS, semi(30), NARANJA)
-centrado(1300, "Junta puntos y a los 20 el almuerzo va por la casa",
-         normal(24), (150, 148, 143))
+emo_texto(1222, "⭐", "¡Acumula 20 puntos y el almuerzo", semi(27), NARANJA, 26)
+centrado(1258, "va por cuenta de la casa!", semi(27), NARANJA)
+centrado(1300, URL_VIS, normal(25), (150, 148, 143))
 
 im.save(SALIDA, quality=90, optimize=True, progressive=True)
 print("whatsapp.jpg  %dx%d  %.0f KB" % (W, H, os.path.getsize(SALIDA)/1024))
