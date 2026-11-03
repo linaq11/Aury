@@ -59,13 +59,17 @@ print("QR listo para:", URL)
 with open(os.path.join(SALIDA, "aury-qr.png"), "rb") as f:
     qr_b64 = base64.b64encode(f.read()).decode()
 
+# Misma redaccion que la pieza de WhatsApp, para que el cliente lea lo
+# mismo en la mesa y en el celular.
 TARJETA = """
   <div class="t">
     <div class="marca">Restaurante Aury</div>
-    <div class="tit">Raspa y descubre<br>lo de esta semana</div>
+    <div class="tit">🎉 ¡Raspa, gana<br>y acumula!</div>
+    <div class="cuerpo">¡Tienes un raspado cada d&iacute;a! Descubre cu&aacute;ntos puntos
+      te llevas y sorpr&eacute;ndete con los premios que pueden aparecer. 🎁</div>
     <img class="qr" src="data:image/png;base64,{qr}" alt="Codigo QR">
-    <div class="pie">Apunta la camara del celular</div>
-    <div class="min">Junta un punto por visita.<br>A los 20, el almuerzo va por la casa.</div>
+    <div class="pie">Apunta la c&aacute;mara del celular</div>
+    <div class="min">⭐ &iexcl;Acumula 20 puntos y el almuerzo va por cuenta de la casa!</div>
   </div>
 """
 
@@ -83,16 +87,19 @@ HTML = """<!DOCTYPE html>
     padding:8mm 6mm; text-align:center;
     background:#f8e9cf; color:#2a1206;
     display:flex; flex-direction:column; align-items:center;
-    height:132mm; justify-content:center;
+    height:134mm; justify-content:center;
     page-break-inside:avoid;
   }}
   .marca {{ font-family:"Bricolage Grotesque",sans-serif; font-weight:800;
     font-size:10pt; letter-spacing:.16em; text-transform:uppercase; color:#d8362a; }}
   .tit {{ font-family:"Bricolage Grotesque",sans-serif; font-weight:800;
-    font-size:19pt; line-height:1.1; letter-spacing:-.02em; margin:3mm 0 5mm; }}
-  .qr {{ width:52mm; height:52mm; display:block; }}
+    font-size:18pt; line-height:1.1; letter-spacing:-.02em; margin:3mm 0 2.5mm; }}
+  .cuerpo {{ font-size:8.4pt; line-height:1.4; color:#4a2812; margin:0 2mm 4mm;
+    max-width:62mm; }}
+  .qr {{ width:48mm; height:48mm; display:block; }}
   .pie {{ font-size:9.5pt; font-weight:600; margin-top:4mm; color:#4a2812; }}
-  .min {{ font-size:8pt; line-height:1.45; margin-top:3mm; color:#6b4a2e; }}
+  .min {{ font-size:8.4pt; line-height:1.45; margin-top:3mm; color:#6b4a2e;
+    max-width:58mm; }}
   .nota {{ margin-top:6mm; font-size:8pt; color:#999; text-align:center; }}
   @media print {{ .nota {{ display:none; }} }}
 </style></head><body>
